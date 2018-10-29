@@ -1,7 +1,18 @@
-//HEADER 42
-# include "ft_ssl.h"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   sha.c                                              :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: bjanik <marvin@42.fr>                      +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2018/10/29 11:19:35 by bjanik            #+#    #+#             */
+/*   Updated: 2018/10/29 19:52:44 by bjanik           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
-void			sha256_init(t_sha256ctx *ctx, int fd)
+#include "ft_ssl.h"
+
+static void			sha256_init(t_sha256ctx *ctx)
 {
 	ctx->h[0] = 0x6a09e667;
 	ctx->h[1] = 0xbb67ae85;
@@ -15,41 +26,40 @@ void			sha256_init(t_sha256ctx *ctx, int fd)
 	ctx->bitlen = 0;
 	memset(ctx->block, 0x0, 64);
 	memset(ctx->digest, 0x0, 32);
-	ctx->fd = fd;
 }
 
-void 			sha256_update(t_sha256ctx *sha256ctx, char *msg, uint32_t msg_len)
+static	void		sha256_update(t_sha256ctx *ctx, t_msg *msg)
 {
-	uint32_t 	i;
-	int 		ret;
+	uint32_t	i;
+	int			ret;
 
 	i = 0;
-	if (msg)
-		while (i < msg_len)
+	if (msg->msg)
+		while (i < msg->msg_len)
 		{
-			sha256ctx->block[sha256ctx->len++] = msg[i++];
-			if (sha256ctx->len == 64)
+			ctx->block[ctx->len++] = msg->msg[i++];
+			if (ctx->len == 64)
 			{
-				sha256_transform(sha256ctx);
-				sha256ctx->len = 0;
-				sha256ctx->bitlen += 512;
+				sha256_transform(ctx);
+				ctx->len = 0;
+				ctx->bitlen += 512;
 			}
 		}
 	else
-		while ((ret = read(sha256ctx->fd, sha256ctx->block, 64)) > 0)
+		while ((ret = read(msg->fd, ctx->block, 64)) > 0)
 		{
-			if (!sha256ctx->fd)
-				printf("%s", sha256ctx->block);
+			if (!msg->fd && !msg->input_file)
+				printf("%s", ctx->block);
 			if (ret == 64)
 			{
-				sha256_transform(sha256ctx);
-				sha256ctx->bitlen += 512;
-			}	
-			sha256ctx->len = ret;
+				sha256_transform(ctx);
+				ctx->bitlen += 512;
+			}
+			ctx->len = ret;
 		}
 }
 
-void			sha256_final(t_sha256ctx *ctx)
+static void			sha256_final(t_sha256ctx *ctx)
 {
 	int		i;
 
@@ -71,8 +81,8 @@ void			sha256_final(t_sha256ctx *ctx)
 	while (++i < 4)
 	{
 		ctx->digest[i] = (ctx->h[0] >> (24 - i * 8)) & 0x000000ff;
-		ctx->digest[i + 4]  = (ctx->h[1] >> (24 - i * 8)) & 0x000000ff;
-		ctx->digest[i + 8]  = (ctx->h[2] >> (24 - i * 8)) & 0x000000ff;
+		ctx->digest[i + 4] = (ctx->h[1] >> (24 - i * 8)) & 0x000000ff;
+		ctx->digest[i + 8] = (ctx->h[2] >> (24 - i * 8)) & 0x000000ff;
 		ctx->digest[i + 12] = (ctx->h[3] >> (24 - i * 8)) & 0x000000ff;
 		ctx->digest[i + 16] = (ctx->h[4] >> (24 - i * 8)) & 0x000000ff;
 		ctx->digest[i + 20] = (ctx->h[5] >> (24 - i * 8)) & 0x000000ff;
@@ -81,28 +91,23 @@ void			sha256_final(t_sha256ctx *ctx)
 	}
 }
 
-void			sha256_print(unsigned char *digest)
+static void			output_sha256(t_msg *msg, unsigned char digest[],
+									uint32_t opts)
 {
-	int 	i;
-
-	i = 0;
-	if (digest)
-	{
-		while (i < 32)
-			printf("%02x", digest[i++]);
-		putchar('\n');
-	}
+	if (!(opts & OPT_Q) && !(opts & OPT_R))
+		msg->input_file ? printf("SHA256 (%s) = ", msg->input_file) :
+			printf("SHA256 (\"%s\") = ", msg->msg);
+	print_hash(digest, 32);
+	if (opts & OPT_R && !(opts & OPT_Q))
+		printf("\"%s\"\n", (msg->input_file) ? msg->input_file : msg->msg);
 }
 
-unsigned char *sha256(char *msg, uint32_t msg_len, int fd, uint32_t opts)
+void				sha256(t_msg *msg, uint32_t opts)
 {
-	t_sha256ctx	sha256ctx;
-	unsigned char 	*digest = malloc(32);
+	t_sha256ctx		sha256ctx;
 
-	sha256_init(&sha256ctx, fd);
-	sha256_update(&sha256ctx, msg, msg_len);
+	sha256_init(&sha256ctx);
+	sha256_update(&sha256ctx, msg);
 	sha256_final(&sha256ctx);
-	memcpy(digest, sha256ctx.digest, 32);
-	sha256_print(digest);
-	return (NULL);
+	output_sha256(msg, sha256ctx.digest, opts);
 }
