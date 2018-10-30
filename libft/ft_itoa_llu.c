@@ -1,28 +1,45 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   usage.c                                            :+:      :+:    :+:   */
+/*   ft_itoa.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: bjanik <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/10/29 15:23:30 by bjanik            #+#    #+#             */
-/*   Updated: 2018/10/29 15:23:32 by bjanik           ###   ########.fr       */
+/*   Created: 2016/11/05 18:34:38 by bjanik            #+#    #+#             */
+/*   Updated: 2016/12/21 15:19:31 by bjanik           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ft_ssl.h"
+#include "libft.h"
 
-void	usage(void)
+static int	ft_nb_digit(unsigned long long n)
 {
-	write(STDERR_FILENO, FT_SSL_USAGE, strlen(FT_SSL_USAGE));
-	exit(EXIT_FAILURE);
+	int	digit;
+
+	digit = 0;
+	while (n)
+	{
+		n /= 10;
+		digit++;
+	}
+	return (digit);
 }
 
-void	command_usage(char *command)
+char		*ft_itoa_llu(unsigned long long n)
 {
-	ft_printf("ft_ssl: Error: '%s' is an invalid command\n\n", command);
-	ft_printf("Standard commands:\n\n");
-	ft_printf("Message digest commands:\nmd5\nsha256\n\n");
-	ft_printf("Cipher commands:\n");
-	exit(EXIT_FAILURE);
+	char	*s;
+	int		i;
+
+	i = ft_nb_digit(n);
+	if ((s = (char*)malloc((i + 1) * sizeof(char))) == NULL)
+		return (NULL);
+	s[i--] = '\0';
+	if (n == 0)
+		s[i] = 48;
+	while (n)
+	{
+		s[i--] = n % 10 + 48;
+		n /= 10;
+	}
+	return (s);
 }

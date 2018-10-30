@@ -1,28 +1,34 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   usage.c                                            :+:      :+:    :+:   */
+/*   ft_strmap.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: bjanik <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/10/29 15:23:30 by bjanik            #+#    #+#             */
-/*   Updated: 2018/10/29 15:23:32 by bjanik           ###   ########.fr       */
+/*   Created: 2016/11/04 14:11:29 by bjanik            #+#    #+#             */
+/*   Updated: 2016/12/09 11:04:10 by bjanik           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ft_ssl.h"
+#include "libft.h"
 
-void	usage(void)
+char	*ft_strmap(char const *s, char (*f)(char))
 {
-	write(STDERR_FILENO, FT_SSL_USAGE, strlen(FT_SSL_USAGE));
-	exit(EXIT_FAILURE);
-}
+	char	*str;
+	int		len;
+	int		i;
 
-void	command_usage(char *command)
-{
-	ft_printf("ft_ssl: Error: '%s' is an invalid command\n\n", command);
-	ft_printf("Standard commands:\n\n");
-	ft_printf("Message digest commands:\nmd5\nsha256\n\n");
-	ft_printf("Cipher commands:\n");
-	exit(EXIT_FAILURE);
+	i = 0;
+	if (s == NULL || f == NULL)
+		return (NULL);
+	len = ft_strlen(s);
+	if ((str = ft_memalloc(len + 1)) == NULL)
+		return (NULL);
+	while (i < len)
+	{
+		str[i] = f(s[i]);
+		i++;
+	}
+	str[i] = '\0';
+	return (str);
 }

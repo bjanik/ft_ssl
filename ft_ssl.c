@@ -25,9 +25,10 @@ t_ssl_command	*get_ssl_command(const char *command)
 	i = -1;
 	while (g_commands[++i].name)
 	{
-		if (!strcmp(g_commands[i].name, command))
+		if (!ft_strcmp(g_commands[i].name, command))
 		{
-			g_commands[i].msg = (t_msg*)malloc(sizeof(t_msg));
+			if (!(g_commands[i].msg = (t_msg*)malloc(sizeof(t_msg))))
+				return (NULL);
 			g_commands[i].msg->msg = NULL;
 			g_commands[i].msg->msg_len = 0;
 			g_commands[i].msg->input_file = NULL;
@@ -44,9 +45,6 @@ void			print_hash(unsigned char digest[], uint32_t digest_len)
 
 	i = 0;
 	if (digest)
-	{
 		while (i < digest_len)
-			printf("%02x", digest[i++]);
-		putchar('\n');
-	}
+			ft_printf("%02x", digest[i++]);
 }

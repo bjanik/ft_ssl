@@ -1,28 +1,26 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   usage.c                                            :+:      :+:    :+:   */
+/*   ft_lstadd.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: bjanik <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/10/29 15:23:30 by bjanik            #+#    #+#             */
-/*   Updated: 2018/10/29 15:23:32 by bjanik           ###   ########.fr       */
+/*   Created: 2016/11/08 13:37:20 by bjanik            #+#    #+#             */
+/*   Updated: 2016/11/09 10:32:06 by bjanik           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ft_ssl.h"
+#include "libft.h"
 
-void	usage(void)
+void	ft_dlstadd(t_dlst **alst, t_dlst *new)
 {
-	write(STDERR_FILENO, FT_SSL_USAGE, strlen(FT_SSL_USAGE));
-	exit(EXIT_FAILURE);
-}
-
-void	command_usage(char *command)
-{
-	ft_printf("ft_ssl: Error: '%s' is an invalid command\n\n", command);
-	ft_printf("Standard commands:\n\n");
-	ft_printf("Message digest commands:\nmd5\nsha256\n\n");
-	ft_printf("Cipher commands:\n");
-	exit(EXIT_FAILURE);
+	if (alst != NULL && *alst == NULL)
+		*alst = new;
+	else if (alst != NULL && *alst != NULL && new != NULL)
+	{
+		new->next = *alst;
+		new->prev = NULL;
+		(*alst)->prev = new;
+		*alst = new;
+	}
 }

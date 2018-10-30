@@ -1,28 +1,28 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   usage.c                                            :+:      :+:    :+:   */
+/*   ft_putnstr.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: bjanik <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/10/29 15:23:30 by bjanik            #+#    #+#             */
-/*   Updated: 2018/10/29 15:23:32 by bjanik           ###   ########.fr       */
+/*   Created: 2016/12/18 14:45:04 by bjanik            #+#    #+#             */
+/*   Updated: 2017/01/13 17:22:29 by bjanik           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ft_ssl.h"
+#include "libft.h"
 
-void	usage(void)
+int	ft_putnstr(const char *str, int n)
 {
-	write(STDERR_FILENO, FT_SSL_USAGE, strlen(FT_SSL_USAGE));
-	exit(EXIT_FAILURE);
-}
+	int	len;
 
-void	command_usage(char *command)
-{
-	ft_printf("ft_ssl: Error: '%s' is an invalid command\n\n", command);
-	ft_printf("Standard commands:\n\n");
-	ft_printf("Message digest commands:\nmd5\nsha256\n\n");
-	ft_printf("Cipher commands:\n");
-	exit(EXIT_FAILURE);
+	len = ft_strlen(str);
+	if (n < len && n >= 0)
+	{
+		write(1, str, n);
+		return (n);
+	}
+	else if (n > 0)
+		write(1, str, len);
+	return (len);
 }

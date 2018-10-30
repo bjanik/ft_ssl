@@ -19,9 +19,11 @@
 # include <unistd.h>
 # include <fcntl.h>
 
+# include "libft.h"
 
 # define FT_SSL_USAGE "usage: ft_ssl command [command opts] [command args]\n"
 # define MD5_USAGE "md5: usage: md5 [-pqr] -s [string] [files ...]\n"
+# define SHA_USAGE "sha: usage: md5 [-pqr] -s [string] [files ...]\n"
 # define MD5_OPTS "pqrs"
 # define SHA_OPTS "pqrs"
 # define OPT_P 1
@@ -67,6 +69,12 @@ typedef struct		s_sha256ctx
 	unsigned char	digest[32];
 	int				fd;
 }					t_sha256ctx;
+
+union				
+{
+	t_sha256ctx		*sha256ctx;
+	t_md5ctx		*md5ctx;
+}					u_ctx;
 
 t_ssl_command		*get_ssl_command(const char *command);
 void				md5(t_msg *msg, uint32_t opts);

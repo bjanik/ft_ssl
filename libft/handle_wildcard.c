@@ -1,28 +1,29 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   usage.c                                            :+:      :+:    :+:   */
+/*   handle_wildcard.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: bjanik <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/10/29 15:23:30 by bjanik            #+#    #+#             */
-/*   Updated: 2018/10/29 15:23:32 by bjanik           ###   ########.fr       */
+/*   Created: 2017/01/20 11:48:55 by bjanik            #+#    #+#             */
+/*   Updated: 2017/01/20 12:11:38 by bjanik           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ft_ssl.h"
+#include "ft_printf.h"
 
-void	usage(void)
+void	handle_wildcard(t_arg *p, va_list ap)
 {
-	write(STDERR_FILENO, FT_SSL_USAGE, strlen(FT_SSL_USAGE));
-	exit(EXIT_FAILURE);
-}
+	char	*s;
 
-void	command_usage(char *command)
-{
-	ft_printf("ft_ssl: Error: '%s' is an invalid command\n\n", command);
-	ft_printf("Standard commands:\n\n");
-	ft_printf("Message digest commands:\nmd5\nsha256\n\n");
-	ft_printf("Cipher commands:\n");
-	exit(EXIT_FAILURE);
+	s = NULL;
+	p->width = va_arg(ap, int);
+	if (p->width < -1)
+	{
+		p->width = ft_abs(p->width);
+		if ((s = ft_strchr(p->flags, '0')) != NULL)
+			*s = '-';
+		else if (is_flag(p, '-') == 0)
+			p->flags[ft_strlen(p->flags)] = '-';
+	}
 }

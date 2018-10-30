@@ -12,55 +12,37 @@
 
 #include "ft_ssl.h"
 
-// void	hash_file(t_ssl_command *command, char *filename)
-// {
-// 	int				fd;
-// 	unsigned char	*digest = malloc(16);
-
-// 	if ((fd = open(filename, O_RDONLY)) < 0)
-// 		printf("ft_ssl: %s: Cannot open file\n", filename);
-// 	else
-// 	{	
-// 		command->cmd_func(command->msg, command->opts);
-// 		close(fd);
-// 		output_hash(command->opts, digest, filename);
-// 	}
-// }
-
 void			hash_string(t_msg *msg, char **argv, int *i)
 {
 	char	*s;
 
-	if (strlen(argv[*i]) > 2)
+	if (ft_strlen(argv[*i]) > 2)
 		s = (&argv[*i][2]);
 	else if (argv[*i + 1])
-		s = argv[*i + 1];
+		s = argv[(*i)++ + 1];
 	else
 	{
-		printf("md5: option requires an argument -- s\n");
-		printf("%s", MD5_USAGE);
+		ft_printf("md5: option requires an argument -- s\n");
+		ft_printf("%s", MD5_USAGE);
 		exit(1);
 	}
-	(*i)++;
+	
 	init_msg(msg, s, NULL);
 }
 
-void			main_loop(t_ssl_command *command, char **argv)
+void			main_loop(t_ssl_command *command, char **argv, int i)
 {
-	int			i;
-
-	i = 2;
-	while (argv[i] && strcmp(END_OF_OPT, argv[i]) && argv[i][0] == '-')
+	while (argv[i] && ft_strcmp(END_OF_OPT, argv[i]) && argv[i][0] == '-')
 	{
-		if (!strncmp("-s", argv[i], 2))
+		if (!ft_strncmp("-s", argv[i], 2))
 			hash_string(command->msg, argv, &i);
-		else if (!strncmp("-p", argv[i], 2))
+		else if (!ft_strncmp("-p", argv[i], 2))
 			init_msg(command->msg, NULL, NULL);
-		else if (!strncmp("-r", argv[i], 2))
+		else if (!ft_strncmp("-r", argv[i], 2))
 			command->opts |= OPT_R;
-		else if (!strncmp("-q", argv[i], 2))
+		else if (!ft_strncmp("-q", argv[i], 2))
 			command->opts |= OPT_Q;
-		if (command->msg->msg)
+		if (command->msg->msg || command->msg->fd > -1)
 		{
 			command->cmd_func(command->msg, command->opts);
 			reset_msg(command->msg);
@@ -88,5 +70,5 @@ int		main(int argc, char **argv)
 		init_msg(command->msg, NULL, NULL);	
 		command->cmd_func(command->msg, command->opts);
 	}
-	main_loop(command, argv);
+	main_loop(command, argv, 2);
 }

@@ -49,7 +49,7 @@ static	void		sha256_update(t_sha256ctx *ctx, t_msg *msg)
 		while ((ret = read(msg->fd, ctx->block, 64)) > 0)
 		{
 			if (!msg->fd && !msg->input_file)
-				printf("%s", ctx->block);
+				ft_printf("%s", ctx->block);
 			if (ret == 64)
 			{
 				sha256_transform(ctx);
@@ -65,12 +65,12 @@ static void			sha256_final(t_sha256ctx *ctx)
 
 	ctx->block[ctx->len] = 0x80;
 	if (ctx->len < 56)
-		memset(ctx->block + ctx->len + 1, 0x0, 56 - ctx->len);
+		ft_memset(ctx->block + ctx->len + 1, 0x0, 56 - ctx->len);
 	else
 	{
-		memset(ctx->block + ctx->len + 1, 0x0, 64 - ctx->len);
+		ft_memset(ctx->block + ctx->len + 1, 0x0, 64 - ctx->len);
 		sha256_transform(ctx);
-		memset(ctx->block, 0x0, 56);
+		ft_memset(ctx->block, 0x0, 56);
 	}
 	i = -1;
 	ctx->bitlen += ctx->len * 8;
@@ -93,13 +93,14 @@ static void			sha256_final(t_sha256ctx *ctx)
 
 static void			output_sha256(t_msg *msg, unsigned char digest[],
 									uint32_t opts)
-{
-	if (!(opts & OPT_Q) && !(opts & OPT_R))
-		msg->input_file ? printf("SHA256 (%s) = ", msg->input_file) :
-			printf("SHA256 (\"%s\") = ", msg->msg);
+{if (!(opts & OPT_Q) && !(opts & OPT_R) && (msg->input_file || msg->msg))
+		msg->input_file ? ft_printf("SHA256 (%s) = ", msg->input_file) :
+			ft_printf("SHA256 (\"%s\") = ", msg->msg);
 	print_hash(digest, 32);
-	if (opts & OPT_R && !(opts & OPT_Q))
-		printf("\"%s\"\n", (msg->input_file) ? msg->input_file : msg->msg);
+	if (opts & OPT_R && !(opts & OPT_Q) && (msg->input_file || msg->msg))
+		msg->input_file ? ft_printf(" %s", msg->input_file) : 
+						ft_printf(" \"%s\"", msg->msg);
+	ft_putchar('\n');
 }
 
 void				sha256(t_msg *msg, uint32_t opts)

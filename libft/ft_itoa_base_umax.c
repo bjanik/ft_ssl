@@ -1,28 +1,34 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   usage.c                                            :+:      :+:    :+:   */
+/*   ft_itoa_base_umax.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: bjanik <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/10/29 15:23:30 by bjanik            #+#    #+#             */
-/*   Updated: 2018/10/29 15:23:32 by bjanik           ###   ########.fr       */
+/*   Created: 2017/01/02 14:59:50 by bjanik            #+#    #+#             */
+/*   Updated: 2017/01/02 16:57:08 by bjanik           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ft_ssl.h"
+#include "libft.h"
 
-void	usage(void)
+char	*ft_itoa_base_umax(uintmax_t value, char *base)
 {
-	write(STDERR_FILENO, FT_SSL_USAGE, strlen(FT_SSL_USAGE));
-	exit(EXIT_FAILURE);
-}
+	char	*s;
+	int		i;
+	int		size_base;
 
-void	command_usage(char *command)
-{
-	ft_printf("ft_ssl: Error: '%s' is an invalid command\n\n", command);
-	ft_printf("Standard commands:\n\n");
-	ft_printf("Message digest commands:\nmd5\nsha256\n\n");
-	ft_printf("Cipher commands:\n");
-	exit(EXIT_FAILURE);
+	size_base = ft_strlen(base);
+	i = ft_nb_digit_base(value, size_base);
+	if ((s = (char*)malloc((i + 1) * sizeof(char))) == NULL)
+		return (NULL);
+	s[i--] = '\0';
+	if (value == 0)
+		s[i] = '0';
+	while (value)
+	{
+		s[i--] = base[value % size_base];
+		value /= size_base;
+	}
+	return (s);
 }

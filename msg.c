@@ -17,7 +17,7 @@ int		init_msg(t_msg *msg, char *message, char *input_file)
 	if (message)
 	{
 		msg->msg = message;
-		msg->msg_len = strlen(message);
+		msg->msg_len = ft_strlen(message);
 		msg->fd = -1;
 		msg->input_file = NULL;
 	}
@@ -27,7 +27,7 @@ int		init_msg(t_msg *msg, char *message, char *input_file)
 		msg->msg_len = 0;
 		if ((msg->fd = open(input_file, O_RDONLY)) < 0)
 		{
-			printf("md5: %s: Cannot open file\n", input_file);
+			ft_printf("md5: %s: Cannot open file\n", input_file);
 			return (1);
 		}
 		msg->input_file = input_file;
