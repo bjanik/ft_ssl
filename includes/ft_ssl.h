@@ -23,8 +23,7 @@
 
 # define FT_SSL_USAGE "usage: ft_ssl command [command opts] [command args]\n"
 # define HASH_CMD_USAGE "[-pqr] -s [string] [files ...]\n"
-# define MD5_OPTS "pqrs"
-# define SHA_OPTS "pqrs"
+# define HASH_CMD_OPTS "pqrs"
 # define OPT_P 1
 # define OPT_Q 2
 # define OPT_R 4
@@ -89,6 +88,7 @@ void					reset_msg(t_msg *msg);
 
 void					print_hash(unsigned char digest[], uint8_t digest_len);
 
+int						parse_opt(void);
 int						usage(void);
 int						command_usage(char *command);
 

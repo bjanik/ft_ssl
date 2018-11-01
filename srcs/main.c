@@ -12,7 +12,7 @@
 
 #include "ft_ssl.h"
 
-static void		hash_string(t_msg *msg, char **argv, int *i)
+static int		hash_string(t_msg *msg, char **argv, int *i)
 {
 	char	*s;
 
@@ -24,9 +24,10 @@ static void		hash_string(t_msg *msg, char **argv, int *i)
 	{
 		ft_printf("%s: option requires an argument -- s\n", argv[1]);
 		ft_printf("%s: usage: %s %s", argv[1], argv[1], HASH_CMD_USAGE);
-		exit(1);
+		return (1);
 	}
 	init_msg(msg, s, NULL);
+	return (0);
 }
 
 static void		hash_files(char **argv, t_ssl_command *command)
