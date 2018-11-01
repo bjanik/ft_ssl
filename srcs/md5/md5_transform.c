@@ -38,20 +38,17 @@ static uint32_t	g_k[64] = {
 	0xf7537e82, 0xbd3af235, 0x2ad7d2bb, 0xeb86d391
 };
 
-static void		get_sub_blocks(t_md5ctx *ctx, uint32_t m[])
+static void		get_sub_blocks(t_ctx *ctx, uint32_t m[])
 {
-	int	j;
 	int	i;
 
-	j = 0;
 	i = -1;
 	while (++i < 16)
 	{
-		m[i] = ctx->block[j] |
-			(ctx->block[j + 1] << 8) |
-			(ctx->block[j + 2] << 16) |
-			(ctx->block[j + 3] << 24);
-		j += 4;
+		m[i] = ctx->block[i * 4] |
+			(ctx->block[i * 4 + 1] << 8) |
+			(ctx->block[i * 4 + 2] << 16) |
+			(ctx->block[i * 4 + 3] << 24);
 	}
 }
 
@@ -91,7 +88,7 @@ static void		operations_loop(uint32_t h[], uint32_t m[])
 	}
 }
 
-void			md5_transform(t_md5ctx *ctx)
+void			md5_transform(t_ctx *ctx)
 {
 	uint32_t	h[5];
 	uint32_t	m[16];

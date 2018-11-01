@@ -12,17 +12,19 @@
 
 #include "ft_ssl.h"
 
-void	usage(void)
+int	usage(void)
 {
 	write(STDERR_FILENO, FT_SSL_USAGE, strlen(FT_SSL_USAGE));
 	exit(EXIT_FAILURE);
 }
 
-void	command_usage(char *command)
+int	command_usage(char *command)
 {
-	ft_printf("ft_ssl: Error: '%s' is an invalid command\n\n", command);
-	ft_printf("Standard commands:\n\n");
-	ft_printf("Message digest commands:\nmd5\nsha256\n\n");
-	ft_printf("Cipher commands:\n");
+	ft_putstr_fd("ft_ssl: Error: ", 2);
+	ft_putstr_fd(command, 2);
+	ft_putstr_fd(" is an invalid command\n", 2);
+	ft_putendl_fd("Standard commands:\n", 2);
+	ft_putendl_fd("Message digest commands:\nmd5\nsha1\nsha256\n", 2);
+	ft_putendl_fd("Cipher commands:", 2);
 	exit(EXIT_FAILURE);
 }

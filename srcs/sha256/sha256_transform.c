@@ -28,7 +28,7 @@ static const uint32_t	g_k[64] = {
 	0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2
 };
 
-static void				get_word_sequence(t_sha256ctx *ctx, uint32_t w[])
+static void				get_word_sequence(t_ctx *ctx, uint32_t w[])
 {
 	int			i;
 	int			j;
@@ -54,7 +54,7 @@ static void				get_word_sequence(t_sha256ctx *ctx, uint32_t w[])
 	}
 }
 
-static void				init_intermediate_hash(t_sha256ctx *ctx, uint32_t h[])
+static void				init_intermediate_hash(t_ctx *ctx, uint32_t h[])
 {
 	int	i;
 
@@ -65,7 +65,7 @@ static void				init_intermediate_hash(t_sha256ctx *ctx, uint32_t h[])
 	h[9] = 0;
 }
 
-void					sha256_transform(t_sha256ctx *ctx)
+void					sha256_transform(t_ctx *ctx)
 {
 	uint32_t	h[10];
 	uint32_t	w[64];

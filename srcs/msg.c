@@ -27,7 +27,8 @@ int		init_msg(t_msg *msg, char *message, char *input_file)
 		msg->msg_len = 0;
 		if ((msg->fd = open(input_file, O_RDONLY)) < 0)
 		{
-			ft_printf("md5: %s: Cannot open file\n", input_file);
+			write(STDERR_FILENO, "ft_ssl: ", 8);
+			perror(input_file);
 			return (1);
 		}
 		msg->input_file = input_file;
