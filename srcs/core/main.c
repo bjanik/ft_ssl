@@ -12,58 +12,38 @@
 
 #include "ft_ssl.h"
 
-static int		hash_string(t_msg *msg, char **argv, int *i)
+static int		hash_files(char **argv, t_ssl_command *command)
 {
-	char	*s;
-
-	if (ft_strlen(argv[*i]) > 2)
-		s = (&argv[*i][2]);
-	else if (argv[*i + 1])
-		s = argv[(*i)++ + 1];
-	else
-	{
-		ft_printf("%s: option requires an argument -- s\n", argv[1]);
-		ft_printf("%s: usage: %s %s", argv[1], argv[1], HASH_CMD_USAGE);
-		return (1);
-	}
-	init_msg(msg, s, NULL);
-	return (0);
-}
-
-static void		hash_files(char **argv, t_ssl_command *command)
-{
-	int 	i;
+	int	i;
+	int	ret;
+	int	rett;
 
 	i = 0;
+	rett = 0;
 	while (argv[i])
 	{
-		if (init_msg(command->msg, NULL, argv[i++]) != 0)
+		if ((ret = init_msg(command->msg, NULL, argv[i++])) != 0)
+		{
+			rett = ret;
 			continue ;
+		}
 		command->cmd_func(command->msg, command->opts);
 	}
+	return (rett);
 }
 
-static void		main_loop(t_ssl_command *command, char **argv)
+static int		set_options(t_ssl_command *command, char **argv, int *index)
 {
-	int i;
+	int ret;
 
-	i = 2;
-	if (!ft_strncmp("-s", argv[i], 2))
-		hash_string(command->msg, argv, &i);
-	else if (!ft_strncmp("-p", argv[i], 2))
-	{
-		init_msg(command->msg, NULL, NULL);
-		command->opts |= OPT_P;
-	}
-	else if (!ft_strncmp("-r", argv[i], 2))
-		command->opts |= OPT_R;
-	else if (!ft_strncmp("-q", argv[i], 2))
-		command->opts |= OPT_Q;
+	if ((ret = parse_opt(command, argv, index)))
+		return (ret);
 	if (command->msg->msg || command->msg->fd > -1)
 	{
 		command->cmd_func(command->msg, command->opts);
 		reset_msg(command->msg);
 	}
+	return (0);
 }
 
 int				main(int argc, char **argv)
@@ -71,23 +51,25 @@ int				main(int argc, char **argv)
 	t_ssl_command	*command;
 	int 			i;
 
-	command = NULL;
-	i = 0;
+	i = 2;
 	if (argc == 1)
 		return (usage());
 	if (!(command = get_ssl_command(argv[1])))
-		return (command_usage(argv[1]));
-	if (argc == 2)
+		return (commands_usage(argv[1]));
+	while (argv[i] && ft_strcmp(END_OF_OPT, argv[i]) && argv[i][0] == '-')
+	{
+		if (set_options(command, argv, &i))
+			return (1);
+		i++;
+	}
+	(argv[i] && !ft_strcmp(END_OF_OPT, argv[i])) ? i++ : 0;
+	if (!argv[i] && !(command->opts & (OPT_S | OPT_P)))
 	{
 		init_msg(command->msg, NULL, NULL);
 		command->cmd_func(command->msg, command->opts);
+		reset_msg(command->msg);
 	}
-	while (argv[i] && ft_strcmp(END_OF_OPT, argv[i]) && argv[i][0] == '-')
-	{
-		main_loop(command, argv);
-		i++;
-	}
-	hash_files(argv + i, command);
+	i = hash_files(argv + i, command);
 	ft_memdel((void**)&(command->msg));
-	return (0);
+	return (i);
 }

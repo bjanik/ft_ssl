@@ -13,9 +13,9 @@
 #include "ft_ssl.h"
 
 t_ssl_command	g_commands[NB_COMMANDS + 1] = {
-	{"md5", md5, MD5_OPTS, 0, NULL},
-	{"sha256", sha256, SHA_OPTS, 0, NULL},
-	{"sha1", sha1, SHA_OPTS, 0, NULL},
+	{"md5", md5, HASH_CMD_OPTS, 0, NULL},
+	{"sha256", sha256, HASH_CMD_OPTS, 0, NULL},
+	{"sha1", sha1, HASH_CMD_OPTS, 0, NULL},
 	{NULL, NULL, NULL, 0, NULL},
 };
 

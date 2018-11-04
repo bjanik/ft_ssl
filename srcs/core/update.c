@@ -38,12 +38,16 @@ static int			read_from_fd(t_msg *msg, t_ctx *ctx, uint32_t opts)
 			ctx->transform(ctx);
 			ctx->bitlen += 512;
 			ctx->len = 0;
-			printf("%d\n", buflen);
 		}
 	}
 	(!msg->fd && !msg->input_file && opts & OPT_P) ? write(1, msg->buf, buflen)
 													: 0;
-	(msg->input_file) ? close(msg->fd) : 0;
+	msg->input_file ? close(msg->fd) : 0;
+	if (ret == -1 && msg->input_file)
+	{
+		write(STDERR_FILENO, "ft_ssl: ", 8);
+		perror(msg->input_file);
+	}
 	return (ret);
 }
 

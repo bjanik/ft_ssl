@@ -22,16 +22,17 @@
 # include "libft.h"
 
 # define FT_SSL_USAGE "usage: ft_ssl command [command opts] [command args]\n"
-# define HASH_CMD_USAGE "[-pqr] -s [string] [files ...]\n"
+# define HASH_CMD_USAGE " [-pqr] -s [string] [files ...]\n"
 # define HASH_CMD_OPTS "pqrs"
 # define OPT_P 1
 # define OPT_Q 2
 # define OPT_R 4
+# define OPT_S 8
 # define END_OF_OPT "--"
 # define BUF_SIZE 1024
 # define BLOCK_SIZE 64
 
-# define MD5_DIGEST_LEN	16
+# define MD5_DIGEST_LEN 16
 # define SHA1_DIGEST_LEN 20
 # define SHA256_DIGEST_LEN 32
 # define MAX_CMD_NAME_LEN 6
@@ -74,6 +75,7 @@ t_ssl_command			*get_ssl_command(const char *command);
 int						update(t_ctx *ctx, t_msg *msg, uint32_t opts);
 void					pad_message(t_ctx *ctx);
 void					output_digest(t_msg *msg, t_ctx ctx, uint32_t opts);
+
 void					md5(t_msg *msg, uint32_t opts);
 void					md5_transform(t_ctx *ctx);
 
@@ -88,9 +90,11 @@ void					reset_msg(t_msg *msg);
 
 void					print_hash(unsigned char digest[], uint8_t digest_len);
 
-int						parse_opt(void);
+int						parse_opt(t_ssl_command *command,
+									char **argv,
+									int *index);
 int						usage(void);
-int						command_usage(char *command);
+int						commands_usage(char *command);
 
 uint32_t				rotleft(uint32_t x, uint32_t n);
 uint32_t				rotright(uint32_t x, uint32_t n);
