@@ -22,32 +22,47 @@ static int			display_buf(t_msg *msg, uint32_t opts)
 	return (0);
 }
 
+static void			read_error(char *input_file, int ret)
+{
+	if (ret == -1 && input_file)
+	{
+		write(STDERR_FILENO, "ft_ssl: ", 8);
+		perror(input_file);
+	}
+	else if (ret == -1)
+		perror("Read error");
+}
+
+static void			transform_block(t_ctx *ctx)
+{
+	ctx->transform(ctx);
+	ctx->bitlen += BLOCK_SIZE * 8;
+	ctx->len = 0;
+}
+
 static int			read_from_fd(t_msg *msg, t_ctx *ctx, uint32_t opts)
 {
 	int			buflen;
 	int			ret;
 
 	buflen = 0;
-	while ((ret = read(msg->fd, ctx->block + ctx->len, 1)) > 0)
+	while ((ret = read(msg->fd, ctx->block + ctx->len, BLOCK_SIZE)) > 0)
 	{
-		msg->buf[buflen++] = ctx->block[++ctx->len - 1];
-		if (!msg->fd && !msg->input_file && buflen == BUF_SIZE)
-			buflen = display_buf(msg, opts);
-		if (ctx->len == 64)
+		ctx->len = ret;
+		if (!msg->fd && !msg->input_file)
 		{
-			ctx->transform(ctx);
-			ctx->bitlen += 512;
-			ctx->len = 0;
+			ft_memcpy(msg->buf + buflen, ctx->block, ret);
+			buflen += ret;
+			if (buflen == BUF_SIZE)
+				buflen = display_buf(msg, opts);
 		}
+		if (ctx->len == BLOCK_SIZE)
+			transform_block(ctx);
 	}
 	(!msg->fd && !msg->input_file && opts & OPT_P) ? write(1, msg->buf, buflen)
 													: 0;
 	msg->input_file ? close(msg->fd) : 0;
-	if (ret == -1 && msg->input_file)
-	{
-		write(STDERR_FILENO, "ft_ssl: ", 8);
-		perror(msg->input_file);
-	}
+	read_error(msg->input_file, ret);
 	return (ret);
 }
 
@@ -56,11 +71,11 @@ int					update(t_ctx *ctx, t_msg *msg, uint32_t opts)
 	uint32_t		i;
 
 	i = 0;
-	if (msg->msg)
+	if (msg->str)
 		while (i < msg->msg_len)
 		{
-			ctx->block[ctx->len++] = msg->msg[i++];
-			if (ctx->len == 64)
+			ctx->block[ctx->len++] = msg->str[i++];
+			if (ctx->len == BLOCK_SIZE)
 			{
 				ctx->transform(ctx);
 				ctx->len = 0;

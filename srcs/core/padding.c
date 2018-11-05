@@ -19,7 +19,7 @@ void	pad_message(t_ctx *ctx)
 		ft_memset(ctx->block + ctx->len + 1, 0x0, 56 - ctx->len);
 	else
 	{
-		ft_memset(ctx->block + ctx->len + 1, 0x0, 64 - ctx->len);
+		ft_memset(ctx->block + ctx->len + 1, 0x0, BLOCK_SIZE - ctx->len);
 		ctx->transform(ctx);
 		ft_memset(ctx->block, 0x0, 56);
 	}

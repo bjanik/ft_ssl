@@ -6,7 +6,7 @@
 /*   By: bjanik <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/29 11:18:58 by bjanik            #+#    #+#             */
-/*   Updated: 2018/10/31 19:45:46 by bjanik           ###   ########.fr       */
+/*   Updated: 2018/11/05 10:23:21 by bjanik           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ static int		set_options(t_ssl_command *command, char **argv, int *index)
 
 	if ((ret = parse_opt(command, argv, index)))
 		return (ret);
-	if (command->msg->msg || command->msg->fd > -1)
+	if (command->msg->str || command->msg->fd > -1)
 	{
 		command->cmd_func(command->msg, command->opts);
 		reset_msg(command->msg);
@@ -49,7 +49,7 @@ static int		set_options(t_ssl_command *command, char **argv, int *index)
 int				main(int argc, char **argv)
 {
 	t_ssl_command	*command;
-	int 			i;
+	int				i;
 
 	i = 2;
 	if (argc == 1)

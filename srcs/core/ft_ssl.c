@@ -29,8 +29,11 @@ t_ssl_command	*get_ssl_command(const char *command)
 		if (!ft_strcmp(g_commands[i].name, command))
 		{
 			if (!(g_commands[i].msg = (t_msg*)malloc(sizeof(t_msg))))
+			{
+				perror("Malloc: ");
 				return (NULL);
-			g_commands[i].msg->msg = NULL;
+			}
+			g_commands[i].msg->str = NULL;
 			g_commands[i].msg->msg_len = 0;
 			g_commands[i].msg->input_file = NULL;
 			g_commands[i].msg->fd = -1;

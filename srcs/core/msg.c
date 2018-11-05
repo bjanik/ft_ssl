@@ -16,14 +16,14 @@ int		init_msg(t_msg *msg, char *message, char *input_file)
 {
 	if (message)
 	{
-		msg->msg = message;
+		msg->str = message;
 		msg->msg_len = ft_strlen(message);
 		msg->fd = -1;
 		msg->input_file = NULL;
 	}
 	else if (input_file)
 	{
-		msg->msg = NULL;
+		msg->str = NULL;
 		msg->msg_len = 0;
 		if ((msg->fd = open(input_file, O_RDONLY)) < 0)
 		{
@@ -40,7 +40,7 @@ int		init_msg(t_msg *msg, char *message, char *input_file)
 
 void	reset_msg(t_msg *msg)
 {
-	msg->msg = NULL;
+	msg->str = NULL;
 	msg->msg_len = 0;
 	msg->input_file = NULL;
 	msg->fd = -1;

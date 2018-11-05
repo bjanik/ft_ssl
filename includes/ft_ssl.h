@@ -6,7 +6,7 @@
 /*   By: bjanik <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/29 11:18:51 by bjanik            #+#    #+#             */
-/*   Updated: 2018/11/01 16:12:47 by bjanik           ###   ########.fr       */
+/*   Updated: 2018/11/05 10:28:24 by bjanik           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@
 
 typedef struct			s_msg
 {
-	char				*msg;
+	char				*str;
 	uint32_t			msg_len;
 	char				*input_file;
 	int					fd;
@@ -64,7 +64,7 @@ typedef struct			s_ctx
 	uint64_t			bitlen;
 	unsigned char		block[BLOCK_SIZE];
 	unsigned char		digest[SHA256_DIGEST_LEN];
-	uint8_t 			digest_len;
+	uint8_t				digest_len;
 	int					fd;
 	void				(*transform)(struct s_ctx *ctx);
 	char				cmd_name[MAX_CMD_NAME_LEN + 1];
