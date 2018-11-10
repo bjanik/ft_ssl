@@ -12,14 +12,15 @@
 
 #include "ft_ssl.h"
 
-t_ssl_command	g_commands[NB_COMMANDS + 1] = {
+const t_ssl_command	g_commands[] = {
 	{"md5", md5, HASH_CMD_OPTS, 0, NULL},
 	{"sha256", sha256, HASH_CMD_OPTS, 0, NULL},
 	{"sha1", sha1, HASH_CMD_OPTS, 0, NULL},
+	{"base64", base64, BASE64_OPTS, 0, NULL},
 	{NULL, NULL, NULL, 0, NULL},
 };
 
-t_ssl_command	*get_ssl_command(const char *command)
+t_ssl_command		*get_ssl_command(const char *command)
 {
 	int		i;
 
@@ -44,7 +45,7 @@ t_ssl_command	*get_ssl_command(const char *command)
 	return (NULL);
 }
 
-void			print_hash(unsigned char digest[], uint8_t digest_len)
+void				print_hash(unsigned char digest[], uint8_t digest_len)
 {
 	size_t	i;
 

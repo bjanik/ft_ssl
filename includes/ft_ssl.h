@@ -23,11 +23,18 @@
 
 # define FT_SSL_USAGE "usage: ft_ssl command [command opts] [command args]\n"
 # define HASH_CMD_USAGE " [-pqr] -s [string] [files ...]\n"
+# define BASE64_USAGE "usage: ft_ssl base64 [-d] [-e] [-i in_file] [-o out_file]\n"
 # define HASH_CMD_OPTS "pqrs"
 # define OPT_P 1
 # define OPT_Q 2
 # define OPT_R 4
 # define OPT_S 8
+# define BASE64_OPTS "edio"
+# define OPT_E 1
+# define OPT_D 2
+# define OPT_I 4
+# define OPT_O 8
+
 # define END_OF_OPT "--"
 # define BUF_SIZE 1024
 # define BLOCK_SIZE 64
@@ -36,8 +43,6 @@
 # define SHA1_DIGEST_LEN 20
 # define SHA256_DIGEST_LEN 32
 # define MAX_CMD_NAME_LEN 6
-
-# define NB_COMMANDS 3
 
 typedef struct			s_msg
 {
@@ -56,6 +61,15 @@ typedef struct			s_ssl_command
 	uint32_t			opts;
 	t_msg				*msg;
 }						t_ssl_command;
+
+typedef struct 			s_base64
+{
+	char				*input_file;
+	char				*output_file;
+	uint8_t				encoded[4];
+	unsigned char		decoded[3];
+	int 				fd[2];
+}						t_base64;
 
 typedef struct			s_ctx
 {
@@ -99,5 +113,5 @@ int						commands_usage(char *command);
 uint32_t				rotleft(uint32_t x, uint32_t n);
 uint32_t				rotright(uint32_t x, uint32_t n);
 
-extern t_ssl_command	g_commands[NB_COMMANDS + 1];
+extern t_ssl_command	g_commands[];
 #endif
