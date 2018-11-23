@@ -36,7 +36,7 @@
 # define OPT_O 8
 
 # define END_OF_OPT "--"
-# define BUF_SIZE 1024
+# define BUF_SIZE 4096
 # define BLOCK_SIZE 64
 
 # define MD5_DIGEST_LEN 16
@@ -68,6 +68,7 @@ typedef struct 			s_base64
 	char				*output_file;
 	uint8_t				encoded[4];
 	unsigned char		decoded[3];
+	void				(*data[2])(struct s_base64 *base, unsigned char b[]);
 	int 				fd[2];
 }						t_base64;
 
@@ -112,6 +113,9 @@ int						commands_usage(char *command);
 
 uint32_t				rotleft(uint32_t x, uint32_t n);
 uint32_t				rotright(uint32_t x, uint32_t n);
+
+void		encode_data(t_base64 *base, unsigned char b[]);
+void		decode_data(t_base64 *base, unsigned char b[]);
 
 extern t_ssl_command	g_commands[];
 #endif
