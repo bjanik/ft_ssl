@@ -29,11 +29,24 @@
 # define OPT_Q 2
 # define OPT_R 4
 # define OPT_S 8
+
+# define B64 "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
 # define BASE64_OPTS "edio"
-# define OPT_E 1
-# define OPT_D 2
-# define OPT_I 4
-# define OPT_O 8
+# define B_OPT_D 1
+# define B_OPT_E 2
+# define B_OPT_I 4
+# define B_OPT_O 8
+
+# define DES_OPTS "adeikopsv"
+# define DES_OPT_A 1
+# define DES_OPT_D 2
+# define DES_OPT_E 4
+# define DES_OPT_I 8
+# define DES_OPT_K 16
+# define DES_OPT_O 32
+# define DES_OPT_P 64
+# define DES_OPT_S 128
+# define DES_OPT_V 256
 
 # define END_OF_OPT "--"
 # define BUF_SIZE 4096
@@ -43,6 +56,10 @@
 # define SHA1_DIGEST_LEN 20
 # define SHA256_DIGEST_LEN 32
 # define MAX_CMD_NAME_LEN 6
+
+# define QUANTUM_SIZE 3
+# define IN 0
+# define OUT 1
 
 typedef struct			s_msg
 {
@@ -69,6 +86,7 @@ typedef struct 			s_base64
 	uint8_t				encoded[4];
 	unsigned char		decoded[3];
 	void				(*data[2])(struct s_base64 *base, unsigned char b[]);
+	unsigned char		buffer[BUF_SIZE + 1];
 	int 				fd[2];
 }						t_base64;
 
@@ -114,8 +132,9 @@ int						commands_usage(char *command);
 uint32_t				rotleft(uint32_t x, uint32_t n);
 uint32_t				rotright(uint32_t x, uint32_t n);
 
-void		encode_data(t_base64 *base, unsigned char b[]);
-void		decode_data(t_base64 *base, unsigned char b[]);
+// void		encode_data(t_base64 *base, unsigned char b[]);
+// void		decode_data(t_base64 *base, unsigned char b[]);
+void		encode_data2(t_base64 *base);
 
-extern t_ssl_command	g_commands[];
+extern t_ssl_command 	g_commands[];
 #endif

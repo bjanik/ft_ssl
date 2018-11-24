@@ -12,11 +12,11 @@
 
 #include "ft_ssl.h"
 
-const t_ssl_command	g_commands[] = {
+t_ssl_command	g_commands[] = {
 	{"md5", md5, HASH_CMD_OPTS, 0, NULL},
 	{"sha256", sha256, HASH_CMD_OPTS, 0, NULL},
 	{"sha1", sha1, HASH_CMD_OPTS, 0, NULL},
-	{"base64", base64, BASE64_OPTS, 0, NULL},
+	// {"base64", base64, BASE64_OPTS, 0, NULL},
 	{NULL, NULL, NULL, 0, NULL},
 };
 
