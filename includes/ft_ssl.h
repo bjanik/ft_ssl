@@ -37,6 +37,7 @@
 # define B_OPT_I 4
 # define B_OPT_O 8
 
+# define DES_ROUNDS 16
 # define DES_OPTS "adeikopsv"
 # define DES_OPT_A 1
 # define DES_OPT_D 2
@@ -51,6 +52,7 @@
 # define END_OF_OPT "--"
 # define BUF_SIZE 4096
 # define BLOCK_SIZE 64
+# define DES_BLOCK_SIZE 8
 
 # define MD5_DIGEST_LEN 16
 # define SHA1_DIGEST_LEN 20
@@ -102,6 +104,15 @@ typedef struct			s_ctx
 	void				(*transform)(struct s_ctx *ctx);
 	char				cmd_name[MAX_CMD_NAME_LEN + 1];
 }						t_ctx;
+
+typedef struct 			s_des
+{
+	char				*in;
+	char				*out;
+	unsigned char		buffer[DES_BLOCK_SIZE];
+	
+	int 				fd[2];
+}						t_des;
 
 t_ssl_command			*get_ssl_command(const char *command);
 
