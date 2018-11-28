@@ -15,6 +15,7 @@
 
 #define INIT_PERM_TABLE_LEN 64
 #define EXP_PERM_TABLE_LEN 48
+#define PBOX_PERM_TABLE_LEN 32
 
 static const uint8_t	g_init_perm_table[INIT_PERM_TABLE_LEN] = {
 	58, 50, 42, 34, 26, 18, 10 , 2, 60, 52, 44, 36, 28, 20 , 12, 4,
@@ -32,6 +33,11 @@ static const uint8_t	g_exp_perm_table[EXP_PERM_TABLE_LEN] = {
 	20, 21, 22, 23, 24, 25,
 	24, 25, 26, 27, 28, 29,
 	28, 29, 30, 31, 32, 1  
+};
+
+static const uint8_t 	g_pbox_perm_table[PBOX_PERM_TABLE_LEN] = {
+	16, 7, 20, 21, 29, 12, 28, 17, 1, 15, 23, 26, 5, 18, 31, 10,
+	2, 8, 24, 14, 32, 27, 3, 9, 19, 13, 30, 6, 22, 11, 4, 25
 };
 
 uint64_t	convert_input_to_block(unsigned char input[])
@@ -81,6 +87,21 @@ uint64_t	expansion_permutation(uint32_t r_block)
 		i++;
 	}
 	return (exp_block);
+}
+
+uint64_t	pbox_permutation(uint32_t block)
+{
+	uint64_t new_block;
+	uint8_t i;
+
+	i = 0;
+	while (i < PBOX_PERM_TABLE_LEN)
+	{
+		tmp |= ((tmp << (32 - g_pbox_perm_table[i])) >> 31) << i;
+		i++;
+	}
+	*block = tmp;
+	return (new_block)
 }
 
 
