@@ -14,6 +14,7 @@
 #include "ft_ssl.h"
 
 #define INIT_PERM_TABLE_LEN 64
+#define FINAL_PERM_TABLE_LEN 64
 #define EXP_PERM_TABLE_LEN 48
 #define PBOX_PERM_TABLE_LEN 32
 
@@ -22,6 +23,17 @@ static const uint8_t	g_init_perm_table[INIT_PERM_TABLE_LEN] = {
 	62, 54, 46, 38, 30, 22, 14, 6, 64, 56, 48, 40, 32, 24, 16, 8,
 	57, 49, 41, 33, 25, 17, 9, 1, 59, 51, 43, 35, 27, 19, 11, 3,
 	61, 53, 45, 37, 29, 21, 13, 5, 63, 55, 47, 39, 31, 23, 15, 7
+};
+
+static const uint8_t	g_final_perm_table[FINAL_PERM_TABLE_LEN] = {
+	40, 8, 48, 16, 56, 24, 64, 32,
+	39, 7, 47, 15, 55, 23, 63, 31,
+	38, 6, 46, 14, 54, 22, 62, 30,
+	37, 5, 45, 13, 53, 21, 61, 29,
+	36, 4, 44, 12, 52, 20, 60, 28,
+	35, 3, 43, 11, 51, 19, 59, 27,
+	34, 2, 42, 10, 50, 18, 58, 26,
+	33, 1, 41, 9, 49, 17, 57, 25
 };
 
 static const uint8_t	g_exp_perm_table[EXP_PERM_TABLE_LEN] = {
@@ -89,26 +101,48 @@ uint64_t	expansion_permutation(uint32_t r_block)
 	return (exp_block);
 }
 
-uint64_t	pbox_permutation(uint32_t block)
+uint32_t	pbox_permutation(uint32_t block)
 {
-	uint64_t new_block;
+	uint32_t new_block;
 	uint8_t i;
 
 	i = 0;
 	while (i < PBOX_PERM_TABLE_LEN)
 	{
-		tmp |= ((tmp << (32 - g_pbox_perm_table[i])) >> 31) << i;
+		new_block |= ((block << (32 - g_pbox_perm_table[i])) >> 31) << i;
 		i++;
 	}
-	*block = tmp;
-	return (new_block)
+	return (new_block);
+}
+
+uint64_t	final_permutation(uint32_t left, uint32_t right)
+{
+	uint64_t f_block;
+	uint8_t	 i;
+
+	f_block = right;
+	f_block = (f_block << 32) | left;
+	i = 0;
+	// while (i < 64)
+	// {
+	// 	tmp = (final_block >> (63 - i)) & 0x1;
+	// 	printf("%llu", tmp);
+	// 	i++;
+	// }
+	while (i < FINAL_PERM_TABLE_LEN)
+	{
+	 	printf("%llu", (f_block << (64 - g_final_perm_table[i])) >> 63);
+		f_block |= ((f_block << (64 - g_final_perm_table[i])) >> 63) << i;
+		i++;
+	}
+	return (f_block);
 }
 
 
 int main(int argc, char **argv)
 {
 	unsigned char	input[8];
-	uint64_t		block, new_block, exp_block;
+	uint64_t		block, new_block, exp_block, final_block;
 	uint32_t		right_block, left_block;
 
 	input[0] = 0x01;
@@ -124,5 +158,7 @@ int main(int argc, char **argv)
 	left_block = new_block >> 32;
 	right_block = (new_block << 32) >> 32;
 	exp_block = expansion_permutation(right_block);
+	final_block = final_permutation(1128411700, 172808597);
+	printf("final_block = %llu\n", final_block);
 	return (0);
 }

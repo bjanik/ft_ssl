@@ -68,23 +68,24 @@ void	get_key_from_str(char *str_key, uint64_t *key)
 
 uint64_t	get_56bits_key(uint64_t key)
 {
-	uint64_t	skey;
+	uint64_t	key56;
 	uint8_t		i;
 
-	skey = 0;
+	key56 = 0;
 	i = 0;
 	while (i < PERMUTATION_TABLE_LEN)
 	{
-		skey |= ((key << (key_perm_table[i] - 1)) >> 63) << i; 
+		key56 |= ((key << (key_perm_table[i] - 1)) >> 63) << (55 - i);
 		i++;
 	}
-	return (skey);
+	return (key56);
 }
 
-inline static void	split_key(uint64_t skey, uint32_t *right_key, uint32_t *left_key)
+inline static void	split_key(uint64_t key56, uint32_t *right_key, uint32_t *left_key)
 {
-	*left_key = skey >> 28;
-	*right_key = (skey << 28) >> 28;
+	*left_key = key56 >> 28;
+	*right_key = (key56 << 36) >> 36;
+	// printf("rkey = %u ; lkey = %u\n", *right_key, *left_key);
 }
 
 void	get_subkeys(uint32_t right_key, uint32_t left_key)
@@ -98,11 +99,11 @@ void	get_subkeys(uint32_t right_key, uint32_t left_key)
 	while (++i < DES_ROUNDS)
 	{
 		sub_keys[i] = 0;
-		tmp_key = (rotleft(left_key, key_shift_table[i]) << 28) | 
+		tmp_key = (rotleft(left_key, key_shift_table[i]) << 28) |
 					rotleft(right_key, key_shift_table[i]);
 		j = -1;
 		while (++j < COMPRESSION_TABLE_LEN)
-			sub_keys[i] |= 
+			sub_keys[i] |=
 				((tmp_key << (key_compression_table[i] - 1)) >> 63) << i;
 	}
 	i = -1;
@@ -114,18 +115,20 @@ void	get_subkeys(uint32_t right_key, uint32_t left_key)
 
 int main(int argc, char **argv)
 {
-	uint64_t 	ull;
+	uint64_t 	key64;
 	uint32_t	left_key;
 	uint32_t	right_key;
-	uint64_t	skey;
+	uint64_t	key56;
 
 	if (argc > 1)
 	{
-		get_key_from_str(argv[1], &ull);
-		printf("%llu\n", ull);
+		key64 = 0;
+		get_key_from_str(argv[1], &key64);
+		printf("%llu\n", key64);
 	}
-	skey = get_56bits_key(ull);
-	split_key(skey, &right_key, &left_key);
+	key56 = get_56bits_key(key64);
+	printf("key56 = %llu\n", key56);
+	split_key(key56, &right_key, &left_key);
 	get_subkeys(right_key, left_key);
 	return (0);
 }
