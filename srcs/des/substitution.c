@@ -71,7 +71,7 @@ static const uint8_t g_s_box8[SBOX_LEN] = {
 	2, 1, 14, 7, 4, 10, 8, 13, 15, 12, 9, 0, 3, 5, 6, 11
 };
 
-void		fill_sub_blocks(uint8_t sub_blocks[], uint64_t x_block)
+static void		fill_sub_blocks(uint8_t sub_blocks[], uint64_t x_block)
 {
 	uint8_t	i;
 
@@ -83,7 +83,7 @@ void		fill_sub_blocks(uint8_t sub_blocks[], uint64_t x_block)
 	}
 }
 
-uint8_t		s_box(uint8_t sub_block, const uint8_t s_box[])
+static uint8_t	s_box(uint8_t sub_block, const uint8_t s_box[])
 {
 	uint8_t		row;
 	uint8_t 	col;
@@ -93,7 +93,7 @@ uint8_t		s_box(uint8_t sub_block, const uint8_t s_box[])
 	return (s_box[col + row * 16]);
 }
 
-uint32_t	s_box_substitutions(uint64_t x_block)
+uint32_t		s_box_substitutions(uint64_t x_block)
 {
 	uint8_t		sub_blocks[NB_SUB_BLOCKS];
 	uint8_t		sbox_output[NB_SUB_BLOCKS];
@@ -120,12 +120,12 @@ uint32_t	s_box_substitutions(uint64_t x_block)
 	return (out_block);
 }
 
-int main(int argc, char **argv)
-{
-	uint64_t	x_block;
-	uint32_t 	out_block;
+// int main(int argc, char **argv)
+// {
+// 	uint64_t	x_block;
+// 	uint32_t 	out_block;
 
-	x_block = 106754541511975;
-	out_block = s_box_substitutions(x_block);
-	return (0);
-}
+// 	x_block = 106754541511975;
+// 	out_block = s_box_substitutions(x_block);
+// 	return (0);
+// }

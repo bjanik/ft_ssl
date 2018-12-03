@@ -23,7 +23,7 @@
 
 # define FT_SSL_USAGE "usage: ft_ssl command [command opts] [command args]\n"
 # define HASH_CMD_USAGE " [-pqr] -s [string] [files ...]\n"
-# define BASE64_USAGE "usage: ft_ssl base64 [-d] [-e] [-i in_file] [-o out_file]\n"
+# define B64_USG "usage: ft_ssl base64 [-d] [-e] [-i in_file] [-o out_file]\n"
 # define HASH_CMD_OPTS "pqrs"
 # define OPT_P 1
 # define OPT_Q 2
@@ -110,7 +110,7 @@ typedef struct 			s_des
 	char				*in;
 	char				*out;
 	unsigned char		buffer[DES_BLOCK_SIZE];
-	
+	uint64_t			keys[DES_ROUNDS];
 	int 				fd[2];
 }						t_des;
 
@@ -146,6 +146,30 @@ uint32_t				rotright(uint32_t x, uint32_t n);
 // void		encode_data(t_base64 *base, unsigned char b[]);
 // void		decode_data(t_base64 *base, unsigned char b[]);
 void		encode_data2(t_base64 *base);
+
+/*
+** DES
+*/
+
+uint64_t	convert_input_to_block(unsigned char input[]);
+
+uint64_t	initial_permutation(uint64_t block);
+uint64_t	expansion_permutation(uint32_t r_block);
+uint32_t	pbox_permutation(uint32_t block);
+uint64_t	final_permutation(uint32_t left, uint32_t right);
+
+void		get_key_from_str(char *str_key, uint64_t *key);
+uint64_t	get_56bits_key(uint64_t key);
+void		get_subkeys(uint32_t right_key,
+						uint32_t left_key,
+						uint64_t sub_keys[]);
+uint32_t	s_box_substitutions(uint64_t x_block);
+
+
+
+
+
+
 
 extern t_ssl_command 	g_commands[];
 #endif

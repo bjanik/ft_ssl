@@ -107,9 +107,10 @@ uint32_t	pbox_permutation(uint32_t block)
 	uint8_t i;
 
 	i = 0;
+	new_block = 0;
 	while (i < PBOX_PERM_TABLE_LEN)
 	{
-		new_block |= ((block << (32 - g_pbox_perm_table[i])) >> 31) << i;
+		new_block |= ((block >> (32 - g_pbox_perm_table[i])) & 0x1) << (31 - i);
 		i++;
 	}
 	return (new_block);
@@ -123,42 +124,38 @@ uint64_t	final_permutation(uint32_t left, uint32_t right)
 	f_block = right;
 	f_block = (f_block << 32) | left;
 	i = 0;
-	// while (i < 64)
-	// {
-	// 	tmp = (final_block >> (63 - i)) & 0x1;
-	// 	printf("%llu", tmp);
-	// 	i++;
-	// }
+	printf("FINAL BLOCK BEFORE FP: %llu\n", f_block);
 	while (i < FINAL_PERM_TABLE_LEN)
 	{
-	 	printf("%llu", (f_block << (64 - g_final_perm_table[i])) >> 63);
-		f_block |= ((f_block << (64 - g_final_perm_table[i])) >> 63) << i;
+		printf("%llu", (f_block >> (64 - g_final_perm_table[i])) & 0x1);
+		f_block |= ((f_block >> (64 - g_final_perm_table[i])) & 0x1) << (63 - i);
 		i++;
 	}
+	printf("\n");
 	return (f_block);
 }
 
 
-int main(int argc, char **argv)
-{
-	unsigned char	input[8];
-	uint64_t		block, new_block, exp_block, final_block;
-	uint32_t		right_block, left_block;
+// int main(int argc, char **argv)
+// {
+// 	unsigned char	input[8];
+// 	uint64_t		block, new_block, exp_block, final_block;
+// 	uint32_t		right_block, left_block;
 
-	input[0] = 0x01;
-	input[1] = 0x23;
-	input[2] = 0x45;
-	input[3] = 0x67;
-	input[4] = 0x89;
-	input[5] = 0xAB;
-	input[6] = 0xCD;
-	input[7] = 0xEF;
-	block = convert_input_to_block(input);
-	new_block = initial_permutation(block);
-	left_block = new_block >> 32;
-	right_block = (new_block << 32) >> 32;
-	exp_block = expansion_permutation(right_block);
-	final_block = final_permutation(1128411700, 172808597);
-	printf("final_block = %llu\n", final_block);
-	return (0);
-}
+// 	input[0] = 0x01;
+// 	input[1] = 0x23;
+// 	input[2] = 0x45;
+// 	input[3] = 0x67;
+// 	input[4] = 0x89;
+// 	input[5] = 0xAB;
+// 	input[6] = 0xCD;
+// 	input[7] = 0xEF;
+// 	block = convert_input_to_block(input);
+// 	new_block = initial_permutation(block);
+// 	left_block = new_block >> 32;
+// 	right_block = (new_block << 32) >> 32;
+// 	exp_block = expansion_permutation(right_block);
+// 	final_block = final_permutation(1128411700, 172808597);
+// 	printf("final_block = %llu\n", final_block);
+// 	return (0);
+// }
