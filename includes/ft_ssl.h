@@ -40,14 +40,9 @@
 # define DES_ROUNDS 16
 # define DES_OPTS "adeikopsv"
 # define DES_OPT_A 1
-# define DES_OPT_D 2
-# define DES_OPT_E 4
-# define DES_OPT_I 8
-# define DES_OPT_K 16
-# define DES_OPT_O 32
-# define DES_OPT_P 64
-# define DES_OPT_S 128
-# define DES_OPT_V 256
+# define DES_OPT_D 2 
+// # define DES_OPT_I 8
+// # define DES_OPT_O 32
 
 # define END_OF_OPT "--"
 # define BUF_SIZE 4096
@@ -109,8 +104,10 @@ typedef struct 			s_des
 {
 	char				*in;
 	char				*out;
-	unsigned char		buffer[DES_BLOCK_SIZE];
+	unsigned char		input[DES_BLOCK_SIZE];
 	uint64_t			keys[DES_ROUNDS];
+	uint64_t			init_vector;
+	uint8_t				opts;
 	int 				fd[2];
 }						t_des;
 
@@ -150,6 +147,8 @@ void		encode_data2(t_base64 *base);
 /*
 ** DES
 */
+
+void		des_init(t_des *des);
 
 uint64_t	convert_input_to_block(unsigned char input[]);
 

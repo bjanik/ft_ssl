@@ -1,25 +1,31 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   des_init.c                                         :+:      :+:    :+:   */
+/*   des_bc.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: bjanik <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/12/05 11:52:19 by bjanik            #+#    #+#             */
-/*   Updated: 2018/12/05 11:52:20 by bjanik           ###   ########.fr       */
+/*   Created: 2018/12/05 14:33:01 by bjanik            #+#    #+#             */
+/*   Updated: 2018/12/05 14:33:02 by bjanik           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ssl.h"
 
-void	des_init(t_des *des)
+uint64_t	des_pcbc_encryption(uint64_t plain, t_des *des)
 {
-	des->in = NULL;
-	des->out = NULL;
-	ft_memset(des->input, 0x0, DES_BLOCK_SIZE);
-	ft_memset(des->subkeys, 0x0, DES_ROUNDS * sizeof(uint64_t));
-	des->init_vector = 0;
-	des->opts = 0;	
-	des->fd[IN] = STDIN_FILENO;
-	des->fd[OUT] = STDOUT_FILENO;
+	uint64_t	cipher;
+
+	cipher = des(plain ^ des->init_vector, des->keys);
+	des->init_vector = cipher ^ plain;
+	return (cipher);
+}
+
+uint64_t	des_pcbc_decryption(uint64_t cipher, t_des *des)
+{
+	uint64_t	plain;
+
+	cipher = des(plain, des->keys) ^ des->init_vector;
+	des->init_vector = plain ^ cipher;
+	return (plain);
 }

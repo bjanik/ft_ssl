@@ -36,7 +36,27 @@ static const uint8_t	key_shift_table[DES_ROUNDS] = {
 	1, 1, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 1
 };
 
-void	get_key_from_str(char *str_key, uint64_t *key)
+inline static uint64_t	shift_left(uint32_t key, uint8_t x)
+{
+	return ((key >> (28 - x)) | ((key << x) & 0xFFFFFFF));
+}
+
+static uint64_t			get_56bits_key(uint64_t key)
+{
+	uint64_t	key56;
+	uint8_t		i;
+
+	key56 = 0;
+	i = 0;
+	while (i < PERMUTATION_TABLE_LEN)
+	{
+		key56 |= ((key << (key_perm_table[i] - 1)) >> 63) << (55 - i);
+		i++;
+	}
+	return (key56);
+}
+
+void	get_data_from_str(char *str_key, uint64_t *key)
 {
 	unsigned char		full_key[MAX_KEY_LEN + 1];
 	int					len;
@@ -65,27 +85,9 @@ void	get_key_from_str(char *str_key, uint64_t *key)
 	}
 }
 
-uint64_t	get_56bits_key(uint64_t key)
-{
-	uint64_t	key56;
-	uint8_t		i;
-
-	key56 = 0;
-	i = 0;
-	while (i < PERMUTATION_TABLE_LEN)
-	{
-		key56 |= ((key << (key_perm_table[i] - 1)) >> 63) << (55 - i);
-		i++;
-	}
-	return (key56);
-}
-
-inline static uint64_t	shift_left(uint32_t key, uint8_t x)
-{
-	return ((key >> (28 - x)) | ((key << x) & 0xFFFFFFF));
-}
-
-void	get_subkeys(uint32_t left_key, uint32_t right_key, uint64_t sub_keys[])
+void					get_subkeys(uint32_t left_key,
+									uint32_t right_key,
+									uint64_t sub_keys[])
 {
 	uint64_t	tmp_key;
 	uint64_t	sh_right_key;
@@ -104,26 +106,22 @@ void	get_subkeys(uint32_t left_key, uint32_t right_key, uint64_t sub_keys[])
 		tmp_key = (sh_left_key << 28) | sh_right_key;
 		j = -1;
 		while (++j < COMPRESSION_TABLE_LEN)
-			sub_keys[i] |= ((tmp_key >> (56 - key_compression_table[j])) & 0x1) << (47 - j);
+			sub_keys[i] |= ((tmp_key >> (56 - key_compression_table[j])) & 0x1)
+							<< (47 - j);
 	}
 }
 
-// int main(int argc, char **argv)
-// {
-// 	uint64_t 	key64;
-// 	uint32_t	left_key;
-// 	uint32_t	right_key;
-// 	uint64_t	key56;
+void	swap_keys(uint64_t sub_keys[])
+{
+	uint8_t		i;
+	uint64_t	tmp;
 
-// 	key64 = 0;
-// 	if (argc > 1)
-// 	{
-// 		get_key_from_str(argv[1], &key64);
-// 		printf("%llu\n", key64);
-// 	}
-// 	key56 = get_56bits_key(key64);
-// 	printf("key56 = %llu\n", key56);
-// 	split_key(key56, &right_key, &left_key);
-// 	get_subkeys(right_key, left_key);
-// 	return (0);
-// }
+	i = 0;
+	while (i < 8)
+	{
+		tmp = sub_keys[i];
+		sub_keys[i] = sub_keys[DES_ROUNDS - i - 1];
+		sub_keys[DES_ROUNDS - i - 1] = tmp;
+		i++;
+	}
+}

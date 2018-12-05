@@ -119,13 +119,3 @@ uint32_t		s_box_substitutions(uint64_t x_block)
 	out_block |= sbox_output[7];
 	return (out_block);
 }
-
-// int main(int argc, char **argv)
-// {
-// 	uint64_t	x_block;
-// 	uint32_t 	out_block;
-
-// 	x_block = 106754541511975;
-// 	out_block = s_box_substitutions(x_block);
-// 	return (0);
-// }
