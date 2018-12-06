@@ -39,8 +39,8 @@
 
 # define DES_ROUNDS 16
 # define DES_OPTS "adeikopsv"
-# define DES_OPT_A 1
-# define DES_OPT_D 2 
+# define DES_OPT_D 1 
+# define DES_OPT_A 2
 // # define DES_OPT_I 8
 // # define DES_OPT_O 32
 
@@ -74,6 +74,7 @@ typedef struct			s_ssl_command
 	const char			*available_opts;
 	uint32_t			opts;
 	t_msg				*msg;
+	t_des				*des;
 }						t_ssl_command;
 
 typedef struct 			s_base64
@@ -107,6 +108,7 @@ typedef struct 			s_des
 	unsigned char		input[DES_BLOCK_SIZE];
 	uint64_t			keys[DES_ROUNDS];
 	uint64_t			init_vector;
+	uint64_t			(*des_mode[2])(uint64_t plain, struct s_des *des);
 	uint8_t				opts;
 	int 				fd[2];
 }						t_des;

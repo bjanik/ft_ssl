@@ -67,6 +67,7 @@ void	des_message(t_des *des)
 {
 	int 			ret;
 	uint64_t		plain;
+	uint64_t		cipher;
 	unsigned char 	output[DES_BLOCK_SIZE + 1];
 
 	ft_memset(output, 0x0, DES_BLOCK_SIZE);
@@ -75,10 +76,7 @@ void	des_message(t_des *des)
 		if (ret < DES_BLOCK_SIZE)
 			ft_memset(des->input + ret, 0x0, DES_BLOCK_SIZE - ret);
 		plain = convert_input_to_block(input);
-		// If CBC : block ^= des->init_vector;
-		cipher = des(plain, des->keys);
-		// IF CBC: des->init_vector = cipher;
-		cipher_to_string(cipher, output);
+		cipher = func(uint64_t plain, t_des *des);
 		write(des->fd[OUT], output, DES_BLOCK_SIZE);
 	}
 	if (ret < 0)
