@@ -12,7 +12,7 @@
 
 #include "ft_ssl.h"
 
-void				md5_init(t_ctx *ctx)
+void					md5_init(t_ctx *ctx)
 {
 	ctx->len = 0;
 	ctx->bitlen = 0;
@@ -28,7 +28,7 @@ void				md5_init(t_ctx *ctx)
 	ctx->transform = md5_transform;
 }
 
-static void			md5_final(t_ctx *ctx)
+static void				md5_final(t_ctx *ctx)
 {
 	int	i;
 
@@ -47,14 +47,31 @@ static void			md5_final(t_ctx *ctx)
 	}
 }
 
-void				md5(t_msg *msg, uint32_t opts)
+static unsigned char	*md5_core(t_ctx	*ctx, t_msg *msg, uint32_t opts)
 {
-	t_ctx	ctx;
+	if (update(ctx, msg, opts) == 0)
+	{
+		md5_final(ctx);
+		return (ft_strdup((char*)ctx->digest));
+	}
+	return (NULL);
+}
+
+void					md5(t_msg *msg, uint32_t opts)
+{
+	t_ctx			ctx;
+	unsigned char	*digest;
 
 	md5_init(&ctx);
-	if (update(&ctx, msg, opts) == 0)
-	{
-		md5_final(&ctx);
+	if ((digest = md5_core(&ctx, msg, opts)))
+	{	
 		output_digest(msg, ctx, opts);
+		ft_strdel(&digest);
 	}
+
+	// if (update(&ctx, msg, opts) == 0)
+	// {
+	// 	md5_final(&ctx);
+		
+	// }
 }
