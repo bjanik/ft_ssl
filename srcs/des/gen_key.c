@@ -41,7 +41,7 @@ inline static uint64_t	shift_left(uint32_t key, uint8_t x)
 	return ((key >> (28 - x)) | ((key << x) & 0xFFFFFFF));
 }
 
-static uint64_t			get_56bits_key(uint64_t key)
+uint64_t			get_56bits_key(uint64_t key)
 {
 	uint64_t	key56;
 	uint8_t		i;
@@ -56,7 +56,7 @@ static uint64_t			get_56bits_key(uint64_t key)
 	return (key56);
 }
 
-void	get_data_from_str(char *str_key, uint64_t *key)
+void	get_hex_from_str(char *str_key, uint64_t *key)
 {
 	unsigned char		full_key[MAX_KEY_LEN + 1];
 	int					len;

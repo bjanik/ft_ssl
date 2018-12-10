@@ -79,23 +79,23 @@ void			decode_data2(t_base64 *base)
 	}
 }
 
-int			main(int argc, char **argv)
-{
-	t_base64 base;
-	uint8_t	action;
+// int			main(int argc, char **argv)
+// {
+// 	t_base64 base;
+// 	uint8_t	action;
 
-	action = ENCODE;
-	base.input_file = NULL;
-	base.output_file = NULL;
-	if (argv[1] && !ft_strcmp(argv[1], "-d"))
-		action = DECODE;
-	else if (argv[1])
-		base.input_file = argv[1];
-	if (argc > 2)
-		base.input_file = argv[2];
-	init_processing(&base);
-	if (action == ENCODE)
-		encode_data2(&base);
-	else
-		decode_data2(&base);
-}
+// 	action = ENCODE;
+// 	base.input_file = NULL;
+// 	base.output_file = NULL;
+// 	if (argv[1] && !ft_strcmp(argv[1], "-d"))
+// 		action = DECODE;
+// 	else if (argv[1])
+// 		base.input_file = argv[1];
+// 	if (argc > 2)
+// 		base.input_file = argv[2];
+// 	init_processing(&base);
+// 	if (action == ENCODE)
+// 		encode_data2(&base);
+// 	else
+// 		decode_data2(&base);
+// }

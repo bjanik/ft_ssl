@@ -13,7 +13,10 @@ HEADERS = includes/
 SRC_PATH = srcs/
 OBJ_PATH = obj/
 
-SRC_NAME =  core/ft_ssl.c \
+SRC_NAME =  base64/base64_decode.c \
+		base64/base64_encode \
+		base64/base64_init.c \
+		core/ft_ssl.c \
 		core/main.c \
 		core/msg.c \
 		core/opt.c \
@@ -22,6 +25,15 @@ SRC_NAME =  core/ft_ssl.c \
 		core/update.c \
 		core/usage.c \
 		core/utils.c \
+		des/des.c \
+		des/des_bc.c \
+		des/des_ecb.c \
+		des/des_init.c \
+		des/des_opts.c \
+		des/des_pcbc.c \
+		des/gen_key.c \
+		des/permutations.c \
+		des/substitution.c \
 		md5/md5.c \
 		md5/md5_transform.c \
 		sha1/sha1.c \

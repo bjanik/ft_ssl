@@ -18,7 +18,7 @@ static void	set_subkeys(t_des *des, char *str_key)
 
 	get_hex_from_str(str_key, &key);
 	key = get_56bits_key(key);
-	get_subkeys(key >> 28, (key << 36) >> 36, des->subkeys);
+	get_subkeys(key >> 28, (key << 36) >> 36, des->keys);
 }
 
 void		set_in_out_files(t_des *des)
@@ -55,17 +55,21 @@ int			des_opts(char **argv, t_des *des)
 		else if (!ft_strcmp(argv[i], "-o"))
 			des->out = argv[++i];
 		else if (!ft_strcmp(argv[i], "-d"))
-		{
 			des->opts |= DES_OPT_D;
-			swap_keys(des->keys);
-		}
-		else if (!ft_strcmp(argv[i], "-e") && (opts & DES_OPT_D))
+		else if (!ft_strcmp(argv[i], "-e") && (des->opts & DES_OPT_D))
 			des->opts &= ~DES_OPT_D;
 		else if (!ft_strcmp(argv[i], "-v"))
-			des->init_vector = get_data_from_str(argv[++i]);
+			get_hex_from_str(argv[++i], &des->init_vector);
 		else if (!ft_strcmp(argv[i], "-k"))
 			set_subkeys(des, argv[++i]);
 		else if (!ft_strcmp(argv[i], "-a"))
-			opts |= DES_OPT_A;
+			des->opts |= DES_OPT_A;
+		else
+		{
+			ft_putendl_fd("ft_ssl: des: invalid option", STDERR_FILENO);
+			return (1);
+		}
 	}
+	(des->opts & DES_OPT_D) ? swap_keys(des->keys) : 0;
+	return (0);
 }

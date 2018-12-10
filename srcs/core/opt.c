@@ -54,7 +54,7 @@ int			parse_opt(t_ssl_command *command, char **argv, int *index)
 		{
 			command->opts |= OPT_P;
 			init_msg(command->msg, NULL, NULL);
-			command->cmd_func(command->msg, command->opts);
+			command->hash_func(command->msg, command->opts);
 			reset_msg(command->msg);
 		}
 		else if (argv[*index][i] == 'r')

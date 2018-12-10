@@ -19,20 +19,18 @@
 char	*pbkdf(char *password, char *salt, size_t iteration)
 {
 	uint64_t	dk;
-	size_t		i;
 	char		*hash;
 	t_msg		msg;
+	t_ctx		ctx;
 
 	if (!(hash = ft_strjoin(password, salt)))
 		return (NULL);
 	init_msg(&msg, hash, NULL);
-	i = 0;
-	while (i < iteration)
+	while (iteration--)
 	{
-		hash = md5(msg, 0);
-		ft_strdel(&msg.msg);
-		msg.msg = hash;
-		i++;
+		hash = md5(&msg, 0);
+		ft_strdel(&msg.str);
+		msg.str = hash;
 	}
 	return (ft_strndup(hash, 8));
 }

@@ -58,6 +58,18 @@
 # define IN 0
 # define OUT 1
 
+typedef struct 			s_des
+{
+	char				*in;
+	char				*out;
+	unsigned char		input[DES_BLOCK_SIZE];
+	uint64_t			keys[DES_ROUNDS];
+	uint64_t			init_vector;
+	uint64_t			(*des_mode[2])(uint64_t plain, struct s_des *des);
+	uint8_t				opts;
+	int 				fd[2];
+}						t_des;
+
 typedef struct			s_msg
 {
 	char				*str;
@@ -70,7 +82,7 @@ typedef struct			s_msg
 typedef struct			s_ssl_command
 {
 	const char			*name;
-	void				(*cmd_func)(t_msg *msg, uint32_t opts);
+	void				(*hash_func)(t_msg *msg, uint32_t opts);
 	const char			*available_opts;
 	uint32_t			opts;
 	t_msg				*msg;
@@ -101,17 +113,6 @@ typedef struct			s_ctx
 	char				cmd_name[MAX_CMD_NAME_LEN + 1];
 }						t_ctx;
 
-typedef struct 			s_des
-{
-	char				*in;
-	char				*out;
-	unsigned char		input[DES_BLOCK_SIZE];
-	uint64_t			keys[DES_ROUNDS];
-	uint64_t			init_vector;
-	uint64_t			(*des_mode[2])(uint64_t plain, struct s_des *des);
-	uint8_t				opts;
-	int 				fd[2];
-}						t_des;
 
 t_ssl_command			*get_ssl_command(const char *command);
 
@@ -145,15 +146,17 @@ uint32_t				rotright(uint32_t x, uint32_t n);
 // void		encode_data(t_base64 *base, unsigned char b[]);
 // void		decode_data(t_base64 *base, unsigned char b[]);
 void		encode_data2(t_base64 *base);
+void		init_processing(t_base64 *base);
 
 /*
 ** DES
 */
 
-void		des_init(t_des *des);
-
+t_des		*init_des(const char *des_mode);
+int 		des_opts(char **argv, t_des *des);
+void		get_hex_from_str(char *str_key, uint64_t *key);
 uint64_t	convert_input_to_block(unsigned char input[]);
-
+uint64_t	des_core(uint64_t block, uint64_t sub_keys[]);
 uint64_t	initial_permutation(uint64_t block);
 uint64_t	expansion_permutation(uint32_t r_block);
 uint32_t	pbox_permutation(uint32_t block);
@@ -164,12 +167,17 @@ uint64_t	get_56bits_key(uint64_t key);
 void		get_subkeys(uint32_t right_key,
 						uint32_t left_key,
 						uint64_t sub_keys[]);
+void		swap_keys(uint64_t keys[]);
 uint32_t	s_box_substitutions(uint64_t x_block);
 
-
-
-
-
+void		des_message(t_des *des, int mode);
+uint64_t	des_ecb_enc_dec(uint64_t plain, t_des *des);
+uint64_t	des_cbc_encryption(uint64_t plain, t_des *des);
+uint64_t	des_cbc_decryption(uint64_t plain, t_des *des);
+uint64_t	des_bc_encryption(uint64_t plain, t_des *des);
+uint64_t	des_bc_decryption(uint64_t plain, t_des *des);
+uint64_t	des_pcbc_encryption(uint64_t plain, t_des *des);
+uint64_t	des_pcbc_decryption(uint64_t plain, t_des *des);
 
 
 extern t_ssl_command 	g_commands[];
