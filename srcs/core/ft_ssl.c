@@ -17,10 +17,10 @@ t_ssl_command		g_commands[] = {
 	{"sha256", sha256, HASH_CMD_OPTS, 0, NULL, NULL},
 	{"sha1", sha1, HASH_CMD_OPTS, 0, NULL, NULL},
 	{"des", NULL, DES_OPTS, 0, NULL, NULL},
-	{"des_bc", NULL, DES_OPTS, 0, NULL, NULL},
-	{"des_cbc", NULL, DES_OPTS, 0, NULL, NULL},
-	{"des_ecb", NULL, DES_OPTS, 0, NULL, NULL},
-	{"des_pcbc", NULL, DES_OPTS, 0, NULL, NULL},
+	{"des-bc", NULL, DES_OPTS, 0, NULL, NULL},
+	{"des-cbc", NULL, DES_OPTS, 0, NULL, NULL},
+	{"des-ecb", NULL, DES_OPTS, 0, NULL, NULL},
+	{"des-pcbc", NULL, DES_OPTS, 0, NULL, NULL},
 	// {"base64", base64, BASE64_OPTS, 0, NULL},
 	{NULL, NULL, NULL, 0, NULL, NULL},
 };
@@ -55,7 +55,7 @@ t_ssl_command		*get_ssl_command(const char *cmd)
 					!(g_commands[i].msg = malloc_msg()))
 				return (NULL);
 			if (!g_commands[i].hash_func &&
-					(g_commands[i].des = init_des(cmd)))
+					!(g_commands[i].des = init_des(cmd)))
 				return (NULL);
 			return (&g_commands[i]);
 		}

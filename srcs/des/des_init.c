@@ -17,22 +17,22 @@
 
 static void	set_des_mode(t_des *des, const char *des_mode)
 {
-	if (!ft_strcmp(des_mode, "des_ecb"))
+	if (!ft_strcmp(des_mode, "des-ecb"))
 	{
 		des->des_mode[ENCRYPT] = des_ecb_enc_dec;
 		des->des_mode[DECRYPT] = des->des_mode[ENCRYPT];
 	}
-	else if (!ft_strcmp(des_mode, "des_cbc") || !ft_strcmp(des_mode, "des"))
+	else if (!ft_strcmp(des_mode, "des-cbc") || !ft_strcmp(des_mode, "des"))
 	{
 		des->des_mode[ENCRYPT] = des_cbc_encryption;
 		des->des_mode[DECRYPT] = des_cbc_decryption;
 	}
-	else if (!ft_strcmp(des_mode, "des_bc"))
+	else if (!ft_strcmp(des_mode, "des-bc"))
 	{
 		des->des_mode[ENCRYPT] = des_bc_encryption;
 		des->des_mode[DECRYPT] = des_bc_decryption;
 	}
-	else if (!ft_strcmp(des_mode, "des_pcbc"))
+	else if (!ft_strcmp(des_mode, "des-pcbc"))
 	{
 		des->des_mode[ENCRYPT] = des_pcbc_encryption;
 		des->des_mode[DECRYPT] = des_pcbc_decryption;

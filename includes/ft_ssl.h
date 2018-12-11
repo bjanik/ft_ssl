@@ -154,6 +154,7 @@ void		init_processing(t_base64 *base);
 
 t_des		*init_des(const char *des_mode);
 int 		des_opts(char **argv, t_des *des);
+void		set_in_out_files(t_des *des);
 void		get_hex_from_str(char *str_key, uint64_t *key);
 uint64_t	convert_input_to_block(unsigned char input[]);
 uint64_t	des_core(uint64_t block, uint64_t sub_keys[]);

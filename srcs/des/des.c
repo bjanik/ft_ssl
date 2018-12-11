@@ -56,9 +56,9 @@ void	cipher_to_string(uint64_t cipher, unsigned char output[])
 	uint8_t	i;
 
 	i = 0;
-	while (i < sizeof(uint64_t))
+	while (i < 8)
 	{
-		output[i] = (unsigned char)(cipher >> (56 - i * DES_BLOCK_SIZE));
+		output[i] = (unsigned char)(cipher >> (56 - i * DES_BLOCK_SIZE)) & 0xFF;
 		i++;
 	}
 }
@@ -70,15 +70,18 @@ void	des_message(t_des *des, int mode)
 	uint64_t		cipher;
 	unsigned char 	output[DES_BLOCK_SIZE + 1];
 
-	ft_memset(output, 0x0, DES_BLOCK_SIZE);
+	ft_memset(output, 0x0, DES_BLOCK_SIZE + 1);
+	// printf("MODE = %d, fd[IN] = %d, fd[OUT] = %d\n", mode, des->fd[IN], des->fd[OUT]);
 	while ((ret = read(des->fd[IN], des->input, DES_BLOCK_SIZE)) > 0)
 	{
 		if (ret < DES_BLOCK_SIZE)
 			ft_memset(des->input + ret, 0x0, DES_BLOCK_SIZE - ret);
 		plain = convert_input_to_block(des->input);
 		cipher = des->des_mode[mode](plain, des);
+		cipher_to_string(cipher, output);
 		write(des->fd[OUT], output, DES_BLOCK_SIZE);
 	}
+	// printf("DES_MESSAGE AFTERLOOP\n");
 	if (ret < 0)
 	{
 		perror("ft_ssl: Read: ");
