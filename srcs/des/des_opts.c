@@ -34,7 +34,8 @@ void		set_in_out_files(t_des *des)
 	}
 	if (des->out)
 	{
-		if ((des->fd[OUT] = open(des->out, O_WRONLY, 0644)) < 0)
+		if ((des->fd[OUT] = 
+					open(des->out, O_WRONLY | O_CREAT | O_TRUNC, 0644)) < 0)
 		{
 			write(STDERR_FILENO, "ft_ssl: ", 8);
 			perror(des->out);
@@ -64,6 +65,8 @@ int			des_opts(char **argv, t_des *des)
 			set_subkeys(des, argv[++i]);
 		else if (!ft_strcmp(argv[i], "-a"))
 			des->opts |= DES_OPT_A;
+		else if (!ft_strcmp(argv[i], "-nopad"))
+			des->opts |= DES_NOPAD;
 		else
 		{
 			ft_putendl_fd("ft_ssl: des: invalid option", STDERR_FILENO);

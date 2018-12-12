@@ -71,17 +71,6 @@ const uint8_t g_s_box8[SBOX_LEN] = {
 	2, 1, 14, 7, 4, 10, 8, 13, 15, 12, 9, 0, 3, 5, 6, 11
 };
 
-const uint8_t *g_s_boxes[NB_SUB_BLOCKS] = {
-	g_s_box1,
-	g_s_box2,
-	g_s_box3,
-	g_s_box4,
-	g_s_box5,
-	g_s_box6,
-	g_s_box7,
-	g_s_box8
-};
-
 static void		fill_sub_blocks(uint8_t sub_blocks[], uint64_t x_block)
 {
 	uint8_t	i;
@@ -109,31 +98,24 @@ uint32_t		s_box_substitutions(uint64_t x_block)
 	uint8_t		sub_blocks[NB_SUB_BLOCKS];
 	uint8_t		sbox_output[NB_SUB_BLOCKS];
 	uint32_t	out_block;
-	uint8_t		i;
 
 	out_block = 0;
 	fill_sub_blocks(sub_blocks, x_block);
-	i = 0;
-	while (i < NB_SUB_BLOCKS)
-	{
-		sbox_output[i] = s_box(sub_blocks[i], g_s_boxes[i]);
-		out_block |= sbox_output[0] << (28 - i * 4);
-		i++;	
-	}
-	// sbox_output[0] = s_box(sub_blocks[0], g_s_box1);
-	// sbox_output[1] = s_box(sub_blocks[1], g_s_box2);
-	// sbox_output[2] = s_box(sub_blocks[2], g_s_box3);
-	// sbox_output[3] = s_box(sub_blocks[3], g_s_box4);
-	// sbox_output[4] = s_box(sub_blocks[4], g_s_box5);
-	// sbox_output[5] = s_box(sub_blocks[5], g_s_box6);
-	// sbox_output[6] = s_box(sub_blocks[6], g_s_box7);
-	// sbox_output[7] = s_box(sub_blocks[7], g_s_box8);
-	// out_block |= sbox_output[1] << 24;
-	// out_block |= sbox_output[2] << 20;
-	// out_block |= sbox_output[3] << 16;
-	// out_block |= sbox_output[4] << 12;
-	// out_block |= sbox_output[5] << 8;
-	// out_block |= sbox_output[6] << 4;
-	// out_block |= sbox_output[7];
+	sbox_output[0] = s_box(sub_blocks[0], g_s_box1);
+	sbox_output[1] = s_box(sub_blocks[1], g_s_box2);
+	sbox_output[2] = s_box(sub_blocks[2], g_s_box3);
+	sbox_output[3] = s_box(sub_blocks[3], g_s_box4);
+	sbox_output[4] = s_box(sub_blocks[4], g_s_box5);
+	sbox_output[5] = s_box(sub_blocks[5], g_s_box6);
+	sbox_output[6] = s_box(sub_blocks[6], g_s_box7);
+	sbox_output[7] = s_box(sub_blocks[7], g_s_box8);
+	out_block |= sbox_output[0] << 28;
+	out_block |= sbox_output[1] << 24;
+	out_block |= sbox_output[2] << 20;
+	out_block |= sbox_output[3] << 16;
+	out_block |= sbox_output[4] << 12;
+	out_block |= sbox_output[5] << 8;
+	out_block |= sbox_output[6] << 4;
+	out_block |= sbox_output[7];
 	return (out_block);
 }

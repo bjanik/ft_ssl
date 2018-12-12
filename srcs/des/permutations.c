@@ -103,17 +103,17 @@ uint64_t	expansion_permutation(uint32_t r_block)
 
 uint32_t	pbox_permutation(uint32_t block)
 {
-	uint32_t new_block;
+	uint32_t n_block;
 	uint8_t i;
 
 	i = 0;
-	new_block = 0;
+	n_block = 0;
 	while (i < PBOX_PERM_TABLE_LEN)
 	{
-		new_block |= ((block >> (32 - g_pbox_perm_table[i])) & 0x1) << (31 - i);
+		n_block |= ((block >> (32 - g_pbox_perm_table[i])) & 0x1) << (31 - i);
 		i++;
 	}
-	return (new_block);
+	return (n_block);
 }
 
 uint64_t	final_permutation(uint32_t left, uint32_t right)

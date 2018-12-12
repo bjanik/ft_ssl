@@ -63,32 +63,52 @@ void	cipher_to_string(uint64_t cipher, unsigned char output[])
 	}
 }
 
-void	des_message(t_des *des, int mode)
+void	des_get_cipher(t_des *des, unsigned char output[])
 {
-	int 			ret;
 	uint64_t		plain;
 	uint64_t		cipher;
+
+	plain = convert_input_to_block(des->input);
+	cipher = des->des_mode[des->opts & DES_OPT_D](plain, des);
+	cipher_to_string(cipher, output);
+	write(des->fd[OUT], output, DES_BLOCK_SIZE);
+}
+
+void	des_message(t_des *des)
+{
+	int 			ret;
+	int 			prev_ret;
 	unsigned char 	output[DES_BLOCK_SIZE + 1];
+	uint32_t		loop;
 
 	ft_memset(output, 0x0, DES_BLOCK_SIZE + 1);
-	// printf("MODE = %d, fd[IN] = %d, fd[OUT] = %d\n", mode, des->fd[IN], des->fd[OUT]);
+	prev_ret = 0;
+	loop = 0;
 	while ((ret = read(des->fd[IN], des->input, DES_BLOCK_SIZE)) > 0)
 	{
-		if (ret < DES_BLOCK_SIZE)
-			ft_memset(des->input + ret, 0x0, DES_BLOCK_SIZE - ret);
-		plain = convert_input_to_block(des->input);
-		cipher = des->des_mode[mode](plain, des);
-		cipher_to_string(cipher, output);
-		write(des->fd[OUT], output, DES_BLOCK_SIZE);
+		if (!(des->opts & DES_NOPAD))
+			ft_memset(des->input + ret, 8 - ret, 8 - ret);
+		if (ret < DES_BLOCK_SIZE && des->opts & DES_NOPAD)
+		{
+			loop ? ft_putchar_fd('\n', STDERR_FILENO) : 0;
+			ft_putendl_fd("ft_ssl: data not multiple of block lenght", STDERR_FILENO);
+			exit(EXIT_FAILURE);
+		}
+		des_get_cipher(des, output);
+		prev_ret = ret;
+		loop++;
 	}
-	// printf("DES_MESSAGE AFTERLOOP\n");
+	if (!ret && prev_ret == 8 && !(des->opts & DES_NOPAD))
+	{
+		ft_memset(des->input + ret, 8 - ret, 8 - ret);
+		des_get_cipher(des, output);
+	}
 	if (ret < 0)
 	{
 		perror("ft_ssl: Read: ");
 		exit(EXIT_FAILURE);
 	}
 }
-
 
 // int main(int argc, char **argv)
 // {
@@ -100,17 +120,17 @@ void	des_message(t_des *des, int mode)
 
 // 	key = 0;
 // 	block = 0;
-// 	get_data_from_str(argv[1], &key);
+// 	get_hex_from_str(argv[1], &key);
 // 	key = get_56bits_key(key);
 // 	get_subkeys(key >> 28, (key << 36) >> 36, des.keys);
 // 	// des.fd[IN] = open(argv[2], O_RDONLY, 0644);
-// 	des.fd[IN] = STDIN_FILENO;
-// 	des.fd[OUT] = STDOUT_FILENO;
+// 	// des.fd[IN] = STDIN_FILENO;
+// 	// des.fd[OUT] = STDOUT_FILENO;
 
-// 	des_message(input);
-// 	// block = des_e(0x0123456789ABCDEF, des.keys);
-// 	// // block = des_e(0x85E813540F0AB405, des.keys);
-// 	// printf("%016llX\n", block);
+// 	// des_message(input);
+// 	block = des_ecb_enc_dec(0x0123456789ABCDEF, &des);
+// 	// block = des_e(0x85E813540F0AB405, des.keys);
+// 	printf("%016llX\n", block);
 // 	// block_to_string(block, output);
 // 	// printf("%s\n", output);
 // 	return (0);

@@ -13,7 +13,7 @@
 
 #include "ft_ssl.h"
 
-uint64_t	des_cbc_encryption(uint64_t plain, t_des *des)
+uint64_t	des_cbc_e(uint64_t plain, t_des *des)
 {
 	uint64_t	cipher;
 
@@ -22,7 +22,7 @@ uint64_t	des_cbc_encryption(uint64_t plain, t_des *des)
 	return (cipher);
 }
 
-uint64_t	des_cbc_decryption(uint64_t cipher, t_des *des)
+uint64_t	des_cbc_d(uint64_t cipher, t_des *des)
 {
 	uint64_t	plain;
 

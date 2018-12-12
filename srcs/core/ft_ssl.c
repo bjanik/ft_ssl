@@ -13,16 +13,21 @@
 #include "ft_ssl.h"
 
 t_ssl_command		g_commands[] = {
-	{"md5", md5, HASH_CMD_OPTS, 0, NULL, NULL},
-	{"sha256", sha256, HASH_CMD_OPTS, 0, NULL, NULL},
-	{"sha1", sha1, HASH_CMD_OPTS, 0, NULL, NULL},
-	{"des", NULL, DES_OPTS, 0, NULL, NULL},
-	{"des-bc", NULL, DES_OPTS, 0, NULL, NULL},
-	{"des-cbc", NULL, DES_OPTS, 0, NULL, NULL},
-	{"des-ecb", NULL, DES_OPTS, 0, NULL, NULL},
-	{"des-pcbc", NULL, DES_OPTS, 0, NULL, NULL},
+	{"md5", md5, HASH_CMD_OPTS, 0, NULL, NULL, {NULL, NULL}},
+	{"sha256", sha256, HASH_CMD_OPTS, 0, NULL, NULL, {NULL, NULL}},
+	{"sha1", sha1, HASH_CMD_OPTS, 0, NULL, NULL, {NULL, NULL}},
+	{"des", NULL, DES_OPTS, 0, NULL, NULL, {des_cbc_e, des_cbc_d}},
+	{"des-bc", NULL, DES_OPTS, 0, NULL, NULL, {des_bc_e, des_bc_d}},
+	{"des-cbc", NULL, DES_OPTS, 0, NULL, NULL, {des_cbc_e, des_cbc_d}},
+	{"des-ecb", NULL, DES_OPTS, 0, NULL, NULL, {des_ecb_e_d, des_ecb_e_d}},
+	{"des-pcbc", NULL, DES_OPTS, 0, NULL, NULL, {des_pcbc_e, des_pcbc_d}},
+	{"des3", NULL, DES_OPTS, 0, NULL, NULL, {NULL, NULL}},
+	{"des3-bc", NULL, DES_OPTS, 0, NULL, NULL, {NULL, NULL}},
+	{"des3-cbc", NULL, DES_OPTS, 0, NULL, NULL, {NULL, NULL}},
+	{"des3-ecb", NULL, DES_OPTS, 0, NULL, NULL, {NULL, NULL}},
+	{"des3-pcbc", NULL, DES_OPTS, 0, NULL, NULL, {NULL, NULL}},
 	// {"base64", base64, BASE64_OPTS, 0, NULL},
-	{NULL, NULL, NULL, 0, NULL, NULL},
+	{NULL, NULL, NULL, 0, NULL, NULL, {NULL, NULL}},
 };
 
 t_msg 				*malloc_msg(void)
@@ -55,7 +60,7 @@ t_ssl_command		*get_ssl_command(const char *cmd)
 					!(g_commands[i].msg = malloc_msg()))
 				return (NULL);
 			if (!g_commands[i].hash_func &&
-					!(g_commands[i].des = init_des(cmd)))
+					!(g_commands[i].des = init_des(g_commands[i].des_mode)))
 				return (NULL);
 			return (&g_commands[i]);
 		}

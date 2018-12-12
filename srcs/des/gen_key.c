@@ -109,6 +109,15 @@ void					get_subkeys(uint32_t left_key,
 			sub_keys[i] |= ((tmp_key >> (56 - key_compression_table[j])) & 0x1)
 							<< (47 - j);
 	}
+	// for (int j = 0; j < DES_ROUNDS; j++)
+	// {
+	// 	for (int k = 63; k >= 0; k--)
+	// 	{
+	// 		printf("%llu", (sub_keys[j] >> k) & 0x1);
+	// 	}
+	// 	printf("\n");
+	// }
+	// printf("END OF KEYS\n");
 }
 
 void	swap_keys(uint64_t sub_keys[])
