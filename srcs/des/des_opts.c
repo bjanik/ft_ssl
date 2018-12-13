@@ -15,10 +15,24 @@
 static void	set_subkeys(t_des *des, char *str_key)
 {
 	uint64_t	key;
+	uint8_t		i;
+	uint8_t		len;
 
-	get_hex_from_str(str_key, &key);
-	key = get_56bits_key(key);
-	get_subkeys(key >> 28, (key << 36) >> 36, des->keys);
+	i = 0;
+	while (i < 3)
+	{
+		len = ft_strlen(str_key);
+		get_hex_from_str(str_key, &key);
+		// printf("KEY %d: %016llX\n", i + 1, key);
+		key = get_56bits_key(key);
+		get_subkeys(key >> 28, (key << 36) >> 36, des->keys[i]);
+		if (len > MAX_KEY_LEN)
+			str_key += MAX_KEY_LEN;
+		else
+			str_key += len;
+		i++;
+	}
+	swap_keys(des->keys[1]);
 }
 
 void		set_in_out_files(t_des *des)
@@ -57,7 +71,7 @@ int			des_opts(char **argv, t_des *des)
 			des->out = argv[++i];
 		else if (!ft_strcmp(argv[i], "-d"))
 			des->opts |= DES_OPT_D;
-		else if (!ft_strcmp(argv[i], "-e") && (des->opts & DES_OPT_D))
+		else if (!ft_strcmp(argv[i], "-e"))
 			des->opts &= ~DES_OPT_D;
 		else if (!ft_strcmp(argv[i], "-v"))
 			get_hex_from_str(argv[++i], &des->init_vector);
@@ -73,6 +87,11 @@ int			des_opts(char **argv, t_des *des)
 			return (1);
 		}
 	}
-	(des->opts & DES_OPT_D) ? swap_keys(des->keys) : 0;
+	if (des->opts & DES_OPT_D)
+	{
+		swap_keys(des->keys[0]);
+		swap_keys(des->keys[1]);
+		swap_keys(des->keys[2]);
+	}
 	return (0);
 }

@@ -80,9 +80,7 @@ static int 		data_encryption_standard(char **argv, t_ssl_command *command)
 int				main(int argc, char **argv)
 {
 	t_ssl_command	*command;
-	// int				i;
 
-	// i = 2;
 	if (argc == 1)
 		return (usage());
 	if (!(command = get_ssl_command(argv[1])))
@@ -91,19 +89,5 @@ int				main(int argc, char **argv)
 		return (hash_algo(argv, command));
 	else
 		return (data_encryption_standard(argv, command));
-	// while (argv[i] && ft_strcmp(END_OF_OPT, argv[i]) && argv[i][0] == '-')
-	// {
-	// 	if (set_options(command, argv, &i))
-	// 		return (1);
-	// 	i++;
-	// }
-	// (argv[i] && !ft_strcmp(END_OF_OPT, argv[i])) ? i++ : 0;
-	// if (!argv[i] && !(command->opts & (OPT_S | OPT_P)))
-	// {
-	// 	init_msg(command->msg, NULL, NULL);
-	// 	command->hash_func(command->msg, command->opts);
-	// 	reset_msg(command->msg);
-	// }
-	// i = hash_files(argv + i, command);
-	// ft_memdel((void**)&(command->msg));
+	return (0);
 }

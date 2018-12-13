@@ -109,29 +109,3 @@ void	des_message(t_des *des)
 		exit(EXIT_FAILURE);
 	}
 }
-
-// int main(int argc, char **argv)
-// {
-// 	t_des			des;
-// 	uint64_t		key;
-// 	uint64_t		block;
-// 	unsigned char 	input[DES_BLOCK_SIZE + 1];
-// 	// unsigned char 	output[DES_BLOCK_SIZE + 1];
-
-// 	key = 0;
-// 	block = 0;
-// 	get_hex_from_str(argv[1], &key);
-// 	key = get_56bits_key(key);
-// 	get_subkeys(key >> 28, (key << 36) >> 36, des.keys);
-// 	// des.fd[IN] = open(argv[2], O_RDONLY, 0644);
-// 	// des.fd[IN] = STDIN_FILENO;
-// 	// des.fd[OUT] = STDOUT_FILENO;
-
-// 	// des_message(input);
-// 	block = des_ecb_enc_dec(0x0123456789ABCDEF, &des);
-// 	// block = des_e(0x85E813540F0AB405, des.keys);
-// 	printf("%016llX\n", block);
-// 	// block_to_string(block, output);
-// 	// printf("%s\n", output);
-// 	return (0);
-// }

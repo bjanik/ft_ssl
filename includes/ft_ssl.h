@@ -42,6 +42,7 @@
 # define DES_OPT_D 1 
 # define DES_OPT_A 2
 # define DES_NOPAD 4
+# define MAX_KEY_LEN 16
 
 # define END_OF_OPT "--"
 # define BUF_SIZE 4096
@@ -62,7 +63,7 @@ typedef struct 			s_des
 	char				*in;
 	char				*out;
 	unsigned char		input[DES_BLOCK_SIZE];
-	uint64_t			keys[DES_ROUNDS];
+	uint64_t			keys[3][DES_ROUNDS];
 	uint64_t			init_vector;
 	uint64_t			(*des_mode[2])(uint64_t plain, struct s_des *des);
 	uint8_t				opts;
@@ -176,11 +177,14 @@ void					des_message(t_des *des);
 uint64_t				des_ecb_e_d(uint64_t plain, t_des *des);
 uint64_t				des_cbc_e(uint64_t plain, t_des *des);
 uint64_t				des_cbc_d(uint64_t plain, t_des *des);
+uint64_t				des_cfb_e_d(uint64_t plain, t_des *des);
 uint64_t				des_bc_e(uint64_t plain, t_des *des);
 uint64_t				des_bc_d(uint64_t plain, t_des *des);
 uint64_t				des_pcbc_e(uint64_t plain, t_des *des);
 uint64_t				des_pcbc_d(uint64_t plain, t_des *des);
 
+uint64_t				des3_ecb(uint64_t plain, t_des *des);
+uint64_t				des3_cbc_e(uint64_t plain, t_des *des);
 
 extern t_ssl_command 	g_commands[];
 #endif

@@ -27,7 +27,9 @@ t_des		*init_des(uint64_t (*des_mode[2])(uint64_t plain, t_des *des))
 	des->in = NULL;
 	des->out = NULL;
 	ft_memset(des->input, 0x0, DES_BLOCK_SIZE);
-	ft_memset(des->keys, 0x0, DES_ROUNDS * sizeof(uint64_t));
+	ft_memset(des->keys[0], 0x0, DES_ROUNDS * sizeof(uint64_t));
+	ft_memset(des->keys[1], 0x0, DES_ROUNDS * sizeof(uint64_t));
+	ft_memset(des->keys[2], 0x0, DES_ROUNDS * sizeof(uint64_t));
 	des->des_mode[0] = des_mode[0];
 	des->des_mode[1] = des_mode[1];
 	des->init_vector = 0;

@@ -13,7 +13,7 @@
 
 #include "ft_ssl.h"
 
-#define MAX_KEY_LEN 16
+
 #define PERMUTATION_TABLE_LEN 56
 #define COMPRESSION_TABLE_LEN 48
 
@@ -109,18 +109,9 @@ void					get_subkeys(uint32_t left_key,
 			sub_keys[i] |= ((tmp_key >> (56 - key_compression_table[j])) & 0x1)
 							<< (47 - j);
 	}
-	// for (int j = 0; j < DES_ROUNDS; j++)
-	// {
-	// 	for (int k = 63; k >= 0; k--)
-	// 	{
-	// 		printf("%llu", (sub_keys[j] >> k) & 0x1);
-	// 	}
-	// 	printf("\n");
-	// }
-	// printf("END OF KEYS\n");
 }
 
-void	swap_keys(uint64_t sub_keys[])
+void	swap_keys(uint64_t keys[])
 {
 	uint8_t		i;
 	uint64_t	tmp;
@@ -128,9 +119,9 @@ void	swap_keys(uint64_t sub_keys[])
 	i = 0;
 	while (i < 8)
 	{
-		tmp = sub_keys[i];
-		sub_keys[i] = sub_keys[DES_ROUNDS - i - 1];
-		sub_keys[DES_ROUNDS - i - 1] = tmp;
+		tmp = keys[i];
+		keys[i] = keys[DES_ROUNDS - i - 1];
+		keys[DES_ROUNDS - i - 1] = tmp;
 		i++;
 	}
 }

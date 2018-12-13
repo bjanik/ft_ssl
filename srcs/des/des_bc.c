@@ -16,7 +16,7 @@ uint64_t	des_bc_e(uint64_t plain, t_des *des)
 {
 	uint64_t	cipher;
 
-	cipher = des_core(plain ^ des->init_vector, des->keys);
+	cipher = des_core(plain ^ des->init_vector, des->keys[0]);
 	des->init_vector ^= cipher;
 	return (cipher);
 }
@@ -25,7 +25,7 @@ uint64_t	des_bc_d(uint64_t cipher, t_des *des)
 {
 	uint64_t	plain;
 
-	plain = des_core(cipher, des->keys) ^ des->init_vector; 
+	plain = des_core(cipher, des->keys[0]) ^ des->init_vector; 
 	des->init_vector ^= cipher;
 	return (plain);
 }
