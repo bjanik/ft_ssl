@@ -18,6 +18,7 @@
 # include <string.h>
 # include <unistd.h>
 # include <fcntl.h>
+# include <pwd.h>
 
 # include "libft.h"
 
@@ -42,6 +43,10 @@
 # define DES_OPT_D 1 
 # define DES_OPT_A 2
 # define DES_NOPAD 4
+# define DES_OPT_V 8
+# define DES_OPT_K 16
+# define DES_OPT_CAP_P 32
+
 # define MAX_KEY_LEN 16
 
 # define END_OF_OPT "--"
@@ -60,8 +65,10 @@
 
 typedef struct 			s_des
 {
-	char				*in;
-	char				*out;
+	char				*name;
+	// char				*in;
+	// char				*out;
+	char				*password;
 	unsigned char		input[DES_BLOCK_SIZE];
 	uint64_t			keys[3][DES_ROUNDS];
 	uint64_t			init_vector;
@@ -69,6 +76,12 @@ typedef struct 			s_des
 	uint8_t				opts;
 	int 				fd[2];
 }						t_des;
+
+typedef struct 			s_des_opts
+{
+	char				*opt;
+	void				(*opt_f)(char **argv, t_des *des, int *index);
+}						t_des_opts;
 
 typedef struct			s_msg
 {
@@ -81,7 +94,7 @@ typedef struct			s_msg
 
 typedef struct			s_ssl_command
 {
-	const char			*name;
+	char				*name;
 	void				(*hash_func)(t_msg *msg, uint32_t opts);
 	const char			*available_opts;
 	uint32_t			opts;
@@ -120,21 +133,16 @@ t_ssl_command			*get_ssl_command(const char *command);
 int						update(t_ctx *ctx, t_msg *msg, uint32_t opts);
 void					pad_message(t_ctx *ctx);
 void					output_digest(t_msg *msg, t_ctx ctx, uint32_t opts);
-
 void					md5(t_msg *msg, uint32_t opts);
+unsigned char			*md5_core(t_ctx	*ctx, t_msg *msg, uint32_t opts);
 void					md5_transform(t_ctx *ctx);
-
 void					sha256(t_msg *msg, uint32_t opts);
 void					sha256_transform(t_ctx *ctx);
-
 void					sha1(t_msg *msg, uint32_t opts);
 void					sha1_transform(t_ctx *ctx);
-
 int						init_msg(t_msg *msg, char *message, char *input_file);
 void					reset_msg(t_msg *msg);
-
 void					print_hash(unsigned char digest[], uint8_t digest_len);
-
 int						parse_opt(t_ssl_command *command,
 									char **argv,
 									int *index);
@@ -146,17 +154,29 @@ uint32_t				rotright(uint32_t x, uint32_t n);
 
 // void		encode_data(t_base64 *base, unsigned char b[]);
 // void		decode_data(t_base64 *base, unsigned char b[]);
-void		encode_data2(t_base64 *base);
-void		init_processing(t_base64 *base);
+void					encode_data2(t_base64 *base);
+void					init_processing(t_base64 *base);
 
 /*
 ** DES
 */
 
-t_des					*init_des(uint64_t (*des_mode[2])(uint64_t plain,
+t_des					*init_des(char *name,
+								  uint64_t (*des_mode[2])(uint64_t plain,
 														  t_des *des));
 int 					des_opts(char **argv, t_des *des);
-void					set_in_out_files(t_des *des);
+void					set_subkeys(char **argv, t_des *des, int *index);
+void					set_input_file(char **argv, t_des *des, int *index);
+void					set_output_file(char **argv, t_des *des, int *index);
+void					set_init_vector(char **argv, t_des *des, int *index);
+void					set_nopad(char **argv, t_des *des, int *index);
+void					set_decrypt_mode(char **argv, t_des *des, int *index);
+void					set_encrypt_mode(char **argv, t_des *des, int *index);
+void					set_cap_p(char **argv, t_des *des, int *index);
+
+
+
+// void					set_in_out_files(t_des *des);
 void					get_hex_from_str(char *str_key, uint64_t *key);
 uint64_t				convert_input_to_block(unsigned char input[]);
 uint64_t				des_core(uint64_t block, uint64_t sub_keys[]);
@@ -174,6 +194,7 @@ void					swap_keys(uint64_t keys[]);
 uint32_t				s_box_substitutions(uint64_t x_block);
 
 void					des_message(t_des *des);
+void					des_message_dec(t_des *des);
 uint64_t				des_ecb_e_d(uint64_t plain, t_des *des);
 uint64_t				des_cbc_e(uint64_t plain, t_des *des);
 uint64_t				des_cbc_d(uint64_t plain, t_des *des);

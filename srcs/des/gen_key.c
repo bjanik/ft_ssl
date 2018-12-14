@@ -61,7 +61,7 @@ void	get_hex_from_str(char *str_key, uint64_t *key)
 	unsigned char		full_key[MAX_KEY_LEN + 1];
 	int					len;
 	int					val;
- 
+
  	len = ft_strlen(str_key);
  	ft_memset(full_key, '0', MAX_KEY_LEN);
  	full_key[MAX_KEY_LEN] = '\0';
@@ -77,10 +77,7 @@ void	get_hex_from_str(char *str_key, uint64_t *key)
 		else if (full_key[len] >= 97 && full_key[len] <= 102)
 			val = full_key[len] - 87;
 		else
-		{
-			ft_putendl_fd("ft_ssl: Invalid key: non-hex digit", STDERR_FILENO);
-			exit(EXIT_FAILURE);
-		}
+			ft_error_msg("ft_ssl: Invalid key/iv: non-hex digit");
 		*key = (*key << 4) | val;
 	}
 }

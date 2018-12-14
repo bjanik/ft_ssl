@@ -15,7 +15,8 @@
 #define ENCRYPT 0
 #define DECRYPT 1
 
-t_des		*init_des(uint64_t (*des_mode[2])(uint64_t plain, t_des *des))
+t_des		*init_des(char *name,
+					  uint64_t (*des_mode[2])(uint64_t plain, t_des *des))
 {
 	t_des	*des;
 
@@ -24,8 +25,10 @@ t_des		*init_des(uint64_t (*des_mode[2])(uint64_t plain, t_des *des))
 		perror("Malloc:");
 		exit(EXIT_FAILURE);
 	}
-	des->in = NULL;
-	des->out = NULL;
+	des->name = name;
+	// des->in = NULL;
+	// des->out = NULL;
+	des->password = NULL;
 	ft_memset(des->input, 0x0, DES_BLOCK_SIZE);
 	ft_memset(des->keys[0], 0x0, DES_ROUNDS * sizeof(uint64_t));
 	ft_memset(des->keys[1], 0x0, DES_ROUNDS * sizeof(uint64_t));

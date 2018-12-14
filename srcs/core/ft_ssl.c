@@ -61,7 +61,8 @@ t_ssl_command		*get_ssl_command(const char *cmd)
 					!(g_commands[i].msg = malloc_msg()))
 				return (NULL);
 			if (!g_commands[i].hash_func &&
-					!(g_commands[i].des = init_des(g_commands[i].des_mode)))
+					!(g_commands[i].des = init_des(g_commands[i].name,
+												   g_commands[i].des_mode)))
 				return (NULL);
 			return (&g_commands[i]);
 		}

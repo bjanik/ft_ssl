@@ -47,7 +47,7 @@ static void				md5_final(t_ctx *ctx)
 	}
 }
 
-static unsigned char	*md5_core(t_ctx	*ctx, t_msg *msg, uint32_t opts)
+unsigned char	*md5_core(t_ctx	*ctx, t_msg *msg, uint32_t opts)
 {
 	if (update(ctx, msg, opts) == 0)
 	{

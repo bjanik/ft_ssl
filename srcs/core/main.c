@@ -72,8 +72,10 @@ static int 		data_encryption_standard(char **argv, t_ssl_command *command)
 {
 	if (des_opts(argv, command->des))
 		return (1);
-	set_in_out_files(command->des);
-	des_message(command->des);
+	if (command->des->opts & DES_OPT_D)
+		des_message_dec(command->des);
+	else
+		des_message(command->des);
 	return (0);
 }
 

@@ -71,7 +71,34 @@ void	des_get_cipher(t_des *des, unsigned char output[])
 	plain = convert_input_to_block(des->input);
 	cipher = des->des_mode[des->opts & DES_OPT_D](plain, des);
 	cipher_to_string(cipher, output);
-	write(des->fd[OUT], output, DES_BLOCK_SIZE);
+	if (!(des->opts & DES_OPT_D))
+		write(des->fd[OUT], output, DES_BLOCK_SIZE);
+}
+
+void	des_message_dec(t_des *des)
+{
+	int 			ret;
+	unsigned char 	buffer[4096 + 1];
+	unsigned char 	output[DES_BLOCK_SIZE + 1];
+	uint16_t		buflen;
+
+	ft_memset(buffer, 0x0, 4096 + 1);
+	buflen = 0;
+	while ((ret = read(des->fd[IN], des->input, DES_BLOCK_SIZE)) > 0)
+	{
+		(ret < DES_BLOCK_SIZE) ? ft_error_msg("ft_ssl: bad block lenght") : 0;
+		if (buflen == 4096)
+		{
+			write(des->fd[OUT], buffer, buflen);
+			ft_memset(buffer, 0x0, 4096);
+			buflen = 0;
+		}
+		des_get_cipher(des, output);
+		ft_memcpy(buffer + buflen, output, DES_BLOCK_SIZE);
+		buflen += DES_BLOCK_SIZE;
+	}
+	buflen ? write(des->fd[OUT], buffer, buflen - buffer[buflen - 1]) : 0;
+	(ret < 0) ? ft_error_msg("ft_ssl: Read error") : 0;
 }
 
 void	des_message(t_des *des)
@@ -79,33 +106,20 @@ void	des_message(t_des *des)
 	int 			ret;
 	int 			prev_ret;
 	unsigned char 	output[DES_BLOCK_SIZE + 1];
-	uint32_t		loop;
 
 	ft_memset(output, 0x0, DES_BLOCK_SIZE + 1);
 	prev_ret = 0;
-	loop = 0;
 	while ((ret = read(des->fd[IN], des->input, DES_BLOCK_SIZE)) > 0)
 	{
 		if (!(des->opts & DES_NOPAD))
 			ft_memset(des->input + ret, 8 - ret, 8 - ret);
-		if (ret < DES_BLOCK_SIZE && des->opts & DES_NOPAD)
-		{
-			loop ? ft_putchar_fd('\n', STDERR_FILENO) : 0;
-			ft_putendl_fd("ft_ssl: data not multiple of block lenght", STDERR_FILENO);
-			exit(EXIT_FAILURE);
-		}
 		des_get_cipher(des, output);
 		prev_ret = ret;
-		loop++;
 	}
-	if (!ret && prev_ret == 8 && !(des->opts & DES_NOPAD))
+	if (!ret && (prev_ret == 8 || !prev_ret) && !(des->opts & DES_NOPAD))
 	{
 		ft_memset(des->input + ret, 8 - ret, 8 - ret);
 		des_get_cipher(des, output);
 	}
-	if (ret < 0)
-	{
-		perror("ft_ssl: Read: ");
-		exit(EXIT_FAILURE);
-	}
+	(ret < 0) ? ft_error_msg("ft_ssl: Read error") : 0;
 }

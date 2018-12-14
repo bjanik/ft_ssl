@@ -20,11 +20,11 @@ int	usage(void)
 
 int	commands_usage(char *command)
 {
-	ft_putstr_fd("ft_ssl: ", 2);
-	ft_putstr_fd(command, 2);
-	ft_putstr_fd(" is an invalid command\n", 2);
-	ft_putendl_fd("Standard commands:\n", 2);
-	ft_putendl_fd("Message digest commands:\nmd5\nsha1\nsha256\n", 2);
-	ft_putendl_fd("Cipher commands:", 2);
+	ft_putstr_fd("ft_ssl: ", STDERR_FILENO);
+	ft_putstr_fd(command, STDERR_FILENO);
+	ft_putstr_fd(" is an invalid command\n", STDERR_FILENO);
+	ft_putendl_fd("Standard commands:\n", STDERR_FILENO);
+	ft_putendl_fd("Message digest commands:\n", STDERR_FILENO);
+	ft_putendl_fd("Cipher commands:", STDERR_FILENO);
 	return (1);
 }
