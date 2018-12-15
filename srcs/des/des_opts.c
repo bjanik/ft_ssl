@@ -102,7 +102,7 @@ inline void	set_nopad(char **argv, t_des *des, int *index)
 inline void	set_decrypt_mode(char **argv, t_des *des, int *index)
 {
 	(void)argv;
-	(void)index;	
+	(void)index;
 	des->opts |= DES_OPT_D;
 }
 
@@ -117,7 +117,8 @@ void		set_password(char **argv, t_des *des, int *index)
 {
 	if (!argv[++(*index)])
 		ft_error_msg("ft_ssl: Password must be defined");
-	des->password = ft_strdup(argv[*index]);
+	if (!(des->password = ft_strdup(argv[*index])))
+		ft_error_msg("ft_ssl: Malloc failed");
 }
 
 
@@ -127,6 +128,7 @@ inline void	set_cap_p(char **argv, t_des *des, int *index)
 	(void)index;
 	des->opts |= DES_OPT_CAP_P;
 }
+
 int			des_opts(char **argv, t_des *des)
 {
 	int	i;
@@ -143,6 +145,9 @@ int			des_opts(char **argv, t_des *des)
 			j++;
 		}
 	}
+	if ((ft_strcmp(des->name, "des-ecb") && ft_strcmp(des->name, "des3-ecb"))
+			&& !(des->opts & DES_OPT_V))
+		ft_error_msg("ft_ssl: initialization vector undefined");
 	if (des->opts & DES_OPT_D)
 	{
 		swap_keys(des->keys[0]);

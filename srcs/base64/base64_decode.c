@@ -35,7 +35,7 @@ static void		translate(unsigned char b[], size_t len)
 		else if (b[i] != '=')
 		{
 			ft_putendl_fd("Invalid character", STDERR_FILENO);
-			exit(1);
+			exit(EXIT_FAILURE);
 		}
 		i++;
 	}

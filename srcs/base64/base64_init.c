@@ -12,7 +12,7 @@
 
 # include "ft_ssl.h"
 
-void			init_processing(t_base64 *base)
+void			init_base64(t_base64 *base)
 {
 	base->fd[IN] = STDIN_FILENO;
 	base->fd[OUT] = STDOUT_FILENO;

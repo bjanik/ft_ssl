@@ -90,7 +90,7 @@ void	des_message_dec(t_des *des)
 		if (buflen == 4096)
 		{
 			write(des->fd[OUT], buffer, buflen);
-			ft_memset(buffer, 0x0, 4096);
+			// ft_memset(buffer, 0x0, 4096);
 			buflen = 0;
 		}
 		des_get_cipher(des, output);

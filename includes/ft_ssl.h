@@ -204,8 +204,13 @@ uint64_t				des_bc_d(uint64_t plain, t_des *des);
 uint64_t				des_pcbc_e(uint64_t plain, t_des *des);
 uint64_t				des_pcbc_d(uint64_t plain, t_des *des);
 
+uint64_t				des3_bc_e(uint64_t plain, t_des *des);
+uint64_t				des3_bc_d(uint64_t plain, t_des *des);
 uint64_t				des3_ecb(uint64_t plain, t_des *des);
 uint64_t				des3_cbc_e(uint64_t plain, t_des *des);
+uint64_t				des3_cbc_d(uint64_t plain, t_des *des);
+uint64_t				des3_pcbc_e(uint64_t plain, t_des *des);
+uint64_t				des3_pcbc_d(uint64_t plain, t_des *des);
 
 extern t_ssl_command 	g_commands[];
 #endif

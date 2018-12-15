@@ -26,8 +26,6 @@ t_des		*init_des(char *name,
 		exit(EXIT_FAILURE);
 	}
 	des->name = name;
-	// des->in = NULL;
-	// des->out = NULL;
 	des->password = NULL;
 	ft_memset(des->input, 0x0, DES_BLOCK_SIZE);
 	ft_memset(des->keys[0], 0x0, DES_ROUNDS * sizeof(uint64_t));
