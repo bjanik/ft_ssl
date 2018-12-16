@@ -47,7 +47,7 @@ void		encode_data2(t_base64 *base)
 
 	buflen = 0;
 	ft_memset(buffer, 0x0, BUF_SIZE + 1);
-	while ((ret = read(base->fd[IN], b, QUANTUM_SIZE)) > 0)
+	while ((ret = read(base->fd[IN], b, QUANTUM_SIZE)) > 0)       
 	{
 		encode_data(base, b);
 		put_encoded_data_to_buffer(base, buffer, &buflen, ret);
@@ -59,7 +59,7 @@ void		encode_data2(t_base64 *base)
 		}
 		ft_memset(b, 0x0, QUANTUM_SIZE);
 	}
-	(ret < 0) ?	exit(1) : 0;
+	(ret < 0) ?	ft_error_msg("ft_ssl: Read error") : 0;
 	write(base->fd[OUT], buffer, buflen);
 	ft_putchar('\n');
 }

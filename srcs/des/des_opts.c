@@ -141,9 +141,13 @@ int			des_opts(char **argv, t_des *des)
 		while (g_des_opts[j].opt)
 		{
 			if (!ft_strcmp(argv[i], g_des_opts[j].opt))
+			{
 				g_des_opts[j].opt_f(argv, des, &i);
+				break ;
+			}
 			j++;
 		}
+		(!g_des_opts[j].opt) ? ft_error_msg("ft_ssl: invalid option") : 0;
 	}
 	if ((ft_strcmp(des->name, "des-ecb") && ft_strcmp(des->name, "des3-ecb"))
 			&& !(des->opts & DES_OPT_V))

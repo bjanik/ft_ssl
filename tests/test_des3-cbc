@@ -1,0 +1,33 @@
+#!/bin/bash
+# openssl des3 -in auteur -K ADF1257FEC694AC147BFE7DC6800DA -iv 58CDE91A021B > open
+# ./ft_ssl des3 -i auteur -k ADF1257FEC694AC147BFE7DC6800DA -v 58CDE91A021B > ft
+# diff ft open
+# echo -----------------------------------------
+# openssl des3 -in auteur -K ADF1257FEC69447BFE7DC6800DA -iv 58CDE91A021B > open
+# ./ft_ssl des3 -i auteur -k ADF1257FEC69447BFE7DC6800DA -v 58CDE91A021B > ft
+# diff ft open
+# echo -----------------------------------------
+# openssl des3 -in auteur -K ADF1257FEC694AC147BFE7800DA -iv 58CDE91A021B > open
+# ./ft_ssl des3 -i auteur -k ADF1257FEC694AC147BFE7800DA -v 58CDE91A021B > ft
+# diff ft open
+# echo -----------------------------------------
+# openssl des3 -in auteur -K A257FEC694ACBFE7DC6800DA -iv 58CDE91A021B > open
+# ./ft_ssl des3 -i auteur -k A257FEC694ACBFE7DC6800DA -v 58CDE91A021B > ft
+# diff ft open
+# echo -----------------------------------------
+# openssl des3 -in auteur -K 1257F694AC147BFE7DC68DA -iv 58CDE91A0B > open
+# ./ft_ssl des3 -i auteur -k 1257F694AC147BFE7DC68DA -v 58CDE91A0B > ft
+# diff ft open
+# echo -----------------------------------------
+# openssl des3 -in auteur -K ADF1888257FEC694AC147BFE7DC6800DA7776600 -iv 58CD1A021B > open
+# ./ft_ssl des3 -i auteur -k ADF1888257FEC694AC147BFE7DC6800DA7776600 -v 58CD1A021B > ft
+# diff ft open
+# echo -----------------------------------------
+# openssl des3 -in auteur -K ADF1257FEC694AC147BFE7DC6800DA -iv 58CDE91A021B > open
+# ./ft_ssl des3 -i auteur -k ADF1257FEC694AC147BFE7DC6800DA -v 58CDE91A021B > ft
+# diff ft open
+echo -----------------------------------------
+./ft_ssl des3 -i auteur -k ADF1257FEC694AC147BFE7DC6800DA -v 58CDE91A021B | ./ft_ssl des3 -d -k ADF1257FEC694AC147BFE7DC6800DA -v 58CDE91A021B
+# openssl des3 -in auteur -K ADF1257FEC694AC147BFE7DC6800DA -iv 58CDE91A021B |openssl des3 -d -K ADF1257FEC694AC147BFE7DC6800DA -iv 58CDE91A021B > open
+# diff ft open
+# echo -----------------------------------------
