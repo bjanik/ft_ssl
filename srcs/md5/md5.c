@@ -52,6 +52,7 @@ unsigned char	*md5_core(t_ctx	*ctx, t_msg *msg, uint32_t opts)
 	if (update(ctx, msg, opts) == 0)
 	{
 		md5_final(ctx);
+		write(1, ctx->digest, 32);
 		return ((unsigned char*)ft_strdup((char*)ctx->digest));
 	}
 	return (NULL);

@@ -66,10 +66,8 @@
 typedef struct 			s_des
 {
 	char				*name;
-	// char				*in;
-	// char				*out;
 	char				*password;
-	unsigned char		input[DES_BLOCK_SIZE];
+	unsigned char		input[BUF_SIZE + 1];
 	uint64_t			keys[3][DES_ROUNDS];
 	uint64_t			init_vector;
 	uint64_t			(*des_mode[2])(uint64_t plain, struct s_des *des);
@@ -134,6 +132,7 @@ int						update(t_ctx *ctx, t_msg *msg, uint32_t opts);
 void					pad_message(t_ctx *ctx);
 void					output_digest(t_msg *msg, t_ctx ctx, uint32_t opts);
 void					md5(t_msg *msg, uint32_t opts);
+void					md5_init(t_ctx *ctx);
 unsigned char			*md5_core(t_ctx	*ctx, t_msg *msg, uint32_t opts);
 void					md5_transform(t_ctx *ctx);
 void					sha256(t_msg *msg, uint32_t opts);
@@ -184,6 +183,8 @@ uint64_t				initial_permutation(uint64_t block);
 uint64_t				expansion_permutation(uint32_t r_block);
 uint32_t				pbox_permutation(uint32_t block);
 uint64_t				final_permutation(uint32_t left, uint32_t right);
+
+void					generate_keys_vector(t_des *des);
    
 void					get_key_from_str(char *str_key, uint64_t *key);
 uint64_t				get_56bits_key(uint64_t key);

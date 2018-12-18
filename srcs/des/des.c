@@ -63,63 +63,67 @@ void	cipher_to_string(uint64_t cipher, unsigned char output[])
 	}
 }
 
-void	des_get_cipher(t_des *des, unsigned char output[])
+void	des_get_cipher(t_des *des, int offset)
 {
 	uint64_t		plain;
 	uint64_t		cipher;
 
-	plain = convert_input_to_block(des->input);
+	plain = convert_input_to_block(des->input + offset);
 	cipher = des->des_mode[des->opts & DES_OPT_D](plain, des);
-	cipher_to_string(cipher, output);
-	if (!(des->opts & DES_OPT_D))
-		write(des->fd[OUT], output, DES_BLOCK_SIZE);
+	cipher_to_string(cipher, des->input + offset);
 }
 
 void	des_message_dec(t_des *des)
 {
 	int 			ret;
-	unsigned char 	buffer[4096 + 1];
-	unsigned char 	output[DES_BLOCK_SIZE + 1];
-	uint16_t		buflen;
+	int 			p_ret;
+	int 			offset;
 
-	ft_memset(buffer, 0x0, 4096 + 1);
-	buflen = 0;
-	while ((ret = read(des->fd[IN], des->input, DES_BLOCK_SIZE)) > 0)
+	offset = 0;
+	while ((ret = read(des->fd[IN], des->input, BUF_SIZE)) > 0)
 	{
-		(ret < DES_BLOCK_SIZE) ? ft_error_msg("ft_ssl: bad block lenght") : 0;
-		if (buflen == 4096)
+		offset = 0;
+		(ret % DES_BLOCK_SIZE) ? ft_error_msg("ft_ssl: bad block lenght") : 0;
+		while (offset < ret)
 		{
-			write(des->fd[OUT], buffer, buflen);
-			// ft_memset(buffer, 0x0, 4096);
-			buflen = 0;
+			des_get_cipher(des, offset);
+			offset += DES_BLOCK_SIZE;
 		}
-		des_get_cipher(des, output);
-		ft_memcpy(buffer + buflen, output, DES_BLOCK_SIZE);
-		buflen += DES_BLOCK_SIZE;
+		if (ret < BUF_SIZE)
+			write(des->fd[OUT], des->input, ret - des->input[ret - 1]);
+		else
+			write(des->fd[OUT], des->input, offset);
+		p_ret = ret;
 	}
-	buflen ? write(des->fd[OUT], buffer, buflen - buffer[buflen - 1]) : 0;
 	(ret < 0) ? ft_error_msg("ft_ssl: Read error") : 0;
+	// buflen ? write(des->fd[OUT], buffer, buflen - buffer[buflen - 1]) : 0;
 }
 
 void	des_message(t_des *des)
 {
 	int 			ret;
-	int 			prev_ret;
-	unsigned char 	output[DES_BLOCK_SIZE + 1];
+	int 			p_ret;
+	int 			offset;
 
-	ft_memset(output, 0x0, DES_BLOCK_SIZE + 1);
-	prev_ret = 0;
-	while ((ret = read(des->fd[IN], des->input, DES_BLOCK_SIZE)) > 0)
+	p_ret = 0;
+	while ((ret = read(des->fd[IN], des->input, BUF_SIZE)) > 0)
 	{
-		if (!(des->opts & DES_NOPAD))
-			ft_memset(des->input + ret, 8 - ret, 8 - ret);
-		des_get_cipher(des, output);
-		prev_ret = ret;
-	}
-	if (!ret && (prev_ret == 8 || !prev_ret) && !(des->opts & DES_NOPAD))
-	{
-		ft_memset(des->input + ret, 8 - ret, 8 - ret);
-		des_get_cipher(des, output);
+		offset = 0;
+		if (!(des->opts & DES_NOPAD)) 
+			ft_memset(des->input + ret, 8 - ret % 8, 8 - ret % 8);
+		while (offset < ret)
+		{
+			des_get_cipher(des, offset);
+			offset += DES_BLOCK_SIZE;
+		}
+		write(des->fd[OUT], des->input, offset);
+		p_ret = ret;
 	}
 	(ret < 0) ? ft_error_msg("ft_ssl: Read error") : 0;
+	if (!(p_ret % DES_BLOCK_SIZE) && !(des->opts & DES_NOPAD))
+	{
+		ft_memset(des->input + ret, 8 - ret, 8 - ret);
+		des_get_cipher(des, 0);
+		write(des->fd[OUT], des->input, DES_BLOCK_SIZE);
+	}
 }

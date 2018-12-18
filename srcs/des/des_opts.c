@@ -26,7 +26,6 @@ const t_des_opts	g_des_opts[] =
 	{NULL, NULL}
 };
 	// {"-a", set_b64},
-	// {"-p", set_password}
 
 void		set_subkeys(char **argv, t_des *des, int *index)
 {
@@ -137,20 +136,19 @@ int			des_opts(char **argv, t_des *des)
 	i = 1;
 	while (argv[++i])
 	{
-		j = 0;
-		while (g_des_opts[j].opt)
+		j = -1;
+		while (g_des_opts[++j].opt)
 		{
 			if (!ft_strcmp(argv[i], g_des_opts[j].opt))
 			{
 				g_des_opts[j].opt_f(argv, des, &i);
 				break ;
 			}
-			j++;
 		}
 		(!g_des_opts[j].opt) ? ft_error_msg("ft_ssl: invalid option") : 0;
 	}
 	if ((ft_strcmp(des->name, "des-ecb") && ft_strcmp(des->name, "des3-ecb"))
-			&& !(des->opts & DES_OPT_V))
+			&& (des->opts & DES_OPT_K) && !(des->opts & DES_OPT_V))
 		ft_error_msg("ft_ssl: initialization vector undefined");
 	if (des->opts & DES_OPT_D)
 	{

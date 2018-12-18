@@ -68,14 +68,18 @@ static int 		hash_algo(char **argv, t_ssl_command *command)
 	return (i);
 }
 
-static int 		data_encryption_standard(char **argv, t_ssl_command *command)
+static int 		data_encryption_standard(char **argv, t_ssl_command *cmd)
 {
-	if (des_opts(argv, command->des))
+	if (des_opts(argv, cmd->des))
 		return (1);
-	if (command->des->opts & DES_OPT_D)
-		des_message_dec(command->des);
+	if ((ft_strcmp(cmd->des->name, "des-ecb") 
+			&& ft_strcmp(cmd->des->name, "des3-ecb"))
+			&& !(cmd->des->opts & DES_OPT_K))
+		generate_keys_vector(cmd->des);
+	if (cmd->des->opts & DES_OPT_D)
+		des_message_dec(cmd->des);
 	else
-		des_message(command->des);
+		des_message(cmd->des);
 	return (0);
 }
 
