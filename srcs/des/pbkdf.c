@@ -31,8 +31,6 @@ char	*get_salt(void)
 		close(fd);	
 	 	ft_error_msg("ft_ssl: read failed");
 	}
-	// write(1, salt, 8);
-	// write(1, "\n", 1);
 	close(fd);
 	return (salt);
 }
@@ -56,52 +54,102 @@ unsigned char	*pbkdf(char *password, char *salt)
 	return (hash);
 }
 
-static void	get_keys_vector_from_hash(uint64_t key_iv[], unsigned char *keys[])
+uint64_t	get_keys_vector_from_hash(unsigned char *keys)
 {
 	uint64_t	tmp;
+	uint64_t	key;
 	uint8_t		i;
 
 	i = 0;
-	key_iv[0] = 0;
-	key_iv[1] = 0;
+	key = 0;
 	while (i < 8)
 	{
-		tmp = keys[0][i];
-		key_iv[0] |= tmp << (56 - i * 8);	
+		tmp = keys[i];
+		key |= tmp << (56 - i * 8);
+		i++;
 	}
-	i = 0;
-	while (i < 8)
+	return (key);
+}
+
+char	*get_password(int encryption)
+{
+	char	*pwd;
+	char	*check_pwd;
+
+	if (encryption)
 	{
-		tmp = keys[1][i];
-		key_iv[1] |= tmp << (56 - i * 8);
+		pwd = ft_strdup(getpass("Enter DES decryption password:"));
+		check_pwd = getpass("Verifying DES decryption password:");
+	}
+	else
+	{
+		pwd = ft_strdup(getpass("Enter DES encryption password:"));
+		check_pwd = getpass("Verifying DES encryption password:");
+	}
+	(!pwd || !check_pwd) ? ft_error_msg("ft_ssl: bad password read") : 0;
+	(ft_strcmp(pwd, check_pwd)) ? ft_error_msg("Verify failure") : 0;
+	return (pwd);
+}
+
+void	display_skv(t_des *des, char *salt,
+					unsigned char *keys[],
+					unsigned char *iv)
+{
+	int 		i;
+	uint8_t 	nb_keys;
+
+	i = -1;
+	nb_keys = (ft_strchr(des->name, '3')) ? 3 : 1;
+	if (des->opts & DES_OPT_CAP_P)
+	{
+		ft_printf("salt=");
+		print_hash((unsigned char*)salt, 8, 1);
+		write(STDOUT_FILENO, "\n", 1);
+		ft_printf("key=");
+		while (++i < 3)
+			print_hash(keys[i], 8, 1);
+		write(STDOUT_FILENO, "\n", 1);
+		ft_printf("iv=");
+		print_hash(iv, 8, 1);
+		write(STDOUT_FILENO, "\n", 1);
+		exit(EXIT_SUCCESS);
 	}
 }
 
 void	generate_keys_vector(t_des *des)
 {
-	char			*pwd[2];
 	char			*salt;
 	unsigned char 	*hash;
-	uint64_t		key_iv[2];
-	unsigned char	*keys[2];
+	uint64_t		keys[3];
+	unsigned char	*ks[3];
+	unsigned char	*iv;
+	uint8_t			i;
 
-	if (des->opts & DES_OPT_D)
+	(!des->password) ? des->password = get_password(des->opts & DES_OPT_D) : 0;
+	i = 0;
+	while (i < 3)
 	{
-		pwd[0] = ft_strdup(getpass("Enter des decryption password:"));
-		pwd[1] = ft_strdup(getpass("Verifying des decryption password:"));
+		salt = get_salt();
+		hash = pbkdf(des->password, salt);
+		ks[i] = (unsigned char*)ft_strndup((char*)hash, 8);
+		keys[i] = get_keys_vector_from_hash(ks[i]);
+		keys[i] = get_56bits_key(keys[i]);
+		get_subkeys(keys[i] >> 28, (keys[i] << 36) >> 36, des->keys[i]);
+		ft_strdel(&salt);
+		ft_strdel((char**)&hash);
+		if (!i)
+		{
+			if (!(iv = (unsigned char*)ft_strdup((char*)hash + 8)))
+				ft_error_msg("ft_ssl: Malloc failed");
+			des->init_vector = get_keys_vector_from_hash(iv);
+			ft_strdel((char**)&iv);
+		}
+		i++;
 	}
-	else
-	{
-		pwd[0] = ft_strdup(getpass("Enter des encryption password:"));
-		pwd[1] = ft_strdup(getpass("Verifying des encryption password:"));
-	}
-	(!pwd[0] || !pwd[1]) ? ft_error_msg("ft_ssl: bad password read") : 0;
-	(ft_strcmp(pwd[0], pwd[1])) ? ft_error_msg("Verify failure") : 0;
-	salt = get_salt();
-	hash = pbkdf(pwd[0], salt);
-	keys[0] = (unsigned char*)ft_strndup((char*)hash, 8);
-	keys[1] = (unsigned char*)ft_strdup((char*)hash + 8);
-	get_keys_vector_from_hash(key_iv, keys);
-	des->keys[0] = key_iv[0];
-	des->init_vector = key_iv[1];
+	(!keys[i] || !iv) ? ft_error_msg("ft_ssl: Malloc failed") : 0;
+	write(des->fd[OUT], "Salted__", 8);
+	write(des->fd[OUT], salt, 8);
+	ft_strdel(&salt);
+	ft_strdel((char**)&keys[0]);
+	ft_strdel((char**)&keys[1]);
 }

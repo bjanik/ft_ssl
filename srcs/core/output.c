@@ -21,7 +21,7 @@ void	output_digest(t_msg *msg, t_ctx ctx, uint32_t opts)
 		else
 			ft_printf("%s (\"%s\") = ", ctx.cmd_name, msg->str);
 	}
-	print_hash(ctx.digest, ctx.digest_len);
+	print_hash(ctx.digest, ctx.digest_len, 0);
 	if (opts & OPT_R && !(opts & OPT_Q) && (msg->input_file || msg->str))
 	{
 		if (msg->input_file)

@@ -70,12 +70,17 @@ t_ssl_command		*get_ssl_command(const char *cmd)
 	return (NULL);
 }
 
-void				print_hash(unsigned char digest[], uint8_t digest_len)
+void				print_hash(unsigned char digest[],
+							   uint8_t digest_len,
+							   uint8_t up)
 {
 	size_t	i;
 
 	i = 0;
 	if (digest)
 		while (i < digest_len)
-			ft_printf("%02x", digest[i++]);
+		{
+			up ? ft_printf("%02X", digest[i]) : ft_printf("%02X", digest[i]);
+			i++;
+		}
 }

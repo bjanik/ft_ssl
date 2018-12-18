@@ -72,9 +72,7 @@ static int 		data_encryption_standard(char **argv, t_ssl_command *cmd)
 {
 	if (des_opts(argv, cmd->des))
 		return (1);
-	if ((ft_strcmp(cmd->des->name, "des-ecb") 
-			&& ft_strcmp(cmd->des->name, "des3-ecb"))
-			&& !(cmd->des->opts & DES_OPT_K))
+	if (!(cmd->des->opts & DES_OPT_K))
 		generate_keys_vector(cmd->des);
 	if (cmd->des->opts & DES_OPT_D)
 		des_message_dec(cmd->des);

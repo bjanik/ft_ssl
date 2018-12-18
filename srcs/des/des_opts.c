@@ -22,7 +22,7 @@ const t_des_opts	g_des_opts[] =
 	{"-v", set_init_vector},
 	{"-nopad", set_nopad},
 	{"-P", set_cap_p},
-	// {"-p", set_password},
+	{"-p", set_password},
 	{NULL, NULL}
 };
 	// {"-a", set_b64},
@@ -35,6 +35,7 @@ void		set_subkeys(char **argv, t_des *des, int *index)
 
 	if (!argv[++(*index)])
 		ft_error_msg("ft_ssl: Key is undefined");
+	des->opts |= DES_OPT_K;
 	i = 0;
 	while (i < 3)
 	{
@@ -158,28 +159,3 @@ int			des_opts(char **argv, t_des *des)
 	}
 	return (0);
 }
-		// if (!ft_strcmp(argv[i], "-i"))
-		// 	des->in = argv[++i];
-		// else if (!ft_strcmp(argv[i], "-o"))
-		// 	des->out = argv[++i];
-		// else if (!ft_strcmp(argv[i], "-d"))
-		// 	des->opts |= DES_OPT_D;
-		// else if (!ft_strcmp(argv[i], "-e"))
-		// 	des->opts &= ~DES_OPT_D;
-		// else if (!ft_strcmp(argv[i], "-v"))
-		// {
-		// 	des->opts |= DES_OPT_V;
-		// 	!argv[i + 1] ? ft_error_msg("ft_ssl: iv undefined") : 0;
-		// 	get_hex_from_str(argv[++i], &des->init_vector);
-		// }
-		// else if (!ft_strcmp(argv[i], "-k"))
-		// 	set_subkeys(des, argv[++i]);
-		// else if (!ft_strcmp(argv[i], "-a"))
-		// 	des->opts |= DES_OPT_A;
-		// else if (!ft_strcmp(argv[i], "-nopad"))
-		// 	des->opts |= DES_NOPAD;
-		// else if (!ft_strcmp(argv[i], "-p"))
-		// 	des->password = argv[++i];
-		// else
-		// 	ft_error_msg("ft_ssl: des: invalid option");
-	

@@ -48,7 +48,7 @@ int		check_fd(const int fd, t_fd *p_fd, char **line)
 		if (ret > 0)
 			(p_fd->tmp)[0] = c;
 	}
-	return (1);
+	return (ret);
 }
 
 int		gnl_return_value(t_fd *p_fd, int ret, char **line)

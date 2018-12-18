@@ -45,7 +45,8 @@
 # define DES_NOPAD 4
 # define DES_OPT_V 8
 # define DES_OPT_K 16
-# define DES_OPT_CAP_P 32
+# define DES_OPT_P 32
+# define DES_OPT_CAP_P 64 
 
 # define MAX_KEY_LEN 16
 
@@ -125,7 +126,6 @@ typedef struct			s_ctx
 	char				cmd_name[MAX_CMD_NAME_LEN + 1];
 }						t_ctx;
 
-
 t_ssl_command			*get_ssl_command(const char *command);
 
 int						update(t_ctx *ctx, t_msg *msg, uint32_t opts);
@@ -141,7 +141,9 @@ void					sha1(t_msg *msg, uint32_t opts);
 void					sha1_transform(t_ctx *ctx);
 int						init_msg(t_msg *msg, char *message, char *input_file);
 void					reset_msg(t_msg *msg);
-void					print_hash(unsigned char digest[], uint8_t digest_len);
+void					print_hash(unsigned char digest[],
+								   uint8_t digest_len,
+								   uint8_t up);
 int						parse_opt(t_ssl_command *command,
 									char **argv,
 									int *index);
@@ -164,6 +166,7 @@ t_des					*init_des(char *name,
 								  uint64_t (*des_mode[2])(uint64_t plain,
 														  t_des *des));
 int 					des_opts(char **argv, t_des *des);
+void					set_password(char **argv, t_des *des, int *index);
 void					set_subkeys(char **argv, t_des *des, int *index);
 void					set_input_file(char **argv, t_des *des, int *index);
 void					set_output_file(char **argv, t_des *des, int *index);
