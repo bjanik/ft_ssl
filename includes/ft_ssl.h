@@ -51,7 +51,7 @@
 # define MAX_KEY_LEN 16
 
 # define END_OF_OPT "--"
-# define BUF_SIZE 4096
+# define BUF_SIZE 4080
 # define BLOCK_SIZE 64
 # define DES_BLOCK_SIZE 8
 

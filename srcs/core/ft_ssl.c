@@ -19,7 +19,6 @@ t_ssl_command		g_commands[] = {
 	{"des", NULL, DES_OPTS, 0, NULL, NULL, {des_cbc_e, des_cbc_d}},
 	{"des-bc", NULL, DES_OPTS, 0, NULL, NULL, {des_bc_e, des_bc_d}},
 	{"des-cbc", NULL, DES_OPTS, 0, NULL, NULL, {des_cbc_e, des_cbc_d}},
-	{"des-cfb", NULL, DES_OPTS, 0, NULL, NULL, {des_cfb_e_d, des_cfb_e_d}},
 	{"des-ecb", NULL, DES_OPTS, 0, NULL, NULL, {des_ecb_e_d, des_ecb_e_d}},
 	{"des-pcbc", NULL, DES_OPTS, 0, NULL, NULL, {des_pcbc_e, des_pcbc_d}},
 	{"des3", NULL, DES_OPTS, 0, NULL, NULL, {des3_cbc_e, des3_cbc_d}},
@@ -80,7 +79,7 @@ void				print_hash(unsigned char digest[],
 	if (digest)
 		while (i < digest_len)
 		{
-			up ? ft_printf("%02X", digest[i]) : ft_printf("%02X", digest[i]);
+			up ? ft_printf("%02X", digest[i]) : ft_printf("%02x", digest[i]);
 			i++;
 		}
 }

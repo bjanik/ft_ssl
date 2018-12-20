@@ -51,6 +51,7 @@ unsigned char	*pbkdf(char *password, char *salt)
 	md5_init(&ctx);
 	hash = md5_core(&ctx, &msg, 0);
 	ft_strdel((char**)&ps);
+	msg.str = NULL;
 	return (hash);
 }
 
@@ -106,50 +107,51 @@ void	display_skv(t_des *des, char *salt,
 		print_hash((unsigned char*)salt, 8, 1);
 		write(STDOUT_FILENO, "\n", 1);
 		ft_printf("key=");
-		while (++i < 3)
+		while (++i < nb_keys)
 			print_hash(keys[i], 8, 1);
 		write(STDOUT_FILENO, "\n", 1);
-		ft_printf("iv=");
-		print_hash(iv, 8, 1);
-		write(STDOUT_FILENO, "\n", 1);
+		if (!ft_strstr(des->name, "ecb"))
+		{
+			ft_printf("iv=");
+			print_hash(iv, 8, 1);
+			write(STDOUT_FILENO, "\n", 1);	
+		}
 		exit(EXIT_SUCCESS);
 	}
 }
 
 void	generate_keys_vector(t_des *des)
 {
-	char			*salt;
+	char			*salt[3];
 	unsigned char 	*hash;
 	uint64_t		keys[3];
 	unsigned char	*ks[3];
 	unsigned char	*iv;
-	uint8_t			i;
+	int				i;
 
 	(!des->password) ? des->password = get_password(des->opts & DES_OPT_D) : 0;
-	i = 0;
-	while (i < 3)
+	i = -1;
+	while (++i < 3)
 	{
-		salt = get_salt();
-		hash = pbkdf(des->password, salt);
-		ks[i] = (unsigned char*)ft_strndup((char*)hash, 8);
+		salt[i] = get_salt();
+		hash = pbkdf(des->password, salt[i]);
+		if (!(ks[i] = (unsigned char*)ft_strndup((char*)hash, 8)))
+			ft_error_msg("ft_ssl: Malloc failed");
 		keys[i] = get_keys_vector_from_hash(ks[i]);
 		keys[i] = get_56bits_key(keys[i]);
 		get_subkeys(keys[i] >> 28, (keys[i] << 36) >> 36, des->keys[i]);
-		ft_strdel(&salt);
-		ft_strdel((char**)&hash);
 		if (!i)
 		{
 			if (!(iv = (unsigned char*)ft_strdup((char*)hash + 8)))
 				ft_error_msg("ft_ssl: Malloc failed");
 			des->init_vector = get_keys_vector_from_hash(iv);
-			ft_strdel((char**)&iv);
 		}
-		i++;
+		i ? ft_strdel(&salt[i]) : 0;
+		ft_strdel((char**)&hash);
 	}
-	(!keys[i] || !iv) ? ft_error_msg("ft_ssl: Malloc failed") : 0;
+	display_skv(des, salt[0], ks, iv);
+	ft_strdel((char**)&iv);
 	write(des->fd[OUT], "Salted__", 8);
-	write(des->fd[OUT], salt, 8);
-	ft_strdel(&salt);
-	ft_strdel((char**)&keys[0]);
-	ft_strdel((char**)&keys[1]);
+	write(des->fd[OUT], salt[0], 8);
+	ft_strdel(&salt[0]);
 }

@@ -96,7 +96,6 @@ void	des_message_dec(t_des *des)
 		p_ret = ret;
 	}
 	(ret < 0) ? ft_error_msg("ft_ssl: Read error") : 0;
-	// buflen ? write(des->fd[OUT], buffer, buflen - buffer[buflen - 1]) : 0;
 }
 
 void	des_message(t_des *des)
@@ -116,7 +115,7 @@ void	des_message(t_des *des)
 			des_get_cipher(des, offset);
 			offset += DES_BLOCK_SIZE;
 		}
-		write(des->fd[OUT], des->input, offset);
+		write(des->fd[OUT], des->input, offset); // Pass buffer to base64 func if -a option is set
 		p_ret = ret;
 	}
 	(ret < 0) ? ft_error_msg("ft_ssl: Read error") : 0;

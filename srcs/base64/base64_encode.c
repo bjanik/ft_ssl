@@ -38,6 +38,50 @@ static void		put_encoded_data_to_buffer(t_base64 *base,
 	*buflen += 4;
 }
 
+void	encode(unsigned char in[], unsigned char out[], int diff)
+{
+	uint8_t	data[4];
+	uint8_t i;
+
+	data[0] = (in[0] >> 2) & 0xFF;
+	data[1] = ((in[0] & 0x03) << 4) | ((in[1] >> 4) & 0xFF);
+	data[2] = ((in[1] & 0x0F) << 2) | ((in[2] >> 6) & 0xFF);
+	data[3] = in[2] & 0x3F;
+	i = 0;
+	while (i < 4)
+	{
+		if (diff < 3 && data[i] == 0 && i > diff)
+			out[i] = '=';
+		else
+			out[i] = B64[data[i]];
+		i++;
+	}
+}
+
+void	base64_encode(unsigned char in[], int ret, int fd)
+{
+	int				offset;
+	int				out_len;
+	unsigned char 	out[BUF_SIZE * 2 + 1];
+
+	offset = 0;
+	out_len = 0;
+	ft_memset(out, 0x0, BUF_SIZE * 2 + 1);
+	while (offset < ret)
+	{
+		encode(in + offset, out + out_len, ret - offset);
+		offset += 3;
+		out_len += 4;
+		if (out_len == BUF_SIZE)
+		{
+			write(fd, out, BUF_SIZE);
+			memset(out, 0x0, BUF_SIZE * 2);
+			out_len = 0;
+		}
+	}
+	write(fd, out, out_len);
+}
+
 void		encode_data2(t_base64 *base)
 {
 	int				ret;
@@ -47,7 +91,7 @@ void		encode_data2(t_base64 *base)
 
 	buflen = 0;
 	ft_memset(buffer, 0x0, BUF_SIZE + 1);
-	while ((ret = read(base->fd[IN], b, QUANTUM_SIZE)) > 0)       
+	while ((ret = read(base->fd[IN], b, QUANTUM_SIZE)) > 0)
 	{
 		encode_data(base, b);
 		put_encoded_data_to_buffer(base, buffer, &buflen, ret);

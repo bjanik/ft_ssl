@@ -28,6 +28,7 @@ static int		hash_files(char **argv, t_ssl_command *command)
 			continue ;
 		}
 		command->hash_func(command->msg, command->opts);
+		close(command->msg->fd);
 	}
 	return (rett);
 }
@@ -65,6 +66,7 @@ static int 		hash_algo(char **argv, t_ssl_command *command)
 		reset_msg(command->msg);
 	}
 	i = hash_files(argv + i, command);
+	ft_memdel((void**)&command->msg);
 	return (i);
 }
 
@@ -78,6 +80,8 @@ static int 		data_encryption_standard(char **argv, t_ssl_command *cmd)
 		des_message_dec(cmd->des);
 	else
 		des_message(cmd->des);
+	ft_strdel(&cmd->des->password);
+	ft_memdel((void**)&cmd->des);
 	return (0);
 }
 
