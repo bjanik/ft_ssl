@@ -64,6 +64,17 @@
 # define IN 0
 # define OUT 1
 
+typedef struct 			s_base64
+{
+	char				*input_file;
+	char				*output_file;
+	// uint8_t				encoded[4];
+	// unsigned char		decoded[3];
+	// void				(*data[2])(struct s_base64 *base, unsigned char b[]);
+	unsigned char		buffer[BUF_SIZE + 1];
+	int 				fd[2];
+}						t_base64;
+
 typedef struct 			s_des
 {
 	char				*name;
@@ -74,6 +85,7 @@ typedef struct 			s_des
 	uint64_t			(*des_mode[2])(uint64_t plain, struct s_des *des);
 	uint8_t				opts;
 	int 				fd[2];
+	t_base64			*base64;
 }						t_des;
 
 typedef struct 			s_des_opts
@@ -98,20 +110,11 @@ typedef struct			s_ssl_command
 	const char			*available_opts;
 	uint32_t			opts;
 	t_msg				*msg;
+	// t_base64			*base64;
 	t_des				*des;
 	uint64_t			(*des_mode[2])(uint64_t plain, struct s_des *des);
 }						t_ssl_command;
 
-typedef struct 			s_base64
-{
-	char				*input_file;
-	char				*output_file;
-	uint8_t				encoded[4];
-	unsigned char		decoded[3];
-	void				(*data[2])(struct s_base64 *base, unsigned char b[]);
-	unsigned char		buffer[BUF_SIZE + 1];
-	int 				fd[2];
-}						t_base64;
 
 typedef struct			s_ctx
 {
@@ -155,8 +158,11 @@ uint32_t				rotright(uint32_t x, uint32_t n);
 
 // void		encode_data(t_base64 *base, unsigned char b[]);
 // void		decode_data(t_base64 *base, unsigned char b[]);
-void					encode_data2(t_base64 *base);
+// void					encode_data2(t_base64 *base);
 void					init_processing(t_base64 *base);
+void					base64_encode(unsigned char in[], int ret, int fd);
+void					init_b64(t_des *des, t_base64 *base);
+
 
 /*
 ** DES
@@ -175,6 +181,7 @@ void					set_nopad(char **argv, t_des *des, int *index);
 void					set_decrypt_mode(char **argv, t_des *des, int *index);
 void					set_encrypt_mode(char **argv, t_des *des, int *index);
 void					set_cap_p(char **argv, t_des *des, int *index);
+void					set_base64(char **argv, t_des *des, int *index);
 
 
 

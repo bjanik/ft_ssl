@@ -23,9 +23,18 @@ const t_des_opts	g_des_opts[] =
 	{"-nopad", set_nopad},
 	{"-P", set_cap_p},
 	{"-p", set_password},
+	{"-a", set_base64},
 	{NULL, NULL}
 };
-	// {"-a", set_b64},
+
+void		set_base64(char **argv, t_des *des, int *index)
+{
+	(void)argv;
+	(void)index;
+	des->opts |= DES_OPT_A;
+	if (!(des->base64 = ft_memalloc(sizeof(t_base64))))
+		ft_error_msg("Malloc failed");
+}
 
 void		set_subkeys(char **argv, t_des *des, int *index)
 {
@@ -151,6 +160,10 @@ int			des_opts(char **argv, t_des *des)
 	if ((ft_strcmp(des->name, "des-ecb") && ft_strcmp(des->name, "des3-ecb"))
 			&& (des->opts & DES_OPT_K) && !(des->opts & DES_OPT_V))
 		ft_error_msg("ft_ssl: initialization vector undefined");
+	if (des->opts & DES_OPT_A)
+	{
+		init_b64(des, des->base64);
+	}
 	if (des->opts & DES_OPT_D)
 	{
 		swap_keys(des->keys[0]);

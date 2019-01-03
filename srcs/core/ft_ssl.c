@@ -26,7 +26,7 @@ t_ssl_command		g_commands[] = {
 	{"des3-cbc", NULL, DES_OPTS, 0, NULL, NULL, {des3_cbc_e, des3_cbc_d}},
 	{"des3-ecb", NULL, DES_OPTS, 0, NULL, NULL, {des3_ecb, des3_ecb}},
 	{"des3-pcbc", NULL, DES_OPTS, 0, NULL, NULL, {des3_pcbc_e, des3_pcbc_d}},
-	// {"base64", base64, BASE64_OPTS, 0, NULL},
+	// {"base64", NULL, BASE64_OPTS, 0, NULL, NULL, {NULL, NULL}},
 	{NULL, NULL, NULL, 0, NULL, NULL, {NULL, NULL}},
 };
 

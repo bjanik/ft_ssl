@@ -30,4 +30,11 @@ void			init_base64(t_base64 *base)
 			ft_putstr_fd("ft_ssl: ", STDERR_FILENO);
 			perror(base->input_file);
 		}
+	ft_memset(base->buffer, 0, BUF_SIZE + 1);
+}
+
+void		init_b64(t_des *des, t_base64 *base)
+{
+	base->fd[IN] = des->fd[IN];
+	base->fd[OUT] = des->fd[OUT];
 }
