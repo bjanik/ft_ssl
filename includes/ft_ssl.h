@@ -161,6 +161,7 @@ uint32_t				rotright(uint32_t x, uint32_t n);
 // void					encode_data2(t_base64 *base);
 void					init_processing(t_base64 *base);
 void					base64_encode(unsigned char in[], int ret, int fd);
+void					base64_decode(unsigned char in[], int ret, int fd);
 void					init_b64(t_des *des, t_base64 *base);
 
 

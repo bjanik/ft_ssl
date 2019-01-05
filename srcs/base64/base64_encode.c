@@ -43,6 +43,8 @@ void	encode(unsigned char in[], unsigned char out[], int diff)
 	uint8_t	data[4];
 	uint8_t i;
 
+	if (diff < 3)
+		ft_memset(in + diff, 0, 3 - diff);
 	data[0] = (in[0] >> 2) & 0xFF;
 	data[1] = ((in[0] & 0x03) << 4) | ((in[1] >> 4) & 0xFF);
 	data[2] = ((in[1] & 0x0F) << 2) | ((in[2] >> 6) & 0xFF);
@@ -71,7 +73,6 @@ void	base64_encode(unsigned char in[], int ret, int fd)
 		ret = BUF_SIZE;
 	while (offset < ret)
 	{
-		// printf("ENCODE\n");
 		encode(in + offset, out + out_len, ret - offset);
 		offset += 3;
 		out_len += 4;
@@ -82,7 +83,6 @@ void	base64_encode(unsigned char in[], int ret, int fd)
 			out_len = 0;
 		}
 	}
-	// printf("\noffset = %d\nret = %d\n", offset, ret);
 	write(fd, out, out_len);
 }
 

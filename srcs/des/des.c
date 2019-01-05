@@ -80,8 +80,10 @@ void	des_message_dec(t_des *des)
 	int 			offset;
 
 	offset = 0;
-	while ((ret = read(des->fd[IN], des->input, BUF_SIZE)) > 0)
+	while ((ret = read(des->fd[IN], des->input, BUF_SIZE * 4 / 3)) > 0)
 	{
+		if (des->opts & DES_OPT_A)
+			base64_decode(des->input, ret, des->fd[OUT]);
 		offset = 0;
 		(ret % DES_BLOCK_SIZE) ? ft_error_msg("ft_ssl: bad block lenght") : 0;
 		while (offset < ret)
@@ -89,7 +91,7 @@ void	des_message_dec(t_des *des)
 			des_get_cipher(des, offset);
 			offset += DES_BLOCK_SIZE;
 		}
-		if (ret < BUF_SIZE)
+		if (ret < 4080)
 			write(des->fd[OUT], des->input, ret - des->input[ret - 1]);
 		else
 			write(des->fd[OUT], des->input, offset);
@@ -108,11 +110,10 @@ void	des_message(t_des *des)
 	while ((ret = read(des->fd[IN], des->input, BUF_SIZE)) > 0)
 	{
 		p_ret = ret;
-		// printf("\nret = %d\n", ret);
 		offset = 0;
 		if (!(des->opts & DES_NOPAD) && ret < BUF_SIZE)
 			ft_memset(des->input + ret, 8 - ret % 8, 8 - ret % 8);
-		(ret < BUF_SIZE) ? ret += 8 - ret % 8: 0;
+		(ret < BUF_SIZE) ? ret += 8 - ret % 8 : 0;
 		while (offset < ret)
 		{
 			des_get_cipher(des, offset);
@@ -122,15 +123,12 @@ void	des_message(t_des *des)
 			 write(des->fd[OUT], des->input, offset); // Pass buffer to base64 func if -a option is set
 	}
 	(ret < 0) ? ft_error_msg("ft_ssl: Read error") : 0;
-	// printf("\np_ret = %d\nret = %d\n", p_ret, ret);
 	if (!(p_ret % DES_BLOCK_SIZE) && p_ret == BUF_SIZE && !(des->opts & DES_NOPAD))
 	{
-		// printf("\nAFTER LOOP\n");
 		ft_memset(des->input + ret, 8 - ret, 8 - ret);
 		des_get_cipher(des, 0);
 		des->opts & DES_OPT_A ? base64_encode(des->input, 8, des->fd[OUT]) :
 			write(des->fd[OUT], des->input, DES_BLOCK_SIZE);
-		// des->opts & DES_OPT_A ? base64_encode(des->input, ret, des->fd[OUT]) :
-		// 	 write(des->fd[OUT], des->input, 12);
 	}
+	des->opts & DES_OPT_A ? ft_putchar_fd('\n', des->fd[OUT]) : 0;
 }
