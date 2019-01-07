@@ -64,11 +64,11 @@ void	base64_encode(unsigned char in[], int ret, int fd)
 {
 	int				offset;
 	int				out_len;
-	unsigned char 	out[BUF_SIZE * 2 + 1];
+	unsigned char 	out[BUF_SIZE + 1];
 
 	offset = 0;
 	out_len = 0;
-	ft_memset(out, 0x0, BUF_SIZE * 2 + 1);
+	ft_memset(out, 0x0, BUF_SIZE + 1);
 	if (ret > BUF_SIZE)
 		ret = BUF_SIZE;
 	while (offset < ret)
@@ -79,7 +79,7 @@ void	base64_encode(unsigned char in[], int ret, int fd)
 		if (out_len == BUF_SIZE)
 		{
 			write(fd, out, BUF_SIZE);
-			memset(out, 0x0, BUF_SIZE * 2);
+			ft_memset(out, 0x0, BUF_SIZE + 1);
 			out_len = 0;
 		}
 	}

@@ -51,7 +51,7 @@
 # define MAX_KEY_LEN 16
 
 # define END_OF_OPT "--"
-# define BUF_SIZE 4080
+# define BUF_SIZE 5440
 # define BLOCK_SIZE 64
 # define DES_BLOCK_SIZE 8
 
@@ -161,7 +161,10 @@ uint32_t				rotright(uint32_t x, uint32_t n);
 // void					encode_data2(t_base64 *base);
 void					init_processing(t_base64 *base);
 void					base64_encode(unsigned char in[], int ret, int fd);
-void					base64_decode(unsigned char in[], int ret, int fd);
+int 					base64_decode(unsigned char in[],
+									  int ret,
+									  int fd,
+									  uint8_t DES);
 void					init_b64(t_des *des, t_base64 *base);
 
 
