@@ -15,13 +15,12 @@
 #define ENCODE 0
 #define DECODE 1
 
-static void		translate(unsigned char in[])
+static int		translate(unsigned char in[])
 {
-	size_t 	i;
+	int 	i;
 
-	i = 0;
-	// printf("\nlen = %zu\n", len);
-	while (i < 4)
+	i = -1;
+	while (++i < 4)
 	{
 		if (in[i] >= 65 && in[i] <= 90)
 			in[i] -= 65;
@@ -33,28 +32,24 @@ static void		translate(unsigned char in[])
 			in[i] = 62;
 		else if (in[i] == '/')
 			in[i] = 63;		
-		else if (in[i] != '=')
-		{
-			printf("invalid is: %c\n", in[i]);
+		else if (in[i] != '=' || (in[i] == '=' && i < 2))
 			ft_error_msg("Invalid character in input stream");
-		}
-		i++;
+		else
+			return (5 - i);
 	}
+	return (3);
 }
 
-static void 	decode(unsigned char in[], unsigned char out[])
+static int 	decode(unsigned char in[], unsigned char out[])
 {
-	// uint8_t		data[3];
+	int 	ret;
 	
 	// (void)out;
-	translate(in);
+	ret = translate(in);
 	out[0] = (in[0] << 2) | ((in[1] & 0x30) >> 4);
-	// data[0] = (in[0] << 2) | ((in[1] & 0x30) >> 4);
 	out[1] = ((in[1] & 0x0F) << 4) | ((in[2] & 0x3C) >> 2);
-	// data[1] = ((in[1] & 0x0F) << 4) | ((in[2] & 0x3C) >> 2);
 	out[2] = ((in[2] & 0x03) << 6) | in[3];
-	// data[2] = ((in[2] & 0x03) << 6) | in[3];
-	// write(1, out, 3);
+	return (ret);
 }
 
 int			base64_decode(unsigned char in[], int ret, int fd, uint8_t des)
@@ -62,29 +57,28 @@ int			base64_decode(unsigned char in[], int ret, int fd, uint8_t des)
 	int				offset;
 	int				out_len;
 	unsigned char 	out[BUF_SIZE + 1];
+	int 			len;
 
 	(ret % 4 != 0) ? ft_error_msg("ft_ssl: bad block length") : 0;
 	offset = 0;
 	out_len = 0;
 	ft_memset(out, 0x0, BUF_SIZE + 1);
+	len = 0;
 	while (offset < ret)
 	{
-		decode(in + offset, out + out_len);
-		des ? ft_memcpy(in + offset , out + out_len, 3) : 0;
+		len += decode(in + offset, out + out_len);
 		out_len += 3;
 		offset += 4;
-		if (out_len == BUF_SIZE && !des)
+		if (len == BUF_SIZE && !des)
 		{
 			write(fd, out, BUF_SIZE);
 			ft_memset(out, 0x0, BUF_SIZE);
 			out_len = 0;
 		}
 	}
-	if (des)
-		ft_memcpy(in, out, out_len);
-	else
-		write(fd, out, out_len);
-	return (out_len);
+	(des == 1) ? (void)ft_memcpy(in, out, len) :
+				 (void)write(fd, out, len);
+	return (len);
 }
 
 // void			decode_data2(t_base64 *base)

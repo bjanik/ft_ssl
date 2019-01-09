@@ -51,7 +51,8 @@
 # define MAX_KEY_LEN 16
 
 # define END_OF_OPT "--"
-# define BUF_SIZE 5440
+# define BUF_SIZE 4080
+# define BASE64_BUF_SIZE 5440
 # define BLOCK_SIZE 64
 # define DES_BLOCK_SIZE 8
 

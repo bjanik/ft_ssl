@@ -42,6 +42,8 @@ unsigned char	*pbkdf(char *password, char *salt)
 	t_msg				msg;
 	t_ctx				ctx;
 
+	if (!password)
+		return (NULL);
 	if (!(ps = ft_memalloc(ft_strlen(password) + 9)))
 		return (NULL);
 	ft_memcpy(ps, password, ft_strlen(password));
