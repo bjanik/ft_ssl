@@ -69,10 +69,11 @@ typedef struct 			s_base64
 {
 	char				*input_file;
 	char				*output_file;
+	uint8_t				opts;
 	// uint8_t				encoded[4];
 	// unsigned char		decoded[3];
 	// void				(*data[2])(struct s_base64 *base, unsigned char b[]);
-	unsigned char		buffer[BUF_SIZE + 1];
+	unsigned char		buffer[BASE64_BUF_SIZE + 1];
 	int 				fd[2];
 }						t_base64;
 
@@ -80,7 +81,7 @@ typedef struct 			s_des
 {
 	char				*name;
 	char				*password;
-	unsigned char		input[BUF_SIZE + 1];
+	unsigned char		input[BASE64_BUF_SIZE + 1];
 	uint64_t			keys[3][DES_ROUNDS];
 	uint64_t			init_vector;
 	uint64_t			(*des_mode[2])(uint64_t plain, struct s_des *des);
@@ -111,7 +112,7 @@ typedef struct			s_ssl_command
 	const char			*available_opts;
 	uint32_t			opts;
 	t_msg				*msg;
-	// t_base64			*base64;
+	t_base64			*base64;
 	t_des				*des;
 	uint64_t			(*des_mode[2])(uint64_t plain, struct s_des *des);
 }						t_ssl_command;
@@ -157,9 +158,6 @@ int						commands_usage(char *command);
 uint32_t				rotleft(uint32_t x, uint32_t n);
 uint32_t				rotright(uint32_t x, uint32_t n);
 
-// void		encode_data(t_base64 *base, unsigned char b[]);
-// void		decode_data(t_base64 *base, unsigned char b[]);
-// void					encode_data2(t_base64 *base);
 void					init_processing(t_base64 *base);
 void					base64_encode(unsigned char in[], int ret, int fd);
 int 					base64_decode(unsigned char in[],
@@ -210,7 +208,8 @@ void					swap_keys(uint64_t keys[]);
 uint32_t				s_box_substitutions(uint64_t x_block);
 
 void					des_message(t_des *des);
-void					des_message_dec(t_des *des);
+void					des_message_decode(t_des *des);
+void					des_get_cipher(t_des *des, int offset);
 uint64_t				des_ecb_e_d(uint64_t plain, t_des *des);
 uint64_t				des_cbc_e(uint64_t plain, t_des *des);
 uint64_t				des_cbc_d(uint64_t plain, t_des *des);
@@ -222,7 +221,9 @@ uint64_t				des_pcbc_d(uint64_t plain, t_des *des);
 
 uint64_t				des3_bc_e(uint64_t plain, t_des *des);
 uint64_t				des3_bc_d(uint64_t plain, t_des *des);
-uint64_t				des3_ecb(uint64_t plain, t_des *des);
+uint64_t				des3_ecb_e(uint64_t plain, t_des *des);
+uint64_t				des3_ecb_d(uint64_t cipher, t_des *des);
+
 uint64_t				des3_cbc_e(uint64_t plain, t_des *des);
 uint64_t				des3_cbc_d(uint64_t plain, t_des *des);
 uint64_t				des3_pcbc_e(uint64_t plain, t_des *des);

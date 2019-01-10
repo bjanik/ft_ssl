@@ -34,8 +34,8 @@ static int		translate(unsigned char in[])
 			in[i] = 63;		
 		else if (in[i] != '=' || (in[i] == '=' && i < 2))
 			ft_error_msg("Invalid character in input stream");
-		else
-			return (5 - i);
+		else if (in[i] == '=')
+			return (i - 1);
 	}
 	return (3);
 }
@@ -44,7 +44,6 @@ static int 	decode(unsigned char in[], unsigned char out[])
 {
 	int 	ret;
 	
-	// (void)out;
 	ret = translate(in);
 	out[0] = (in[0] << 2) | ((in[1] & 0x30) >> 4);
 	out[1] = ((in[1] & 0x0F) << 4) | ((in[2] & 0x3C) >> 2);

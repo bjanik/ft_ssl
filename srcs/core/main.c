@@ -77,7 +77,7 @@ static int 		data_encryption_standard(char **argv, t_ssl_command *cmd)
 	if (!(cmd->des->opts & DES_OPT_K))
 		generate_keys_vector(cmd->des);
 	if (cmd->des->opts & DES_OPT_D)
-		des_message_dec(cmd->des);
+		des_message_decode(cmd->des);
 	else
 		des_message(cmd->des);
 	ft_strdel(&cmd->des->password);
@@ -95,7 +95,9 @@ int				main(int argc, char **argv)
 		return (commands_usage(argv[1]));
 	if (command->hash_func)
 		return (hash_algo(argv, command));
-	else
+	else if (command->des)
 		return (data_encryption_standard(argv, command));
+	else
+		return (base64());
 	return (0);
 }

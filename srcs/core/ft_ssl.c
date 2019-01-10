@@ -13,21 +13,21 @@
 #include "ft_ssl.h"
 
 t_ssl_command		g_commands[] = {
-	{"md5", md5, HASH_CMD_OPTS, 0, NULL, NULL, {NULL, NULL}},
-	{"sha256", sha256, HASH_CMD_OPTS, 0, NULL, NULL, {NULL, NULL}},
-	{"sha1", sha1, HASH_CMD_OPTS, 0, NULL, NULL, {NULL, NULL}},
-	{"des", NULL, DES_OPTS, 0, NULL, NULL, {des_cbc_e, des_cbc_d}},
-	{"des-bc", NULL, DES_OPTS, 0, NULL, NULL, {des_bc_e, des_bc_d}},
-	{"des-cbc", NULL, DES_OPTS, 0, NULL, NULL, {des_cbc_e, des_cbc_d}},
-	{"des-ecb", NULL, DES_OPTS, 0, NULL, NULL, {des_ecb_e_d, des_ecb_e_d}},
-	{"des-pcbc", NULL, DES_OPTS, 0, NULL, NULL, {des_pcbc_e, des_pcbc_d}},
-	{"des3", NULL, DES_OPTS, 0, NULL, NULL, {des3_cbc_e, des3_cbc_d}},
-	{"des3-bc", NULL, DES_OPTS, 0, NULL, NULL, {des3_bc_e, des3_bc_d}},
-	{"des3-cbc", NULL, DES_OPTS, 0, NULL, NULL, {des3_cbc_e, des3_cbc_d}},
-	{"des3-ecb", NULL, DES_OPTS, 0, NULL, NULL, {des3_ecb, des3_ecb}},
-	{"des3-pcbc", NULL, DES_OPTS, 0, NULL, NULL, {des3_pcbc_e, des3_pcbc_d}},
-	// {"base64", NULL, BASE64_OPTS, 0, NULL, NULL, {NULL, NULL}},
-	{NULL, NULL, NULL, 0, NULL, NULL, {NULL, NULL}},
+	{"md5", md5, HASH_CMD_OPTS, 0, NULL, NULL, NULL, {NULL, NULL}},
+	{"sha256", sha256, HASH_CMD_OPTS, 0, NULL, NULL, NULL, {NULL, NULL}},
+	{"sha1", sha1, HASH_CMD_OPTS, 0, NULL, NULL, NULL, {NULL, NULL}},
+	{"base64", 0, BASE64_OPTS, 0, NULL, NULL, NULL, {NULL, NULL}},
+	{"des", 0, DES_OPTS, 0, NULL, NULL, NULL, {des_cbc_e, des_cbc_d}},
+	{"des-bc", 0, DES_OPTS, 0, NULL, NULL, NULL, {des_bc_e, des_bc_d}},
+	{"des-cbc", 0, DES_OPTS, 0, NULL, NULL, NULL, {des_cbc_e, des_cbc_d}},
+	{"des-ecb", 0, DES_OPTS, 0, NULL, NULL, NULL, {des_ecb_e_d, des_ecb_e_d}},
+	{"des-pcbc", 0, DES_OPTS, 0, NULL, NULL, NULL, {des_pcbc_e, des_pcbc_d}},
+	{"des3", 0, DES_OPTS, 0, NULL, NULL, NULL, {des3_cbc_e, des3_cbc_d}},
+	{"des3-bc", 0, DES_OPTS, 0, NULL, NULL, NULL, {des3_bc_e, des3_bc_d}},
+	{"des3-cbc", 0, DES_OPTS, 0, NULL, NULL, NULL, {des3_cbc_e, des3_cbc_d}},
+	{"des3-ecb", 0, DES_OPTS, 0, NULL, NULL, NULL, {des3_ecb_e, des3_ecb_d}},
+	{"des3-pcbc", 0, DES_OPTS, 0, NULL, NULL, NULL, {des3_pcbc_e, des3_pcbc_d}},
+	{NULL, 0, NULL, 0, NULL, NULL, {NULL, NULL}},
 };
 
 t_msg 				*malloc_msg(void)
@@ -62,6 +62,8 @@ t_ssl_command		*get_ssl_command(const char *cmd)
 			if (!g_commands[i].hash_func &&
 					!(g_commands[i].des = init_des(g_commands[i].name,
 												   g_commands[i].des_mode)))
+				return (NULL);
+			else if (!(g_commands[i].base64 = init_base64()))
 				return (NULL);
 			return (&g_commands[i]);
 		}

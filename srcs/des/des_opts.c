@@ -161,9 +161,7 @@ int			des_opts(char **argv, t_des *des)
 			&& (des->opts & DES_OPT_K) && !(des->opts & DES_OPT_V))
 		ft_error_msg("ft_ssl: initialization vector undefined");
 	if (des->opts & DES_OPT_A)
-	{
 		init_b64(des, des->base64);
-	}
 	if (des->opts & DES_OPT_D)
 	{
 		swap_keys(des->keys[0]);

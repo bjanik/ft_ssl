@@ -70,42 +70,6 @@ void	des_get_cipher(t_des *des, int offset)
 	cipher_to_string(cipher, des->input + offset);
 }
 
-void	des_message_dec(t_des *des)
-{
-	int 			ret;
-	uint32_t		n;
-	int 			offset;
-	int 			len;
-
-	offset = 0;
-	n = (des->opts & DES_OPT_A) ? BASE64_BUF_SIZE : BUF_SIZE;
-	while ((ret = read(des->fd[IN], des->input, n)) > 0)
-	{
-		if (des->opts & DES_OPT_A)
-			len = base64_decode(des->input, ret, des->fd[OUT], 1);
-		// write(des->fd[OUT], des->input, ret);
-		offset = 0;
-		// (ret % DES_BLOCK_SIZE) ? ft_error_msg("ft_ssl: bad block lenght") : 0;
-		printf("ret = %d len = %d\n", ret, len);
-		// printf("%d\n", des->input[ret - 1]);
-		// (des->opts & DES_OPT_A) ? ret = (ret / 4) * 3 - ret % 8 : 0;
-		while (offset < len)
-		{
-			des_get_cipher(des, offset);
-			offset += DES_BLOCK_SIZE;
-		}
-		// write(des->fd[OUT], des->input, ret);
-		printf("nb = %d\n", des->input[offset - 1]);
-		// write(des->fd[OUT], des->input, ret - des->input[offset - 1]);
-
-		if (ret < BUF_SIZE)
-			write(des->fd[OUT], des->input, );
-		else
-			write(des->fd[OUT], des->input, offset);
-	}
-	(ret < 0) ? ft_error_msg("ft_ssl: Read error") : 0;
-}
-
 void	des_message(t_des *des)
 {
 	int 			ret;
@@ -129,7 +93,7 @@ void	des_message(t_des *des)
 			 write(des->fd[OUT], des->input, offset);
 	}
 	(ret < 0) ? ft_error_msg("ft_ssl: Read error") : 0;
-	if (!(p_ret % DES_BLOCK_SIZE) && p_ret == BUF_SIZE && !(des->opts & DES_NOPAD))
+	if ((p_ret == BUF_SIZE && !(des->opts & DES_NOPAD)) || !p_ret)
 	{
 		ft_memset(des->input + ret, 8 - ret, 8 - ret);
 		des_get_cipher(des, 0);

@@ -46,9 +46,9 @@ uint64_t	des3_cbc_d(uint64_t cipher, t_des *des)
 {
 	uint64_t	plain;
 
-	plain = des_core(cipher, des->keys[0]) ^ des->init_vector;
+	plain = des_core(cipher, des->keys[2]) ^ des->init_vector;
 	plain = des_core(plain ^ des->init_vector, des->keys[1]);
-	plain = des_core(plain, des->keys[2]) ^ des->init_vector;
+	plain = des_core(plain, des->keys[0]) ^ des->init_vector;
 	des->init_vector = cipher;
 	return (plain);
 }
