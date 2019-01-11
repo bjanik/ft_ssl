@@ -12,6 +12,26 @@
 
 # include "ft_ssl.h"
 
+static void		set_base64_fds(t_base64 *base)
+{
+	if (base->input_file)
+		if ((base->fd[IN] = open(base->input_file, O_RDONLY, 0644)) < 0)
+		{
+			ft_putstr_fd("ft_ssl: ", STDERR_FILENO);
+			ft_memdel((void**)&base);
+			perror(base->input_file);
+		}
+	if (base->output_file)
+		if ((base->fd[OUT] = open(base->output_file, O_WRONLY |
+													O_CREAT |
+													O_TRUNC, 0644)) < 0)
+		{
+			ft_putstr_fd("ft_ssl: ", STDERR_FILENO);
+			ft_memdel((void**)&base);
+			perror(base->input_file);
+		}
+}
+
 void			base64_opts(char **argv, t_base64 *base)
 {
 	int i;
@@ -37,51 +57,20 @@ void			base64_opts(char **argv, t_base64 *base)
 }
 
 
-static void		set_base64_fds(t_base64 *base)
-{
-	if (base->input_file)
-		if ((base->fd[IN] = open(base->input_file, O_RDONLY, 0644)) < 0)
-		{
-			ft_putstr_fd("ft_ssl: ", STDERR_FILENO);
-			ft_memdel((void**)&base);
-			perror(base->input_file);
-		}
-	if (base->output_file)
-		if ((base->fd[OUT] = open(base->output_file, O_WRONLY |
-													O_CREAT |
-													O_TRUNC, 0644)) < 0)
-		{
-			ft_putstr_fd("ft_ssl: ", STDERR_FILENO);
-			ft_memdel((void**)&base);
-			perror(base->input_file);
-		}	
-}
-
 t_base64		*init_base64(void)
 {
 	t_base64	*base;
 
 	if (!(base = (t_base64*)malloc(sizeof(t_base64))))
 		return (NULL);
+	base->opts = 0;
 	base->fd[IN] = STDIN_FILENO;
 	base->fd[OUT] = STDOUT_FILENO;
-	ft_memset(base->buffer, 0, BUF_SIZE + 1);
+	ft_memset(base->buffer, 0, BASE64_BUF_SIZE + 1);
+	ft_memset(base->encoded, 0, 4);
+	ft_memset(base->decoded, 0, 3);
 	base->input_file = NULL;
 	base->output_file = NULL;
-	if (base->input_file)
-		if ((base->fd[IN] = open(base->input_file, O_RDONLY, 0644)) < 0)
-		{
-			ft_putstr_fd("ft_ssl: ", STDERR_FILENO);
-			perror(base->input_file);
-		}
-	if (base->output_file)
-		if ((base->fd[OUT] = open(base->output_file, O_WRONLY |
-													O_CREAT |
-													O_TRUNC, 0644)) < 0)
-		{
-			ft_putstr_fd("ft_ssl: ", STDERR_FILENO);
-			perror(base->input_file);
-		}
 	return (base);
 }
 

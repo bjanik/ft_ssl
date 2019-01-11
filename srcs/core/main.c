@@ -98,6 +98,6 @@ int				main(int argc, char **argv)
 	else if (command->des)
 		return (data_encryption_standard(argv, command));
 	else
-		return (base64());
+		return (base64_core(argv, command->base64));
 	return (0);
 }

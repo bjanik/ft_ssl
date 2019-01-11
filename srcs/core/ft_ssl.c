@@ -27,7 +27,7 @@ t_ssl_command		g_commands[] = {
 	{"des3-cbc", 0, DES_OPTS, 0, NULL, NULL, NULL, {des3_cbc_e, des3_cbc_d}},
 	{"des3-ecb", 0, DES_OPTS, 0, NULL, NULL, NULL, {des3_ecb_e, des3_ecb_d}},
 	{"des3-pcbc", 0, DES_OPTS, 0, NULL, NULL, NULL, {des3_pcbc_e, des3_pcbc_d}},
-	{NULL, 0, NULL, 0, NULL, NULL, {NULL, NULL}},
+	{NULL, 0, NULL, 0, NULL, NULL, NULL, {NULL, NULL}},
 };
 
 t_msg 				*malloc_msg(void)
@@ -56,14 +56,15 @@ t_ssl_command		*get_ssl_command(const char *cmd)
 	{
 		if (!ft_strcmp(g_commands[i].name, cmd))
 		{
-			if (g_commands[i].hash_func &&
+			if (!ft_strcmp(g_commands[i].available_opts, BASE64_OPTS) &&
+					!(g_commands[i].base64 = init_base64()))
+				return (NULL);
+			else if (g_commands[i].hash_func &&
 					!(g_commands[i].msg = malloc_msg()))
 				return (NULL);
-			if (!g_commands[i].hash_func &&
+			else if (!g_commands[i].hash_func && !g_commands[i].base64 &&
 					!(g_commands[i].des = init_des(g_commands[i].name,
 												   g_commands[i].des_mode)))
-				return (NULL);
-			else if (!(g_commands[i].base64 = init_base64()))
 				return (NULL);
 			return (&g_commands[i]);
 		}

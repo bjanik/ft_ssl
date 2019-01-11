@@ -35,8 +35,6 @@
 # define BASE64_OPTS "edio"
 # define B_OPT_D 1
 # define B_OPT_E 2
-# define B_OPT_I 4
-# define B_OPT_O 8
 
 # define DES_ROUNDS 16
 # define DES_OPTS "adeikopsv"
@@ -46,13 +44,13 @@
 # define DES_OPT_V 8
 # define DES_OPT_K 16
 # define DES_OPT_P 32
-# define DES_OPT_CAP_P 64 
+# define DES_OPT_CAP_P 64
 
 # define MAX_KEY_LEN 16
 
 # define END_OF_OPT "--"
-# define BUF_SIZE 4080
-# define BASE64_BUF_SIZE 5440
+# define BUF_SIZE 48
+# define BASE64_BUF_SIZE 64
 # define BLOCK_SIZE 64
 # define DES_BLOCK_SIZE 8
 
@@ -70,8 +68,8 @@ typedef struct 			s_base64
 	char				*input_file;
 	char				*output_file;
 	uint8_t				opts;
-	// uint8_t				encoded[4];
-	// unsigned char		decoded[3];
+	uint8_t				encoded[4];
+	unsigned char		decoded[3];
 	// void				(*data[2])(struct s_base64 *base, unsigned char b[]);
 	unsigned char		buffer[BASE64_BUF_SIZE + 1];
 	int 				fd[2];
@@ -158,13 +156,22 @@ int						commands_usage(char *command);
 uint32_t				rotleft(uint32_t x, uint32_t n);
 uint32_t				rotright(uint32_t x, uint32_t n);
 
+/*
+** BASE64
+*/
+
 void					init_processing(t_base64 *base);
+t_base64				*init_base64(void);
+int						base64_core(char **argv, t_base64 *base);
 void					base64_encode(unsigned char in[], int ret, int fd);
 int 					base64_decode(unsigned char in[],
 									  int ret,
 									  int fd,
 									  uint8_t DES);
+int 					decode(unsigned char in[], unsigned char out[], size_t len);
+
 void					init_b64(t_des *des, t_base64 *base);
+void					base64_opts(char **argv, t_base64 *base);
 
 
 /*
