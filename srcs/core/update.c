@@ -48,7 +48,7 @@ static int			read_from_fd(t_msg *msg, t_ctx *ctx, uint32_t opts)
 	buflen = 0;
 	while ((ret = read(msg->fd, ctx->block + ctx->len, BLOCK_SIZE)) > 0)
 	{
-		ctx->len = ret;
+		ctx->len += ret;
 		if (!msg->fd && !msg->input_file)
 		{
 			ft_memcpy(msg->buf + buflen, ctx->block, ret);

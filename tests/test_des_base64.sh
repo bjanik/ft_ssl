@@ -89,7 +89,7 @@
 # echo ----------------------------------
 set -e
 i=0
-while [ "$i" -lt 100 ]
+while [ "$i" -lt 1 ]
 do
 	cat /dev/random | head -c 7889 > rand
 	./ft_ssl des -i rand -k 770000DD8855 -v ECDC55F5AE88 -a -o b64_rand

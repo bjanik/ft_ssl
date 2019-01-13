@@ -34,7 +34,6 @@ int	commands_usage(char *command)
 			ft_putendl_fd(g_commands[i].name, STDERR_FILENO) : 0;
 	ft_putchar_fd('\n', STDERR_FILENO);
 	ft_putendl_fd("Cipher commands:", STDERR_FILENO);
-	ft_putchar_fd('\n', STDERR_FILENO);
 	i = -1;
 	while (g_commands[++i].name)
 		(!g_commands[i].hash_func) ? 

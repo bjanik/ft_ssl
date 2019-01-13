@@ -49,8 +49,8 @@
 # define MAX_KEY_LEN 16
 
 # define END_OF_OPT "--"
-# define BUF_SIZE 48
-# define BASE64_BUF_SIZE 64
+# define BUF_SIZE 4080
+# define BASE64_BUF_SIZE 5440
 # define BLOCK_SIZE 64
 # define DES_BLOCK_SIZE 8
 
@@ -59,7 +59,6 @@
 # define SHA256_DIGEST_LEN 32
 # define MAX_CMD_NAME_LEN 6
 
-# define QUANTUM_SIZE 3
 # define IN 0
 # define OUT 1
 
@@ -70,7 +69,6 @@ typedef struct 			s_base64
 	uint8_t				opts;
 	uint8_t				encoded[4];
 	unsigned char		decoded[3];
-	// void				(*data[2])(struct s_base64 *base, unsigned char b[]);
 	unsigned char		buffer[BASE64_BUF_SIZE + 1];
 	int 				fd[2];
 }						t_base64;
@@ -79,7 +77,7 @@ typedef struct 			s_des
 {
 	char				*name;
 	char				*password;
-	unsigned char		input[BASE64_BUF_SIZE + 1];
+	unsigned char		in[BASE64_BUF_SIZE + 1];
 	uint64_t			keys[3][DES_ROUNDS];
 	uint64_t			init_vector;
 	uint64_t			(*des_mode[2])(uint64_t plain, struct s_des *des);
@@ -114,7 +112,6 @@ typedef struct			s_ssl_command
 	t_des				*des;
 	uint64_t			(*des_mode[2])(uint64_t plain, struct s_des *des);
 }						t_ssl_command;
-
 
 typedef struct			s_ctx
 {
@@ -194,8 +191,6 @@ void					set_cap_p(char **argv, t_des *des, int *index);
 void					set_base64(char **argv, t_des *des, int *index);
 
 
-
-// void					set_in_out_files(t_des *des);
 void					get_hex_from_str(char *str_key, uint64_t *key);
 uint64_t				convert_input_to_block(unsigned char input[]);
 uint64_t				des_core(uint64_t block, uint64_t sub_keys[]);
@@ -216,7 +211,7 @@ uint32_t				s_box_substitutions(uint64_t x_block);
 
 void					des_message(t_des *des);
 void					des_message_decode(t_des *des);
-void					des_get_cipher(t_des *des, int offset);
+void					des_get_cipher(t_des *des, int offset, unsigned char buf[]);
 uint64_t				des_ecb_e_d(uint64_t plain, t_des *des);
 uint64_t				des_cbc_e(uint64_t plain, t_des *des);
 uint64_t				des_cbc_d(uint64_t plain, t_des *des);

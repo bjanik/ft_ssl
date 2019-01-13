@@ -23,7 +23,7 @@ static void			decode_data(t_base64 *base)
 	i = 0;
 	while ((ret = read(base->fd[IN], &c, 1)) > 0)
 	{
-		if (c == '\n' || c == '=')
+		if (c == '\n' || c == '=' || c == ' ')
 			continue ;
 		base->encoded[len++] = c;
 		if (len == 4)
@@ -52,7 +52,9 @@ int		base64_core(char **argv, t_base64 *base)
 	{
 
 		while ((ret = read(base->fd[IN], base->buffer, BUF_SIZE)) > 0)
+		{	
 			base64_encode(base->buffer, ret, base->fd[OUT]);
+		}
 		(ret < 0) ? ft_error_msg("ft_ssl: Read error") : 0;
 		ft_putchar_fd('\n', base->fd[OUT]);
 	}
