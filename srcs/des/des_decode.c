@@ -49,7 +49,7 @@ static void	des_message_decode_reg(t_des *des)
 		// else
 		// 	write(des->fd[OUT], des->in, offset);
 	}
-	des_final(des, 0, len, buf);
+	// des_final(des, 0, len, buf);
 	(ret < 0) ? ft_error_msg("ft_ssl: Read error") : 0;
 }
 

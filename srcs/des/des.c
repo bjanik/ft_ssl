@@ -78,9 +78,8 @@ void			des_get_cipher(t_des *des, int len, unsigned char buf[])
 			 write(des->fd[OUT], buf, len);
 }
 
-static void		des_final(t_des *des, int p_ret, int len, unsigned char buf[])
+static void		des_final(t_des *des, int len, unsigned char buf[])
 {
-	p_ret = 0;
 	if (!(des->opts & DES_NOPAD) || !len)
 	{
 		ft_memset(buf + len, 8 - len % 8, 8 - len % 8);
@@ -91,11 +90,9 @@ static void		des_final(t_des *des, int p_ret, int len, unsigned char buf[])
 void	des_message(t_des *des)
 {
 	int 			ret;
-	int 			p_ret;
 	int 			len;
 	unsigned char	buf[BASE64_BUF_SIZE + 1];
 
-	p_ret = 0;
 	len = 0;
 	while ((ret = read(des->fd[IN], des->in + len, BUF_SIZE)) > 0)
 	{
@@ -113,10 +110,8 @@ void	des_message(t_des *des)
 			else
 				len = 0;
 		}
-		p_ret = ret;
 	}
-	// ft_printf("Length = %d\n", len);
 	(ret < 0) ? ft_error_msg("ft_ssl: Read error") : 0;
-	des_final(des, p_ret, len, buf);
+	des_final(des, len, buf);
 	// des->opts & DES_OPT_A ? ft_putchar_fd('\n', des->fd[OUT]) : 0;
 }

@@ -14,7 +14,7 @@
 
 int	usage(void)
 {
-	write(STDERR_FILENO, FT_SSL_USAGE, strlen(FT_SSL_USAGE));
+	write(STDERR_FILENO, FT_SSL_USAGE, ft_strlen(FT_SSL_USAGE));
 	return (1);
 }
 

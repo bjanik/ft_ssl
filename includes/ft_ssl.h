@@ -77,6 +77,7 @@ typedef struct 			s_des
 {
 	char				*name;
 	char				*password;
+	char				*salt;
 	unsigned char		in[BASE64_BUF_SIZE + 1];
 	uint64_t			keys[3][DES_ROUNDS];
 	uint64_t			init_vector;
@@ -189,6 +190,8 @@ void					set_decrypt_mode(char **argv, t_des *des, int *index);
 void					set_encrypt_mode(char **argv, t_des *des, int *index);
 void					set_cap_p(char **argv, t_des *des, int *index);
 void					set_base64(char **argv, t_des *des, int *index);
+void					set_salt(char *argv, t_des *des, int *index);
+
 
 
 void					get_hex_from_str(char *str_key, uint64_t *key);
