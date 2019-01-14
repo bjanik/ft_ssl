@@ -43,18 +43,30 @@ static void			decode_data(t_base64 *base)
 
 int		base64_core(char **argv, t_base64 *base)
 {
-	int	ret;
+	int				ret;
+	int				len;
+	unsigned char 	buf[BASE64_BUF_SIZE + 1];
 
 	base64_opts(argv, base);
 	if (base->opts & B_OPT_D)
 		decode_data(base);
 	else
 	{
-
+		len = 0;
 		while ((ret = read(base->fd[IN], base->buffer, BUF_SIZE)) > 0)
-		{	
-			base64_encode(base->buffer, ret, base->fd[OUT]);
+		{
+			!(len + ret <= BUF_SIZE) ? ft_memcpy(buf + len, base->buffer, ret) :
+						ft_memcpy(buf + len, base->buffer, BUF_SIZE - len);
+			len += ret;
+			if (len >= BUF_SIZE)
+			{
+				base64_encode(base->buffer, len, base->fd[OUT]);
+				if (len > BUF_SIZE)
+					ft_memcpy(buf, base->buffer + ret - len + BUF_SIZE, len - BUF_SIZE);
+				len = (len > BUF_SIZE) ? len - BUF_SIZE : 0;
+			}
 		}
+		base64_encode(buf, len, base->fd[OUT]);
 		(ret < 0) ? ft_error_msg("ft_ssl: Read error") : 0;
 		ft_putchar_fd('\n', base->fd[OUT]);
 	}

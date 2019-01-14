@@ -74,8 +74,6 @@ void			des_get_cipher(t_des *des, int len, unsigned char buf[])
 		cipher_to_string(cipher, buf + offset);
 		offset += DES_BLOCK_SIZE;
 	}
-	des->opts & DES_OPT_A ? base64_encode(buf, len, des->fd[OUT]) :
-			 write(des->fd[OUT], buf, len);
 }
 
 static void		des_final(t_des *des, int len, unsigned char buf[])
@@ -84,6 +82,10 @@ static void		des_final(t_des *des, int len, unsigned char buf[])
 	{
 		ft_memset(buf + len, 8 - len % 8, 8 - len % 8);
 		des_get_cipher(des, len + 8 - len % 8, buf);
+		if (des->opts & DES_OPT_A)
+			base64_encode(buf, len + 8 - len % 8, des->fd[OUT]);
+		else
+			write(des->fd[OUT], buf, len + 8 - len % 8);
 	}
 }
 
@@ -94,21 +96,19 @@ void	des_message(t_des *des)
 	unsigned char	buf[BASE64_BUF_SIZE + 1];
 
 	len = 0;
-	while ((ret = read(des->fd[IN], des->in + len, BUF_SIZE)) > 0)
+	while ((ret = read(des->fd[IN], des->in, BUF_SIZE)) > 0)
 	{
-		!(len + ret <= BUF_SIZE) ? ft_memcpy(buf + len, des->in, ret) : 
+		!(len + ret <= BUF_SIZE) ? ft_memcpy(buf + len, des->in, ret) :
 						ft_memcpy(buf + len, des->in, BUF_SIZE - len);
 		len += ret;
 		if (len >= BUF_SIZE)
 		{
 			des_get_cipher(des, BUF_SIZE, buf);
+			!(des->opts & DES_OPT_A) ? write(des->fd[OUT], buf, BUF_SIZE):
+					 base64_encode(buf, BUF_SIZE, des->fd[OUT]);
 			if (len > BUF_SIZE)
-			{
-				ft_memcpy(buf, des->in + ret - len + BUF_SIZE, len - BUF_SIZE);
-				len -= BUF_SIZE;
-			}
-			else
-				len = 0;
+				ft_memcpy(buf, des->in + ret - len + BASE64_BUF_SIZE, len - BASE64_BUF_SIZE);
+			len = (len > BASE64_BUF_SIZE) ? len - BUF_SIZE : 0;
 		}
 	}
 	(ret < 0) ? ft_error_msg("ft_ssl: Read error") : 0;

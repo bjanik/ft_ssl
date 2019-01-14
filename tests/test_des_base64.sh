@@ -87,7 +87,7 @@
 # ./ft_ssl des -i b64_rand -k 770000DD8855 -v ECDC55F5AE88 -a -d -o o_rand
 # diff rand o_rand
 # echo ----------------------------------
-set -e
+
 i=0
 while [ "$i" -lt 1 ]
 do
@@ -97,7 +97,7 @@ do
 	diff b64_rand open_rand
 	i=`expr $i + 1`
 done
-
+echo =======================================================================
 i=0
 while [ "$i" -lt 100 ]
 do

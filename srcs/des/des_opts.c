@@ -24,7 +24,7 @@ const t_des_opts	g_des_opts[] =
 	{"-P", set_cap_p},
 	{"-p", set_password},
 	{"-a", set_base64},
-	{"-s", set_salt},
+	// {"-s", set_salt},
 	{NULL, NULL}
 };
 
@@ -131,12 +131,13 @@ void		set_password(char **argv, t_des *des, int *index)
 		ft_error_msg("ft_ssl: Malloc failed");
 }
 
-void		set_salt(char **argv, t_des *des, int *index)
-{
-	if (!argv[++(*index)])
-		ft_error_msg("ft_ssl: missing argument salt for -s");
-	get_hex_from_str(argv[*index], &des->salt);
-}
+// void		set_salt(char **argv, t_des *des, int *index)
+// {
+// 	if (!argv[++(*index)])
+// 		ft_error_msg("ft_ssl: missing argument salt for -s");
+	
+// 	get_hex_from_str(argv[*index], &des->salt);
+// }
 
 
 inline void	set_cap_p(char **argv, t_des *des, int *index)

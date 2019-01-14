@@ -77,7 +77,7 @@ typedef struct 			s_des
 {
 	char				*name;
 	char				*password;
-	char				*salt;
+	unsigned char		*salt[3];
 	unsigned char		in[BASE64_BUF_SIZE + 1];
 	uint64_t			keys[3][DES_ROUNDS];
 	uint64_t			init_vector;

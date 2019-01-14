@@ -15,7 +15,6 @@
 static void	des_message_decode_reg(t_des *des)
 {
 	int 			ret;
-	// int 			offset;
 	int 			len;
 	unsigned char 	buf[BASE64_BUF_SIZE + 1];
 
@@ -29,27 +28,14 @@ static void	des_message_decode_reg(t_des *des)
 		if (len >= BUF_SIZE)
 		{
 			des_get_cipher(des, BUF_SIZE, buf);
+			write(des->fd[OUT], buf, BUF_SIZE);
 			if (len > BUF_SIZE)
-			{
 				ft_memcpy(buf, des->in + ret - len + BUF_SIZE, len - BUF_SIZE);
-				len -= BUF_SIZE;
-			}
-			else
-				len = 0;
+			len = (len > BASE64_BUF_SIZE) ? len - BUF_SIZE : 0;
 		}
-		// des_get_cipher(des, offset, buf);
-
-		// while (offset < ret)
-		// {
-			
-		// 	offset += DES_BLOCK_SIZE;
-		// }
-		// if (ret < BUF_SIZE)
-		// 	write(des->fd[OUT], des->in, ret - des->in[offset - 1]);
-		// else
-		// 	write(des->fd[OUT], des->in, offset);
 	}
-	// des_final(des, 0, len, buf);
+	des_get_cipher(des, len, buf);
+	write(des->fd[OUT], buf, len - buf[len - 1]);
 	(ret < 0) ? ft_error_msg("ft_ssl: Read error") : 0;
 }
 
