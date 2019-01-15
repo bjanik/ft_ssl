@@ -89,7 +89,7 @@ static void		des_final(t_des *des, int len, unsigned char buf[])
 	}
 }
 
-void	des_message(t_des *des)
+void	des_encrypt_message(t_des *des)
 {
 	int 			ret;
 	int 			len;

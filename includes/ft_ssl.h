@@ -212,8 +212,8 @@ void					get_subkeys(uint32_t right_key,
 void					swap_keys(uint64_t keys[]);
 uint32_t				s_box_substitutions(uint64_t x_block);
 
-void					des_message(t_des *des);
-void					des_message_decode(t_des *des);
+void					des_encrypt_message(t_des *des);
+void					des_decrypt_message(t_des *des);
 void					des_get_cipher(t_des *des, int offset, unsigned char buf[]);
 uint64_t				des_ecb_e_d(uint64_t plain, t_des *des);
 uint64_t				des_cbc_e(uint64_t plain, t_des *des);

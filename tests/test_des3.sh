@@ -1,4 +1,5 @@
 #!/bin/sh
+set -e
 echo -------------TEST DES3-CBC---------------
 openssl des3 -in auteur -K ADF1257FEC694AC147BFE7DC6800DA -iv 58CDE91A021B > open
 ./ft_ssl des3 -i auteur -k ADF1257FEC694AC147BFE7DC6800DA -v 58CDE91A021B > ft
@@ -38,6 +39,14 @@ diff ft open
 echo -----------------------------------------
 ./ft_ssl des3 -i /dev/null -k ADF1EEFFFAC8899AD -v 58CDE91A0 | ./ft_ssl des3 -d -k ADF1EEFFFAC8899AD -v 58CDE91A0 > ft
 openssl des3 -in /dev/null -K ADF1EEFFFFAC8899AD -iv 58CDE91A0 | openssl des3 -d -K ADF1EEFFFFAC8899AD -iv 58CDE91A0 > open
+diff ft open
+echo -----------------------------------------
+./ft_ssl des3 -i /usr/bin/openssl -k ADF1EEFFFAC8899AD -v 58CDE91A0 | ./ft_ssl des3 -d -k ADF1EEFFFAC8899AD -v 58CDE91A0 > ft
+openssl des3 -in /usr/bin/openssl -K ADF1EEFFFFAC8899AD -iv 58CDE91A0 | openssl des3 -d -K ADF1EEFFFFAC8899AD -iv 58CDE91A0 > open
+diff ft open
+echo -----------------------------------------
+./ft_ssl des3 -i /bin/bash -k ADF1EEFFFAC8899AD -v 58CDE91A0 | ./ft_ssl des3 -d -k ADF1EEFFFAC8899AD -v 58CDE91A0 > ft
+openssl des3 -in /bin/bash -K ADF1EEFFFFAC8899AD -iv 58CDE91A0 | openssl des3 -d -K ADF1EEFFFFAC8899AD -iv 58CDE91A0 > open
 diff ft open
 
 

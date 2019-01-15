@@ -1,4 +1,5 @@
 #!/bin/sh
+set -e
 echo ----------------- DES-ECB -------------------
 openssl des-ecb -in /bin/ls -K  789789789 > open
 ./ft_ssl des-ecb -i /bin/ls -k 789789789 > ft

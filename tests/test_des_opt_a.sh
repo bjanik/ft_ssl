@@ -1,4 +1,5 @@
 #!/bin/sh
+set -e
 echo ---------- TEST DES-ECB ----------
 ./ft_ssl des-ecb -i auteur -k 778855 -a > 42
 openssl des-ecb -in auteur -K 778855 -a |  tr -d '\n'  > 43

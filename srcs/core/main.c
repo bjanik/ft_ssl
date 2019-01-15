@@ -77,9 +77,9 @@ static int 		data_encryption_standard(char **argv, t_ssl_command *cmd)
 	if (!(cmd->des->opts & DES_OPT_K))
 		generate_keys_vector(cmd->des);
 	if (cmd->des->opts & DES_OPT_D)
-		des_message_decode(cmd->des);
+		des_decrypt_message(cmd->des);
 	else
-		des_message(cmd->des);
+		des_encrypt_message(cmd->des);
 	ft_strdel(&cmd->des->password);
 	ft_memdel((void**)&cmd->des);
 	return (0);
