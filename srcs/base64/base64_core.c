@@ -47,7 +47,8 @@ int		base64_core(char **argv, t_base64 *base)
 	int				len;
 	unsigned char 	buf[BASE64_BUF_SIZE + 1];
 
-	base64_opts(argv, base);
+	if (base64_opts(argv, base))
+		return (1);
 	if (base->opts & B_OPT_D)
 		decode_data(base);
 	else

@@ -21,6 +21,7 @@
 # include <pwd.h>
 
 # include "libft.h"
+# include "lexer.h"
 
 # define FT_SSL_USAGE "usage: ft_ssl command [command opts] [command args]\n"
 # define HASH_CMD_USAGE " [-pqr] -s [string] [files ...]\n"
@@ -169,7 +170,7 @@ int 					base64_decode(unsigned char in[],
 int 					decode(unsigned char in[], unsigned char out[], size_t len);
 
 void					init_b64(t_des *des, t_base64 *base);
-void					base64_opts(char **argv, t_base64 *base);
+int						base64_opts(char **argv, t_base64 *base);
 
 
 /*
@@ -233,6 +234,9 @@ uint64_t				des3_cbc_e(uint64_t plain, t_des *des);
 uint64_t				des3_cbc_d(uint64_t plain, t_des *des);
 uint64_t				des3_pcbc_e(uint64_t plain, t_des *des);
 uint64_t				des3_pcbc_d(uint64_t plain, t_des *des);
+
+char					**lst_to_tab(t_list *tokens, int count);
+
 
 extern t_ssl_command 	g_commands[];
 #endif

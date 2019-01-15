@@ -95,3 +95,5 @@ echo ----------------------------------
 ./ft_ssl des3-ecb -i /usr/bin/openssl -k 778855AAAAA874CDFEEE500EDAC068464696ADFFFCC00 -a > 42
 openssl des-ede3 -in /usr/bin/openssl -K 778855AAAAA874CDFEEE500EDAC068464696ADFFFCC00 -a | tr -d '\n' > 43
 diff 42 43
+
+rm 42 43

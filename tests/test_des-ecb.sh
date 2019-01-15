@@ -12,3 +12,5 @@ echo ---------------------------------------------
 openssl des-ecb -in /bin/cat -K 789789789 > open
 ./ft_ssl des-ecb -i /bin/cat -k 789789789 > ft
 diff open ft
+
+rm open ft

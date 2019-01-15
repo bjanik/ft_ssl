@@ -21,7 +21,7 @@ static void	des_decrypt_message_reg(t_des *des)
 	len = 0;
 	while ((ret = read(des->fd[IN], des->in, BUF_SIZE)) > 0)
 	{
-		// (ret % DES_BLOCK_SIZE) ? ft_error_msg("ft_ssl: bad block lenght") : 0;
+		
 		!(len + ret <= BUF_SIZE) ? ft_memcpy(buf + len, des->in, ret) : 
 						ft_memcpy(buf + len, des->in, BUF_SIZE - len);
 		len += ret;
@@ -34,6 +34,7 @@ static void	des_decrypt_message_reg(t_des *des)
 			len = (len > BASE64_BUF_SIZE) ? len - BUF_SIZE : 0;
 		}
 	}
+	(len % DES_BLOCK_SIZE) ? ft_error_msg("ft_ssl: bad block lenght") : 0;
 	des_get_cipher(des, len, buf);
 	write(des->fd[OUT], buf, len - buf[len - 1]);
 	(ret < 0) ? ft_error_msg("ft_ssl: Read error") : 0;
@@ -62,7 +63,6 @@ static void	des_decrypt_message_base64(t_des *des)
 			len = (len > BASE64_BUF_SIZE) ? len - BASE64_BUF_SIZE : 0;
 		}
 	}
-	// ft_printf("len = %d\tbuf = %s\n", len, buf);
 	(ret < 0) ? ft_error_msg("ft_ssl: Read error") : 0;
 	length = base64_decode(buf, len, des->fd[OUT], 1);
 	des_get_cipher(des, length, buf);

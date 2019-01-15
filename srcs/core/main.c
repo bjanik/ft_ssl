@@ -85,12 +85,12 @@ static int 		data_encryption_standard(char **argv, t_ssl_command *cmd)
 	return (0);
 }
 
-int				main(int argc, char **argv)
+static int 	ft_ssl_routine(char **argv)
 {
 	t_ssl_command	*command;
 
-	if (argc == 1)
-		return (usage());
+	if (!argv[1])
+		return (1);
 	if (!(command = get_ssl_command(argv[1])))
 		return (commands_usage(argv[1]));
 	if (command->hash_func)
@@ -100,4 +100,51 @@ int				main(int argc, char **argv)
 	else
 		return (base64_core(argv, command->base64));
 	return (0);
+}
+
+int 	interactive_mode(char **argv)
+{
+	t_lexer	lexer;
+	char	*input;
+	t_list 	*lst;
+	char	**av;
+
+	init_lexer(&lexer);
+	while (42)
+	{
+		write(STDOUT_FILENO, "ft_ssl> ", 8);
+		if (get_next_line(STDIN_FILENO, &input) < 0)
+			ft_error_msg("ft_ssl: Reading user input failed");
+		lexer_input(&lexer, input);
+		if (!(lst = ft_lstnew(argv[0], ft_strlen(argv[0]) + 1)))
+			ft_error_msg("Malloc failed");
+		lst->next = lexer.tokens[0];
+		lexer.tokens[0] = lst;
+		if (!(av = lst_to_tab(lexer.tokens[0], lexer.count + 1)))
+			ft_error_msg("Malloc failed");
+		ft_ssl_routine(av);
+		ft_free_string_tab(&av);
+		ft_lstdel(&lexer.tokens[0], del);
+		ft_strdel(&input);
+	}	
+}
+
+
+int				main(int argc, char **argv)
+{
+	if (argc == 1)
+		interactive_mode(argv);
+	else
+		return (ft_ssl_routine(argv));
+	return (0);
+
+	// if (!(command = get_ssl_command(argv[1])))
+	// 	return (commands_usage(argv[1]));
+	// if (command->hash_func)
+	// 	return (hash_algo(argv, command));
+	// else if (command->des)
+	// 	return (data_encryption_standard(argv, command));
+	// else
+	// 	return (base64_core(argv, command->base64));
+	// return (0);
 }

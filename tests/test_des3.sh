@@ -95,3 +95,5 @@ diff ft auteur
 echo -------------TEST DES3-PCBC---------------
 ./ft_ssl des3-pcbc -i auteur -k 789ADEFADFE82C45FA98C878987EF7AD5E8 -v FE78CAD690 | ./ft_ssl des3-pcbc -k 789ADEFADFE82C45FA98C878987EF7AD5E8 -v FE78CAD690 -d > ft
 diff ft auteur
+
+rm ft open

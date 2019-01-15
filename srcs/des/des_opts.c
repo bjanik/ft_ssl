@@ -42,6 +42,7 @@ void		set_subkeys(char **argv, t_des *des, int *index)
 	uint64_t	key;
 	uint8_t		i;
 	uint8_t		len;
+	char		*tmp;
 
 	if (!argv[++(*index)])
 		ft_error_msg("ft_ssl: Key is undefined");
@@ -49,14 +50,15 @@ void		set_subkeys(char **argv, t_des *des, int *index)
 	i = 0;
 	while (i < 3)
 	{
-		get_hex_from_str(argv[(*index)], &key);
-		len = ft_strlen(argv[(*index)]);
+		tmp = argv[(*index)];
+		get_hex_from_str(tmp, &key);
+		len = ft_strlen(tmp);
 		key = get_56bits_key(key);
 		get_subkeys(key >> 28, (key << 36) >> 36, des->keys[i]);
 		if (len > MAX_KEY_LEN)
-			argv[(*index)] += MAX_KEY_LEN;
+			tmp += MAX_KEY_LEN;
 		else
-			argv[(*index)] += len;
+			tmp += len;
 		i++;
 	}
 	swap_keys(des->keys[1]);

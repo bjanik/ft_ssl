@@ -13,11 +13,6 @@ echo ----------------------------------
 ./ft_ssl des3-bc -i /bin/cat -k 778855 -v CCAADD55FF45 -a | ./ft_ssl des3-bc -k 778855 -v CCAADD55FF45 -a -d > 42
 diff 42 /bin/cat
 echo ----------------------------------
-# ./ft_ssl des-pcbc -i toto -k 778855 -v CCAADD55FF45 -a | ./ft_ssl des-pcbc -k 778855 -v CCAADD55FF45 -a -d > 42
-# diff 42 toto
-echo ----------------------------------
-# ./ft_ssl des3-ecb -i tests/test_des_base64.sh -k 778855 -v CCAADD55FF45 -a | ./ft_ssl des3-ecb -k 778855 -v CCAADD55FF45 -a -d > 42
-# diff 42 tests/test_des_base64.sh
 
 ./ft_ssl des-ecb -i auteur -k 778855 -a > 42
 openssl des-ecb -in auteur -K 778855 -a |  tr -d '\n'  > 43
@@ -119,7 +114,7 @@ do
 	i=`expr $i + 1`
 done
 echo "ALL TESTS PASSED"
-rm b64* o_*
+rm b64* o_* rand 42 43 open_rand
 
 
 
