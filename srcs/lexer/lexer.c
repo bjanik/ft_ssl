@@ -6,16 +6,15 @@
 /*   By: bjanik <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/15 11:31:54 by bjanik            #+#    #+#             */
-/*   Updated: 2019/01/15 11:31:55 by bjanik           ###   ########.fr       */
+/*   Updated: 2019/01/16 18:06:25 by bjanik           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-
 #include "lexer.h"
-#include "libft.h" 
+#include "libft.h"
 #include <string.h>
 
-void		realloc_current_token(t_lexer *lexer)
+void			realloc_current_token(t_lexer *lexer)
 {
 	char	*tmp;
 
@@ -24,7 +23,6 @@ void		realloc_current_token(t_lexer *lexer)
 	if (!(lexer->current_token = (char *)ft_memalloc((lexer->token_size + 1)
 			* sizeof(char))))
 		ft_error_msg("Malloc failed\n");
-	// ft_bzero(lexer->current_token, lexer->token_size + 1);
 	ft_strcpy(lexer->current_token, tmp);
 	ft_strdel(&tmp);
 }
@@ -34,7 +32,7 @@ static void		skip_char(t_lexer *lexer)
 	(void)lexer;
 }
 
-void		append_char(t_lexer *lexer)
+void			append_char(t_lexer *lexer)
 {
 	if (lexer->token_len == lexer->token_size)
 		realloc_current_token(lexer);
@@ -56,7 +54,7 @@ static void		get_event(t_lexer *lexer)
 		lexer->event = EV_REG_CHAR;
 }
 
-void		del(void *content, size_t size)
+void			del(void *content, size_t size)
 {
 	(void)size;
 	ft_memdel(&content);
@@ -83,7 +81,7 @@ const t_transition		g_lexer[MAX_STATE][MAX_EVENT] = {
 		{DQUOTE, append_char},
 		{QUOTE, append_char},
 		{STD, append_char},
-		{STD, append_char}},	
+		{STD, append_char}},
 
 	{{DQUOTE, append_char},
 		{STD, skip_char},

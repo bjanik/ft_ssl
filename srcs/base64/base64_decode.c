@@ -6,18 +6,15 @@
 /*   By: bjanik <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/08 14:17:27 by bjanik            #+#    #+#             */
-/*   Updated: 2018/11/10 17:50:26 by bjanik           ###   ########.fr       */
+/*   Updated: 2019/01/16 18:01:56 by bjanik           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ssl.h"
 
-#define ENCODE 0
-#define DECODE 1
-
-static int		translate(unsigned char in[], size_t len)
+static int	translate(unsigned char in[], size_t len)
 {
-	size_t 	i;
+	size_t	i;
 
 	i = 0;
 	while (i < len)
@@ -31,7 +28,7 @@ static int		translate(unsigned char in[], size_t len)
 		else if (in[i] == '+')
 			in[i] = 62;
 		else if (in[i] == '/')
-			in[i] = 63;		
+			in[i] = 63;
 		else if (in[i] != '=' || (in[i] == '=' && i < 2))
 			ft_error_msg("Invalid character in input stream");
 		else if (in[i] == '=')
@@ -41,10 +38,10 @@ static int		translate(unsigned char in[], size_t len)
 	return (3);
 }
 
-int 	decode(unsigned char in[], unsigned char out[], size_t len)
+int			decode(unsigned char in[], unsigned char out[], size_t len)
 {
-	int 	ret;
-	
+	int	ret;
+
 	ret = translate(in, len);
 	out[0] = (in[0] << 2) | ((in[1] & 0x30) >> 4);
 	out[1] = ((in[1] & 0x0F) << 4) | ((in[2] & 0x3C) >> 2);
@@ -56,8 +53,8 @@ int			base64_decode(unsigned char in[], int ret, int fd, uint8_t des)
 {
 	int				offset;
 	int				out_len;
-	unsigned char 	out[BUF_SIZE + 1];
-	int 			len;
+	unsigned char	out[BUF_SIZE + 1];
+	int				len;
 
 	(ret % 4 != 0) ? ft_error_msg("ft_ssl: bad block length") : 0;
 	offset = 0;
@@ -77,6 +74,6 @@ int			base64_decode(unsigned char in[], int ret, int fd, uint8_t des)
 		}
 	}
 	(des == 1) ? (void)ft_memcpy(in, out, len) :
-				 (void)write(fd, out, len);
+				(void)write(fd, out, len);
 	return (len);
 }

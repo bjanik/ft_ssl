@@ -6,10 +6,9 @@
 /*   By: bjanik <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/28 18:06:48 by bjanik            #+#    #+#             */
-/*   Updated: 2018/11/28 18:06:49 by bjanik           ###   ########.fr       */
+/*   Updated: 2019/01/16 18:48:26 by bjanik           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
 
 #include "ft_ssl.h"
 #define NB_SUB_BLOCKS 8
@@ -86,7 +85,7 @@ static void		fill_sub_blocks(uint8_t sub_blocks[], uint64_t x_block)
 static uint8_t	s_box(uint8_t sub_block, const uint8_t s_box[])
 {
 	uint8_t		row;
-	uint8_t 	col;
+	uint8_t		col;
 
 	row = (sub_block & 0x1) | ((sub_block >> 5) << 1);
 	col = (sub_block >> 1) & 0xF;

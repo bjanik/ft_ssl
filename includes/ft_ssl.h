@@ -78,7 +78,8 @@ typedef struct 			s_des
 {
 	char				*name;
 	char				*password;
-	unsigned char		*salt[3];
+	unsigned char		*s_salt;
+	uint64_t			*salt[3];
 	unsigned char		in[BASE64_BUF_SIZE + 1];
 	uint64_t			keys[3][DES_ROUNDS];
 	uint64_t			init_vector;
@@ -91,7 +92,7 @@ typedef struct 			s_des
 typedef struct 			s_des_opts
 {
 	char				*opt;
-	void				(*opt_f)(char **argv, t_des *des, int *index);
+	int					(*opt_f)(char **argv, t_des *des, int *index);
 }						t_des_opts;
 
 typedef struct			s_msg
@@ -154,6 +155,8 @@ int						commands_usage(char *command);
 
 uint32_t				rotleft(uint32_t x, uint32_t n);
 uint32_t				rotright(uint32_t x, uint32_t n);
+uint64_t				shift_left(uint32_t key, uint8_t x);
+
 
 /*
 ** BASE64
@@ -181,21 +184,20 @@ t_des					*init_des(char *name,
 								  uint64_t (*des_mode[2])(uint64_t plain,
 														  t_des *des));
 int 					des_opts(char **argv, t_des *des);
-void					set_password(char **argv, t_des *des, int *index);
-void					set_subkeys(char **argv, t_des *des, int *index);
-void					set_input_file(char **argv, t_des *des, int *index);
-void					set_output_file(char **argv, t_des *des, int *index);
-void					set_init_vector(char **argv, t_des *des, int *index);
-void					set_nopad(char **argv, t_des *des, int *index);
-void					set_decrypt_mode(char **argv, t_des *des, int *index);
-void					set_encrypt_mode(char **argv, t_des *des, int *index);
-void					set_cap_p(char **argv, t_des *des, int *index);
-void					set_base64(char **argv, t_des *des, int *index);
-void					set_salt(char *argv, t_des *des, int *index);
+int						set_password(char **argv, t_des *des, int *index);
+int						set_subkeys(char **argv, t_des *des, int *index);
+int						set_input_file(char **argv, t_des *des, int *index);
+int						set_output_file(char **argv, t_des *des, int *index);
+int						set_init_vector(char **argv, t_des *des, int *index);
+int						set_nopad(char **argv, t_des *des, int *index);
+int						set_decrypt_mode(char **argv, t_des *des, int *index);
+int						set_encrypt_mode(char **argv, t_des *des, int *index);
+int						set_cap_p(char **argv, t_des *des, int *index);
+int						set_base64(char **argv, t_des *des, int *index);
+int						set_salt(char **argv, t_des *des, int *index);
 
 
-
-void					get_hex_from_str(char *str_key, uint64_t *key);
+int						get_hex_from_str(char *str_key, uint64_t *key);
 uint64_t				convert_input_to_block(unsigned char input[]);
 uint64_t				des_core(uint64_t block, uint64_t sub_keys[]);
 uint64_t				initial_permutation(uint64_t block);

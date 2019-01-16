@@ -32,8 +32,8 @@ openssl des -in /bin/cat -K 789789789 -iv CCD4588 > open
 ./ft_ssl des -i /bin/cat -k 789789789 -v CCD4588 > ft
 diff open ft
 echo ---------------------------------------------
-openssl des-ecb -in /usr/bin/openssl -K 789789789 -iv CCD4588 > open
-./ft_ssl des-ecb -i /usr/bin/openssl -k 789789789  -v CCD4588 > ft
+openssl des-cbc -in /usr/bin/openssl -K 789789789 -iv CCD4588 > open
+./ft_ssl des-cbc -i /usr/bin/openssl -k 789789789  -v CCD4588 > ft
 diff open ft
 
 rm open ft

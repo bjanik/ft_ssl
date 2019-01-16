@@ -38,7 +38,7 @@ void	base64_encode(unsigned char in[], int ret, int fd)
 {
 	int				offset;
 	int				out_len;
-	unsigned char 	out[BUF_SIZE + 1];
+	unsigned char	out[BUF_SIZE + 1];
 
 	offset = 0;
 	out_len = 0;

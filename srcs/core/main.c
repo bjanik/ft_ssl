@@ -72,33 +72,41 @@ static int 		hash_algo(char **argv, t_ssl_command *command)
 
 static int 		data_encryption_standard(char **argv, t_ssl_command *cmd)
 {
+	int 	ret = 0;
+
 	if (des_opts(argv, cmd->des))
-		return (1);
-	if (!(cmd->des->opts & DES_OPT_K))
-		generate_keys_vector(cmd->des);
-	if (cmd->des->opts & DES_OPT_D)
-		des_decrypt_message(cmd->des);
+		ret = 1;
 	else
-		des_encrypt_message(cmd->des);
+	{
+		if (!(cmd->des->opts & DES_OPT_K))
+			generate_keys_vector(cmd->des);
+		if (cmd->des->opts & DES_OPT_D)
+			des_decrypt_message(cmd->des);
+		else
+			des_encrypt_message(cmd->des);
+	}
 	ft_strdel(&cmd->des->password);
+	ft_strdel((char**)&cmd->des->s_salt);
+	ft_memdel((void**)&cmd->des->base64);
 	ft_memdel((void**)&cmd->des);
-	return (0);
+	return (ret);
 }
 
 static int 	ft_ssl_routine(char **argv)
 {
 	t_ssl_command	*command;
+	int 			ret;
 
 	if (!argv[1])
 		return (1);
 	if (!(command = get_ssl_command(argv[1])))
 		return (commands_usage(argv[1]));
 	if (command->hash_func)
-		return (hash_algo(argv, command));
+		ret = hash_algo(argv, command);
 	else if (command->des)
-		return (data_encryption_standard(argv, command));
+		ret = data_encryption_standard(argv, command);
 	else
-		return (base64_core(argv, command->base64));
+		ret = base64_core(argv, command->base64);
 	return (0);
 }
 
@@ -115,6 +123,8 @@ int 	interactive_mode(char **argv)
 		write(STDOUT_FILENO, "ft_ssl> ", 8);
 		if (get_next_line(STDIN_FILENO, &input) < 0)
 			ft_error_msg("ft_ssl: Reading user input failed");
+		if (!input)
+			break ;
 		lexer_input(&lexer, input);
 		if (!(lst = ft_lstnew(argv[0], ft_strlen(argv[0]) + 1)))
 			ft_error_msg("Malloc failed");
@@ -126,25 +136,19 @@ int 	interactive_mode(char **argv)
 		ft_free_string_tab(&av);
 		ft_lstdel(&lexer.tokens[0], del);
 		ft_strdel(&input);
-	}	
+	}
+	ft_strdel(&lexer.current_token);
+	return (0);
 }
 
 
 int				main(int argc, char **argv)
 {
-	if (argc == 1)
-		interactive_mode(argv);
-	else
-		return (ft_ssl_routine(argv));
-	return (0);
+	int 			ret;
 
-	// if (!(command = get_ssl_command(argv[1])))
-	// 	return (commands_usage(argv[1]));
-	// if (command->hash_func)
-	// 	return (hash_algo(argv, command));
-	// else if (command->des)
-	// 	return (data_encryption_standard(argv, command));
-	// else
-	// 	return (base64_core(argv, command->base64));
-	// return (0);
+	if (argc == 1)
+		ret = interactive_mode(argv);
+	else
+		ret = ft_ssl_routine(argv);
+	return (ret);
 }

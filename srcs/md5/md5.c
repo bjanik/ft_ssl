@@ -6,13 +6,13 @@
 /*   By: bjanik <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/29 11:19:09 by bjanik            #+#    #+#             */
-/*   Updated: 2018/11/01 15:39:51 by bjanik           ###   ########.fr       */
+/*   Updated: 2019/01/16 18:04:18 by bjanik           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ssl.h"
 
-void					md5_init(t_ctx *ctx)
+void			md5_init(t_ctx *ctx)
 {
 	ctx->len = 0;
 	ctx->bitlen = 0;
@@ -28,7 +28,7 @@ void					md5_init(t_ctx *ctx)
 	ctx->transform = md5_transform;
 }
 
-static void				md5_final(t_ctx *ctx)
+static void		md5_final(t_ctx *ctx)
 {
 	int	i;
 
@@ -47,7 +47,7 @@ static void				md5_final(t_ctx *ctx)
 	}
 }
 
-unsigned char	*md5_core(t_ctx	*ctx, t_msg *msg, uint32_t opts)
+unsigned char	*md5_core(t_ctx *ctx, t_msg *msg, uint32_t opts)
 {
 	if (update(ctx, msg, opts) == 0)
 	{
@@ -57,14 +57,14 @@ unsigned char	*md5_core(t_ctx	*ctx, t_msg *msg, uint32_t opts)
 	return (NULL);
 }
 
-void					md5(t_msg *msg, uint32_t opts)
+void			md5(t_msg *msg, uint32_t opts)
 {
 	t_ctx			ctx;
 	unsigned char	*digest;
 
 	md5_init(&ctx);
 	if ((digest = md5_core(&ctx, msg, opts)))
-	{	
+	{
 		output_digest(msg, ctx, opts);
 		ft_strdel((char**)&digest);
 	}

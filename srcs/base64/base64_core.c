@@ -12,12 +12,12 @@
 
 #include "ft_ssl.h"
 
-static void			decode_data(t_base64 *base)
+static void	decode_data(t_base64 *base)
 {
 	int				ret;
-	unsigned char 	c;
-	size_t 			len;
-	int 			i;
+	unsigned char	c;
+	size_t			len;
+	int				i;
 
 	len = 0;
 	i = 0;
@@ -37,11 +37,11 @@ static void			decode_data(t_base64 *base)
 	if (len && i)
 	{
 		decode(base->encoded, base->decoded, len);
-	 	write(base->fd[OUT], base->decoded, len - 1);
+		write(base->fd[OUT], base->decoded, len - 1);
 	}
 }
 
-int		base64_core(char **argv, t_base64 *base)
+int			base64_core(char **argv, t_base64 *base)
 {
 	int				ret;
 	int				len;

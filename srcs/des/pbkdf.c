@@ -142,7 +142,7 @@ void	generate_keys_vector(t_des *des)
 		keys[i] = get_keys_vector_from_hash(ks[i]);
 		keys[i] = get_56bits_key(keys[i]);
 		get_subkeys(keys[i] >> 28, (keys[i] << 36) >> 36, des->keys[i]);
-		if (!i)
+		if (!i && !(des->opts & DES_OPT_V))
 		{
 			if (!(iv = (unsigned char*)ft_strdup((char*)hash + 8)))
 				ft_error_msg("ft_ssl: Malloc failed");

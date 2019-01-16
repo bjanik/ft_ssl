@@ -6,14 +6,11 @@
 /*   By: bjanik <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/05 11:52:19 by bjanik            #+#    #+#             */
-/*   Updated: 2018/12/05 11:52:20 by bjanik           ###   ########.fr       */
+/*   Updated: 2019/01/16 18:34:18 by bjanik           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ssl.h"
-
-#define ENCRYPT 0
-#define DECRYPT 1
 
 t_des		*init_des(char *name,
 					  uint64_t (*des_mode[2])(uint64_t plain, t_des *des))
@@ -27,7 +24,8 @@ t_des		*init_des(char *name,
 	}
 	des->name = name;
 	des->password = NULL;
-	// des->salt = 0;
+	des->s_salt = 0;
+	ft_memset(des->salt, 0x0, 3 * sizeof(uint64_t));
 	ft_memset(des->in, 0x0, BASE64_BUF_SIZE);
 	ft_memset(des->keys[0], 0x0, DES_ROUNDS * sizeof(uint64_t));
 	ft_memset(des->keys[1], 0x0, DES_ROUNDS * sizeof(uint64_t));

@@ -6,7 +6,7 @@
 /*   By: bjanik <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/15 12:14:53 by bjanik            #+#    #+#             */
-/*   Updated: 2019/01/15 12:14:54 by bjanik           ###   ########.fr       */
+/*   Updated: 2019/01/16 18:07:09 by bjanik           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ static t_list	*init_token_node(t_lexer *lexer)
 	return (token);
 }
 
-void		delimitate_token(t_lexer *lexer)
+void			delimitate_token(t_lexer *lexer)
 {
 	t_list	*token;
 
@@ -37,7 +37,7 @@ void		delimitate_token(t_lexer *lexer)
 			lexer->tokens[1] = token;
 		}
 		else
-		{	
+		{
 			lexer->tokens[1]->next = token;
 			lexer->tokens[1] = token;
 		}

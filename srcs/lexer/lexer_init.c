@@ -6,16 +6,14 @@
 /*   By: bjanik <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/15 11:26:30 by bjanik            #+#    #+#             */
-/*   Updated: 2019/01/15 11:26:31 by bjanik           ###   ########.fr       */
+/*   Updated: 2019/01/16 18:07:04 by bjanik           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-
 #include "lexer.h"
 
-void		init_lexer(t_lexer *lexer)
+void	init_lexer(t_lexer *lexer)
 {
-
 	if (!(lexer->current_token = (char*)ft_memalloc(INITIAL_TOKEN_SIZE + 1)))
 		ft_error_msg("Malloc failed\n");
 	lexer->input = NULL;

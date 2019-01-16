@@ -6,13 +6,13 @@
 /*   By: bjanik <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/24 12:55:06 by bjanik            #+#    #+#             */
-/*   Updated: 2018/11/24 12:55:17 by bjanik           ###   ########.fr       */
+/*   Updated: 2019/01/16 18:03:18 by bjanik           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-# include "ft_ssl.h"
+#include "ft_ssl.h"
 
-static void		set_base64_fds(t_base64 *base)
+static void	set_base64_fds(t_base64 *base)
 {
 	if (base->input_file)
 		if ((base->fd[IN] = open(base->input_file, O_RDONLY, 0644)) < 0)
@@ -34,7 +34,7 @@ static void		set_base64_fds(t_base64 *base)
 
 int			base64_opts(char **argv, t_base64 *base)
 {
-	int i;
+	int	i;
 
 	i = 1;
 	while (argv[++i])
@@ -58,8 +58,7 @@ int			base64_opts(char **argv, t_base64 *base)
 	return (0);
 }
 
-
-t_base64		*init_base64(void)
+t_base64	*init_base64(void)
 {
 	t_base64	*base;
 

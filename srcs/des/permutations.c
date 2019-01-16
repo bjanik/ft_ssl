@@ -6,10 +6,9 @@
 /*   By: bjanik <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/28 14:09:57 by bjanik            #+#    #+#             */
-/*   Updated: 2018/11/28 14:09:58 by bjanik           ###   ########.fr       */
+/*   Updated: 2019/01/16 18:50:53 by bjanik           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
 
 #include "ft_ssl.h"
 
@@ -19,7 +18,7 @@
 #define PBOX_PERM_TABLE_LEN 32
 
 static const uint8_t	g_init_perm_table[INIT_PERM_TABLE_LEN] = {
-	58, 50, 42, 34, 26, 18, 10 , 2, 60, 52, 44, 36, 28, 20 , 12, 4,
+	58, 50, 42, 34, 26, 18, 10, 2, 60, 52, 44, 36, 28, 20, 12, 4,
 	62, 54, 46, 38, 30, 22, 14, 6, 64, 56, 48, 40, 32, 24, 16, 8,
 	57, 49, 41, 33, 25, 17, 9, 1, 59, 51, 43, 35, 27, 19, 11, 3,
 	61, 53, 45, 37, 29, 21, 13, 5, 63, 55, 47, 39, 31, 23, 15, 7
@@ -44,10 +43,10 @@ static const uint8_t	g_exp_perm_table[EXP_PERM_TABLE_LEN] = {
 	16, 17, 18, 19, 20, 21,
 	20, 21, 22, 23, 24, 25,
 	24, 25, 26, 27, 28, 29,
-	28, 29, 30, 31, 32, 1  
+	28, 29, 30, 31, 32, 1
 };
 
-static const uint8_t 	g_pbox_perm_table[PBOX_PERM_TABLE_LEN] = {
+static const uint8_t	g_pbox_perm_table[PBOX_PERM_TABLE_LEN] = {
 	16, 7, 20, 21, 29, 12, 28, 17, 1, 15, 23, 26, 5, 18, 31, 10,
 	2, 8, 24, 14, 32, 27, 3, 9, 19, 13, 30, 6, 22, 11, 4, 25
 };
@@ -64,7 +63,7 @@ uint64_t	convert_input_to_block(unsigned char input[])
 	{
 		tmp = input[i];
 		block |= tmp << (56 - 8 * i);
-		i++; 
+		i++;
 	}
 	return (block);
 }
@@ -103,8 +102,8 @@ uint64_t	expansion_permutation(uint32_t r_block)
 
 uint32_t	pbox_permutation(uint32_t block)
 {
-	uint32_t n_block;
-	uint8_t i;
+	uint32_t	n_block;
+	uint8_t		i;
 
 	i = 0;
 	n_block = 0;
@@ -118,9 +117,9 @@ uint32_t	pbox_permutation(uint32_t block)
 
 uint64_t	final_permutation(uint32_t left, uint32_t right)
 {
-	uint64_t f_block;
-	uint64_t tmp;
-	uint8_t	 i;
+	uint64_t	f_block;
+	uint64_t	tmp;
+	uint8_t		i;
 
 	tmp = right;
 	tmp = (tmp << 32) | left;

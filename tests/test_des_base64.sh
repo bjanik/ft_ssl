@@ -14,19 +14,19 @@ echo ----------------------------------
 diff 42 /bin/cat
 echo ----------------------------------
 
-./ft_ssl des-ecb -i auteur -k 778855 -a > 42
+./ft_ssl des-ecb -i auteur -k 778855 -a  |  tr -d '\n'> 42
 openssl des-ecb -in auteur -K 778855 -a |  tr -d '\n'  > 43
 diff 42 43
 echo ----------------------------------
-./ft_ssl des-ecb -i /bin/ls -k 778855 -a > 42
+./ft_ssl des-ecb -i /bin/ls -k 778855 -a |  tr -d '\n' > 42
 openssl des-ecb -in /bin/ls -K 778855 -a | tr -d '\n' > 43
 diff 42 43
 echo ----------------------------------
-./ft_ssl des-ecb -i /bin/bash -k 778855 -a > 42
+./ft_ssl des-ecb -i /bin/bash -k 778855 -a |  tr -d '\n'> 42
 openssl des-ecb -in /bin/bash -K 778855 -a | tr -d '\n' > 43
 diff 42 43
 echo ----------------------------------
-./ft_ssl des-ecb -i /bin/cat -k 778855 -a > 42
+./ft_ssl des-ecb -i /bin/cat -k 778855 -a |  tr -d '\n'> 42
 openssl des-ecb -in /bin/cat -K 778855 -a | tr -d '\n' > 43
 diff 42 43
 echo ----------------------------------
@@ -85,10 +85,10 @@ diff rand o_rand
 echo ----------------------------------
 
 i=0
-while [ "$i" -lt 1 ]
+while [ "$i" -lt 10 ]
 do
 	cat /dev/random | head -c 7889 > rand
-	./ft_ssl des -i rand -k 770000DD8855 -v ECDC55F5AE88 -a -o b64_rand
+	./ft_ssl des -i rand -k 770000DD8855 -v ECDC55F5AE88 -a | tr -d '\n'> b64_rand
 	openssl des -in rand -K 770000DD8855 -iv ECDC55F5AE88 -a | tr -d '\n' > open_rand
 	diff b64_rand open_rand
 	i=`expr $i + 1`
@@ -115,11 +115,3 @@ do
 done
 echo "ALL TESTS PASSED"
 rm b64* o_* rand 42 43 open_rand
-
-
-
-
-
-
-
-

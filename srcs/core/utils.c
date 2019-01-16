@@ -21,3 +21,8 @@ uint32_t	rotright(uint32_t x, uint32_t n)
 {
 	return ((x >> n) | (x << (32 - n)));
 }
+
+uint64_t	shift_left(uint32_t key, uint8_t x)
+{
+	return ((key >> (28 - x)) | ((key << x) & 0xFFFFFFF));
+}
