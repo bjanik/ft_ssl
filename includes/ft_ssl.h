@@ -78,8 +78,8 @@ typedef struct 			s_des
 {
 	char				*name;
 	char				*password;
-	unsigned char		*s_salt;
-	uint64_t			*salt[3];
+	uint64_t			salt_value;
+	unsigned char		salt[16];
 	unsigned char		in[BASE64_BUF_SIZE + 1];
 	uint64_t			keys[3][DES_ROUNDS];
 	uint64_t			init_vector;
@@ -138,7 +138,9 @@ void					md5(t_msg *msg, uint32_t opts);
 void					md5_init(t_ctx *ctx);
 unsigned char			*md5_core(t_ctx	*ctx, t_msg *msg, uint32_t opts);
 void					md5_transform(t_ctx *ctx);
+void					sha256_init(t_ctx *ctx);
 void					sha256(t_msg *msg, uint32_t opts);
+unsigned char			*sha256_core(t_ctx *ctx, t_msg *msg, uint32_t opts);
 void					sha256_transform(t_ctx *ctx);
 void					sha1(t_msg *msg, uint32_t opts);
 void					sha1_transform(t_ctx *ctx);
@@ -169,12 +171,11 @@ void					base64_encode(unsigned char in[], int ret, int fd);
 int 					base64_decode(unsigned char in[],
 									  int ret,
 									  int fd,
-									  uint8_t DES);
+									  uint8_t des);
 int 					decode(unsigned char in[], unsigned char out[], size_t len);
 
 void					init_b64(t_des *des, t_base64 *base);
 int						base64_opts(char **argv, t_base64 *base);
-
 
 /*
 ** DES
@@ -196,7 +197,6 @@ int						set_cap_p(char **argv, t_des *des, int *index);
 int						set_base64(char **argv, t_des *des, int *index);
 int						set_salt(char **argv, t_des *des, int *index);
 
-
 int						get_hex_from_str(char *str_key, uint64_t *key);
 uint64_t				convert_input_to_block(unsigned char input[]);
 uint64_t				des_core(uint64_t block, uint64_t sub_keys[]);
@@ -206,6 +206,8 @@ uint32_t				pbox_permutation(uint32_t block);
 uint64_t				final_permutation(uint32_t left, uint32_t right);
 
 void					generate_keys_vector(t_des *des);
+char					*get_password(int encryption);
+unsigned char 			*get_salt(t_des *des);
    
 void					get_key_from_str(char *str_key, uint64_t *key);
 uint64_t				get_56bits_key(uint64_t key);

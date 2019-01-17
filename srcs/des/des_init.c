@@ -24,8 +24,8 @@ t_des		*init_des(char *name,
 	}
 	des->name = name;
 	des->password = NULL;
-	des->s_salt = 0;
-	ft_memset(des->salt, 0x0, 3 * sizeof(uint64_t));
+	des->salt_value = 0;
+	ft_memset(des->salt, '0', 16);
 	ft_memset(des->in, 0x0, BASE64_BUF_SIZE);
 	ft_memset(des->keys[0], 0x0, DES_ROUNDS * sizeof(uint64_t));
 	ft_memset(des->keys[1], 0x0, DES_ROUNDS * sizeof(uint64_t));

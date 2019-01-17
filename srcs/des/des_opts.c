@@ -62,12 +62,17 @@ int			set_subkeys(char **argv, t_des *des, int *index)
 
 int			set_salt(char **argv, t_des *des, int *index)
 {
-	(void)des;
+	int 	len;
+
 	if (!argv[++(*index)])
 	{
 		ft_putendl_fd("ft_ssl: missing argument salt for -s", STDERR_FILENO);
 		return (1);
 	}
+	if ((len = ft_strlen(argv[*index])) > 16)
+		ft_memcpy(des->salt, argv[*index], 16);
+	else
+		ft_memcpy(des->salt, argv[*index], len);
 	// return (get_hex_from_str(argv[*index], &des->salt));
 	return (0);
 }

@@ -12,7 +12,7 @@
 
 #include "ft_ssl.h"
 
-static void			sha256_init(t_ctx *ctx)
+void			sha256_init(t_ctx *ctx)
 {
 	ctx->h[0] = 0x6a09e667;
 	ctx->h[1] = 0xbb67ae85;
@@ -32,7 +32,7 @@ static void			sha256_init(t_ctx *ctx)
 	ctx->transform = sha256_transform;
 }
 
-static void			sha256_final(t_ctx *ctx)
+void			sha256_final(t_ctx *ctx)
 {
 	int		i;
 
@@ -55,12 +55,23 @@ static void			sha256_final(t_ctx *ctx)
 	}
 }
 
+unsigned char	*sha256_core(t_ctx *ctx, t_msg *msg, uint32_t opts)
+{
+	if (update(ctx, msg, opts) == 0)
+	{
+		sha256_final(ctx);
+		return ((unsigned char*)ft_strdup((char*)ctx->digest));
+	}
+	return (NULL);
+}
+
 void				sha256(t_msg *msg, uint32_t opts)
 {
-	t_ctx		ctx;
+	t_ctx			ctx;
+	unsigned char	*digest;
 
 	sha256_init(&ctx);
-	if (update(&ctx, msg, opts) == 0)
+	if ((digest = sha256_core(&ctx, msg, opts)))
 	{
 		sha256_final(&ctx);
 		output_digest(msg, ctx, opts);

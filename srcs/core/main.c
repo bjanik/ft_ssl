@@ -6,7 +6,7 @@
 /*   By: bjanik <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/29 11:18:58 by bjanik            #+#    #+#             */
-/*   Updated: 2018/11/05 10:23:21 by bjanik           ###   ########.fr       */
+/*   Updated: 2019/01/17 12:14:17 by bjanik           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ static int		hash_files(char **argv, t_ssl_command *command)
 
 static int		set_options(t_ssl_command *command, char **argv, int *index)
 {
-	int ret;
+	int	ret;
 
 	if ((ret = parse_opt(command, argv, index)))
 		return (ret);
@@ -47,9 +47,9 @@ static int		set_options(t_ssl_command *command, char **argv, int *index)
 	return (0);
 }
 
-static int 		hash_algo(char **argv, t_ssl_command *command)
+static int		hash_algo(char **argv, t_ssl_command *command)
 {
-	int 	i;
+	int	i;
 
 	i = 2;
 	while (argv[i] && ft_strcmp(END_OF_OPT, argv[i]) && argv[i][0] == '-')
@@ -70,10 +70,11 @@ static int 		hash_algo(char **argv, t_ssl_command *command)
 	return (i);
 }
 
-static int 		data_encryption_standard(char **argv, t_ssl_command *cmd)
+static int		data_encryption_standard(char **argv, t_ssl_command *cmd)
 {
-	int 	ret = 0;
+	int	ret;
 
+	ret = 0;
 	if (des_opts(argv, cmd->des))
 		ret = 1;
 	else
@@ -86,16 +87,16 @@ static int 		data_encryption_standard(char **argv, t_ssl_command *cmd)
 			des_encrypt_message(cmd->des);
 	}
 	ft_strdel(&cmd->des->password);
-	ft_strdel((char**)&cmd->des->s_salt);
+	ft_strdel((char**)&cmd->des->salt);
 	ft_memdel((void**)&cmd->des->base64);
 	ft_memdel((void**)&cmd->des);
 	return (ret);
 }
 
-static int 	ft_ssl_routine(char **argv)
+static int		ft_ssl_routine(char **argv)
 {
 	t_ssl_command	*command;
-	int 			ret;
+	int				ret;
 
 	if (!argv[1])
 		return (1);
@@ -110,11 +111,11 @@ static int 	ft_ssl_routine(char **argv)
 	return (0);
 }
 
-int 	interactive_mode(char **argv)
+int				interactive_mode(char **argv)
 {
 	t_lexer	lexer;
 	char	*input;
-	t_list 	*lst;
+	t_list	*lst;
 	char	**av;
 
 	init_lexer(&lexer);
@@ -123,8 +124,8 @@ int 	interactive_mode(char **argv)
 		write(STDOUT_FILENO, "ft_ssl> ", 8);
 		if (get_next_line(STDIN_FILENO, &input) < 0)
 			ft_error_msg("ft_ssl: Reading user input failed");
-		if (!input)
-			break ;
+		//if (!input)
+	//		break ;
 		lexer_input(&lexer, input);
 		if (!(lst = ft_lstnew(argv[0], ft_strlen(argv[0]) + 1)))
 			ft_error_msg("Malloc failed");
@@ -141,10 +142,9 @@ int 	interactive_mode(char **argv)
 	return (0);
 }
 
-
 int				main(int argc, char **argv)
 {
-	int 			ret;
+	int			ret;
 
 	if (argc == 1)
 		ret = interactive_mode(argv);

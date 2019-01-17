@@ -6,7 +6,7 @@
 /*   By: bjanik <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/29 15:23:30 by bjanik            #+#    #+#             */
-/*   Updated: 2018/10/29 15:23:32 by bjanik           ###   ########.fr       */
+/*   Updated: 2019/01/17 12:10:34 by bjanik           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,13 +30,13 @@ int	commands_usage(char *command)
 	ft_putchar_fd('\n', STDERR_FILENO);
 	ft_putendl_fd("Message digest commands:", STDERR_FILENO);
 	while (g_commands[++i].name)
-		(g_commands[i].hash_func) ? 
+		(g_commands[i].hash_func) ?
 			ft_putendl_fd(g_commands[i].name, STDERR_FILENO) : 0;
 	ft_putchar_fd('\n', STDERR_FILENO);
 	ft_putendl_fd("Cipher commands:", STDERR_FILENO);
 	i = -1;
 	while (g_commands[++i].name)
-		(!g_commands[i].hash_func) ? 
+		(!g_commands[i].hash_func) ?
 			ft_putendl_fd(g_commands[i].name, STDERR_FILENO) : 0;
 	return (1);
 }

@@ -6,7 +6,7 @@
 /*   By: bjanik <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/29 11:18:40 by bjanik            #+#    #+#             */
-/*   Updated: 2018/10/29 19:56:29 by bjanik           ###   ########.fr       */
+/*   Updated: 2019/01/17 12:09:56 by bjanik           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ t_ssl_command		g_commands[] = {
 	{NULL, 0, NULL, 0, NULL, NULL, NULL, {NULL, NULL}},
 };
 
-t_msg 				*malloc_msg(void)
+t_msg				*malloc_msg(void)
 {
 	t_msg	*msg;
 
@@ -64,7 +64,7 @@ t_ssl_command		*get_ssl_command(const char *cmd)
 				return (NULL);
 			else if (!g_commands[i].hash_func && !g_commands[i].base64 &&
 					!(g_commands[i].des = init_des(g_commands[i].name,
-												   g_commands[i].des_mode)))
+												g_commands[i].des_mode)))
 				return (NULL);
 			return (&g_commands[i]);
 		}
@@ -73,8 +73,8 @@ t_ssl_command		*get_ssl_command(const char *cmd)
 }
 
 void				print_hash(unsigned char digest[],
-							   uint8_t digest_len,
-							   uint8_t up)
+								uint8_t digest_len,
+								uint8_t up)
 {
 	size_t	i;
 
