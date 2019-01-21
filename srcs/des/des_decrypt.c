@@ -12,13 +12,69 @@
 
 #include "ft_ssl.h"
 
-static void	des_decrypt_message_reg(t_des *des)
+const unsigned char g_padding_patterns[][8] = {
+	"\x01",
+	"\x02\x02",
+	"\x03\x03\x03",
+	"\x04\x04\x04\x04",
+	"\x05\x05\x05\x05\x05",
+	"\x06\x06\x06\x06\x06\x06",
+	"\x07\x07\x07\x07\x07\x07\x07",
+	"\x08\x08\x08\x08\x08\x08\x08\x08",
+};
+
+
+int 	init_decryption_with_salt(t_des *des, unsigned char buf[], int *len)
+{
+	int 	ret;
+
+	ret = 0;
+	if (!(des->opts & DES_OPT_K))
+	{
+		ret = read(des->fd[IN], buf, 16);
+		if (ret < 16)
+		{
+			ft_putendl_fd("ft_ssl: Bad decrypt", STDERR_FILENO);
+			ret = 1;
+		}	
+		else if (!ft_strncmp((char*)buf, "Salted__", 8))
+		{
+			if (!(des->salt = (unsigned char*)malloc(sizeof(unsigned char) * 8)))
+				return (1);
+			ft_memcpy(des->salt, buf + 8, 8);
+		}
+		generate_keys_vector(des);
+		ft_memdel((void**)&des->salt);
+	}
+	*len = 0;
+	return (ret);
+}
+
+static int 	check_errors(unsigned char buf[], int len)
+{
+	if (buf[len - 1] < 9 &&	
+		ft_memcmp(buf + len - buf[len - 1],
+				  g_padding_patterns[buf[len - 1] - 1],
+		 		  buf[len - 1]))
+	{
+		ft_putendl_fd("ft_ssl: Bad decrypt", STDERR_FILENO);
+		return (1);
+	}
+	else if (len % DES_BLOCK_SIZE)
+	{	
+		ft_putendl_fd("ft_ssl: bad block lenght", STDERR_FILENO);
+		return (1);
+	}
+	return (0);
+}
+
+static int des_decrypt_message_reg(t_des *des)
 {
 	int				ret;
 	int				len;
 	unsigned char	buf[BASE64_BUF_SIZE + 1];
 
-	len = 0;
+	init_decryption_with_salt(des, buf, &len);
 	while ((ret = read(des->fd[IN], des->in, BUF_SIZE)) > 0)
 	{
 		!(len + ret <= BUF_SIZE) ? ft_memcpy(buf + len, des->in, ret) :
@@ -33,10 +89,12 @@ static void	des_decrypt_message_reg(t_des *des)
 			len = (len > BASE64_BUF_SIZE) ? len - BUF_SIZE : 0;
 		}
 	}
-	(len % DES_BLOCK_SIZE) ? ft_error_msg("ft_ssl: bad block lenght") : 0;
+	if (check_errors(buf, len))
+		return (1);
 	des_get_cipher(des, len, buf);
 	write(des->fd[OUT], buf, len - buf[len - 1]);
 	(ret < 0) ? ft_error_msg("ft_ssl: Read error") : 0;
+	return (0);
 }
 
 static int	remove_newlines_from_input(unsigned char input[], int ret)
@@ -62,6 +120,11 @@ static int	write_b64_decoding(t_des *des,
 	int	length;
 
 	length = base64_decode(buf, len, des->fd[OUT], 1);
+	if (length % DES_BLOCK_SIZE)
+	{	
+		ft_putendl_fd("ft_ssl: bad block lenght", STDERR_FILENO);
+		return (1);
+	}
 	des_get_cipher(des, length, buf);
 	if (final)
 		write(des->fd[OUT], buf, length - buf[length - 1]);
@@ -70,7 +133,7 @@ static int	write_b64_decoding(t_des *des,
 	return (0);
 }
 
-static void	des_decrypt_message_base64(t_des *des)
+static int	des_decrypt_message_base64(t_des *des)
 {
 	int				ret;
 	int				len;
@@ -93,15 +156,14 @@ static void	des_decrypt_message_base64(t_des *des)
 		}
 	}
 	(ret < 0) ? ft_error_msg("ft_ssl: Read error") : 0;
-	write_b64_decoding(des, buf, len, 1);
-	// if (p_ret == BASE64_BUF_SIZE && len < BUF_SIZE)
-	// 	ft_error_msg("ft_ssl: Invalid character in input stream");
+	if (write_b64_decoding(des, buf, len, 1))
+		return (1);
+	return (0);
 }
 
-void		des_decrypt_message(t_des *des)
+int		des_decrypt_message(t_des *des)
 {
 	if (des->opts & DES_OPT_A)
-		des_decrypt_message_base64(des);
-	else
-		des_decrypt_message_reg(des);
+		return (des_decrypt_message_base64(des));
+	return (des_decrypt_message_reg(des));
 }

@@ -12,12 +12,12 @@
 
 #include "ft_ssl.h"
 
-int		init_msg(t_msg *msg, char *message, char *input_file)
+int		init_msg(t_msg *msg, unsigned char *message, char *input_file)
 {
 	if (message)
 	{
 		msg->str = message;
-		msg->msg_len = ft_strlen(message);
+		msg->msg_len = ft_strlen((char*)message);
 		msg->fd = -1;
 		msg->input_file = NULL;
 	}

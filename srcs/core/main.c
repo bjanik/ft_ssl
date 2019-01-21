@@ -72,18 +72,19 @@ static int		hash_algo(char **argv, t_ssl_command *command)
 
 static int		data_encryption_standard(char **argv, t_ssl_command *cmd)
 {
-	int	ret;
+	int 	ret;
 
 	ret = 0;
 	if (des_opts(argv, cmd->des))
 		ret = 1;
 	else
 	{
-		if (!(cmd->des->opts & DES_OPT_K))
-			generate_keys_vector(cmd->des);
-		if (cmd->des->opts & DES_OPT_D)
+		if (!(cmd->des->opts & DES_OPT_K) && !(cmd->des->opts & DES_OPT_D))
+			if (generate_keys_vector(cmd->des))
+				ret = 1;
+		if (cmd->des->opts & DES_OPT_D && !ret)
 			des_decrypt_message(cmd->des);
-		else
+		else if (!ret)
 			des_encrypt_message(cmd->des);
 	}
 	ft_strdel(&cmd->des->password);
@@ -108,7 +109,7 @@ static int		ft_ssl_routine(char **argv)
 		ret = data_encryption_standard(argv, command);
 	else
 		ret = base64_core(argv, command->base64);
-	return (0);
+	return (ret);
 }
 
 int				interactive_mode(char **argv)
@@ -124,9 +125,10 @@ int				interactive_mode(char **argv)
 		write(STDOUT_FILENO, "ft_ssl> ", 8);
 		if (get_next_line(STDIN_FILENO, &input) < 0)
 			ft_error_msg("ft_ssl: Reading user input failed");
-		//if (!input)
-	//		break ;
-		lexer_input(&lexer, input);
+		if (!input)
+			break ;
+		if (lexer_input(&lexer, input))
+			continue ;
 		if (!(lst = ft_lstnew(argv[0], ft_strlen(argv[0]) + 1)))
 			ft_error_msg("Malloc failed");
 		lst->next = lexer.tokens[0];
@@ -134,9 +136,9 @@ int				interactive_mode(char **argv)
 		if (!(av = lst_to_tab(lexer.tokens[0], lexer.count + 1)))
 			ft_error_msg("Malloc failed");
 		ft_ssl_routine(av);
-		ft_free_string_tab(&av);
-		ft_lstdel(&lexer.tokens[0], del);
 		ft_strdel(&input);
+		reset_lexer(&lexer);
+		ft_free_string_tab(&av);
 	}
 	ft_strdel(&lexer.current_token);
 	return (0);

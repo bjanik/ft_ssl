@@ -53,9 +53,10 @@ typedef struct		s_transition
 }					t_transition;
 
 void				init_lexer(t_lexer *lexer);
+void				reset_lexer(t_lexer *lexer);
 void				delimitate_token(t_lexer *lexer);
 void				realloc_current_token(t_lexer *lexer);
-void				lexer_input(t_lexer *lexer, char *input);
+int					lexer_input(t_lexer *lexer, char *input);
 void				del(void *content, size_t size);
 
 

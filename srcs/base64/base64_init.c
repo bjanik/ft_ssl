@@ -50,7 +50,7 @@ int			base64_opts(char **argv, t_base64 *base)
 		else
 		{
 			ft_memdel((void**)&base);
-			write(STDERR_FILENO, "ft_ssl: base64: invalid option", 30);
+			ft_putendl_fd("ft_ssl: base64: invalid option", STDERR_FILENO);
 			return (1);
 		}
 	}
@@ -75,7 +75,7 @@ t_base64	*init_base64(void)
 	return (base);
 }
 
-void		init_b64(t_des *des, t_base64 *base)
+void		init_b64_fds(t_des *des, t_base64 *base)
 {
 	base->fd[IN] = des->fd[IN];
 	base->fd[OUT] = des->fd[OUT];

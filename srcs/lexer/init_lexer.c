@@ -20,7 +20,7 @@ void	init_lexer(t_lexer *lexer)
 	ft_bzero(lexer->current_token, INITIAL_TOKEN_SIZE + 1);
 	lexer->token_size = INITIAL_TOKEN_SIZE;
 	lexer->token_len = 0;
-	lexer->state = 0;
+	lexer->state = INIT;
 	lexer->event = START;
 	lexer->tokens[0] = NULL;
 	lexer->tokens[1] = NULL;

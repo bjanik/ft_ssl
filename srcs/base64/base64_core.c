@@ -71,5 +71,6 @@ int			base64_core(char **argv, t_base64 *base)
 		(ret < 0) ? ft_error_msg("ft_ssl: Read error") : 0;
 		ft_putchar_fd('\n', base->fd[OUT]);
 	}
+	ft_memdel((void**)&base);
 	return (0);
 }

@@ -73,7 +73,7 @@ void				sha256(t_msg *msg, uint32_t opts)
 	sha256_init(&ctx);
 	if ((digest = sha256_core(&ctx, msg, opts)))
 	{
-		sha256_final(&ctx);
 		output_digest(msg, ctx, opts);
+		ft_strdel((char**)&digest);
 	}
 }

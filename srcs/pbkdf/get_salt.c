@@ -12,21 +12,20 @@
 
 #include "ft_ssl.h"
 
-unsigned char 	*get_salt(t_des *des)
+int 	get_salt(t_des *des)
 {
 	int 			fd;
-	unsigned char	*salt;
 
-	if (!(salt = ft_memalloc(sizeof(char) * 9)))
-		ft_error_msg("ft_ssl: malloc failed");
-	// ft_memset(salt, 0x0, 9);
+	des->salt = (unsigned char*)malloc(sizeof(unsigned char*) * 8);
 	if ((fd = open("/dev/random", O_RDONLY, 0644)) < 0)
 		ft_error_msg("ft_ssl: /dev/random opening failed");
-	if (read(fd, salt, 8) < 0)
+	if (read(fd, des->salt, 8) < 0)
 	{
 		close(fd);	
-	 	ft_error_msg("ft_ssl: read failed");
+	 	ft_putendl_fd("ft_ssl: read failed", STDERR_FILENO);
+	 	return (1);
 	}
+	// print_hash(des->salt, 8, 1);
 	close(fd);
-	return (salt);
+	return (0);
 }

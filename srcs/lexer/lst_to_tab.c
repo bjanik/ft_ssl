@@ -12,7 +12,7 @@
 
 #include "lexer.h"
 
-char		**lst_to_tab(t_list *tokens, int count)
+char	**lst_to_tab(t_list *tokens, int count)
 {
 	t_list	*tk;
 	char	**tab;

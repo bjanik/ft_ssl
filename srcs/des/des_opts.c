@@ -62,18 +62,18 @@ int			set_subkeys(char **argv, t_des *des, int *index)
 
 int			set_salt(char **argv, t_des *des, int *index)
 {
-	int 	len;
+	uint64_t	salt;
 
 	if (!argv[++(*index)])
 	{
 		ft_putendl_fd("ft_ssl: missing argument salt for -s", STDERR_FILENO);
 		return (1);
 	}
-	if ((len = ft_strlen(argv[*index])) > 16)
-		ft_memcpy(des->salt, argv[*index], 16);
-	else
-		ft_memcpy(des->salt, argv[*index], len);
-	// return (get_hex_from_str(argv[*index], &des->salt));
+	if (get_hex_from_str(argv[*index], &salt))
+		return (1);
+	des->salt = (unsigned char*)malloc(sizeof(unsigned char) * 8);
+	ft_memset(des->salt, 0, 8);
+	cipher_to_string(salt, des->salt);
 	return (0);
 }
 
@@ -86,7 +86,7 @@ static int	finalize_opts(t_des *des)
 		return (1);
 	}
 	if (des->opts & DES_OPT_A)
-		init_b64(des, des->base64);
+		init_b64_fds(des, des->base64);
 	if (des->opts & DES_OPT_D)
 	{
 		swap_keys(des->keys[0]);
