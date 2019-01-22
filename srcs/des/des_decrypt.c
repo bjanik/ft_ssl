@@ -26,12 +26,14 @@ const unsigned char g_padding_patterns[][8] = {
 
 int 	init_decryption_with_salt(t_des *des, unsigned char buf[], int *len)
 {
-	int 	ret;
+	// unsigned char	keys[4][8];
+	int 			ret;
 
 	ret = 0;
 	if (!(des->opts & DES_OPT_K))
 	{
 		ret = read(des->fd[IN], buf, 16);
+		(ret < 0) ? ft_error_msg("ft_ssl: Read error") : 0;
 		if (ret < 16)
 		{
 			ft_putendl_fd("ft_ssl: Bad decrypt", STDERR_FILENO);
@@ -40,7 +42,7 @@ int 	init_decryption_with_salt(t_des *des, unsigned char buf[], int *len)
 		else if (!ft_strncmp((char*)buf, "Salted__", 8))
 		{
 			if (!(des->salt = (unsigned char*)malloc(sizeof(unsigned char) * 8)))
-				return (1);
+				ft_error_msg("ft_ssl: Malloc failed");
 			ft_memcpy(des->salt, buf + 8, 8);
 		}
 		generate_keys_vector(des);
@@ -50,8 +52,9 @@ int 	init_decryption_with_salt(t_des *des, unsigned char buf[], int *len)
 	return (ret);
 }
 
-static int 	check_errors(unsigned char buf[], int len)
+static int 	check_errors(unsigned char buf[], int len, int ret)
 {
+	(ret < 0) ? ft_error_msg("ft_ssl: Read error") : 0;
 	if (buf[len - 1] < 9 &&	
 		ft_memcmp(buf + len - buf[len - 1],
 				  g_padding_patterns[buf[len - 1] - 1],
@@ -74,7 +77,8 @@ static int des_decrypt_message_reg(t_des *des)
 	int				len;
 	unsigned char	buf[BASE64_BUF_SIZE + 1];
 
-	init_decryption_with_salt(des, buf, &len);
+	if (init_decryption_with_salt(des, buf, &len))
+		return (1);
 	while ((ret = read(des->fd[IN], des->in, BUF_SIZE)) > 0)
 	{
 		!(len + ret <= BUF_SIZE) ? ft_memcpy(buf + len, des->in, ret) :
@@ -89,11 +93,10 @@ static int des_decrypt_message_reg(t_des *des)
 			len = (len > BASE64_BUF_SIZE) ? len - BUF_SIZE : 0;
 		}
 	}
-	if (check_errors(buf, len))
+	if (check_errors(buf, len, ret))
 		return (1);
 	des_get_cipher(des, len, buf);
 	write(des->fd[OUT], buf, len - buf[len - 1]);
-	(ret < 0) ? ft_error_msg("ft_ssl: Read error") : 0;
 	return (0);
 }
 
@@ -106,7 +109,7 @@ static int	remove_newlines_from_input(unsigned char input[], int ret)
 	j = 0;
 	while (i < ret)
 	{
-		if (input[i] != '\n')
+		if (input[i] != '\n' && input[i] != ' ')
 			input[j++] = input[i];
 		i++;
 	}

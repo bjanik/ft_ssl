@@ -70,9 +70,18 @@ static int		hash_algo(char **argv, t_ssl_command *command)
 	return (i);
 }
 
+static void		reset_des(t_ssl_command *cmd)
+{
+	ft_strdel(&cmd->des->password);
+	ft_strdel((char**)&cmd->des->salt);
+	ft_memdel((void**)&cmd->des->base64);
+	ft_memset(cmd->des->hex_keys, '0', MAX_KEY_LEN * 4);
+	ft_memdel((void**)&cmd->des);
+}
+
 static int		data_encryption_standard(char **argv, t_ssl_command *cmd)
 {
-	int 	ret;
+	int 			ret;
 
 	ret = 0;
 	if (des_opts(argv, cmd->des))
@@ -80,17 +89,15 @@ static int		data_encryption_standard(char **argv, t_ssl_command *cmd)
 	else
 	{
 		if (!(cmd->des->opts & DES_OPT_K) && !(cmd->des->opts & DES_OPT_D))
-			if (generate_keys_vector(cmd->des))
-				ret = 1;
-		if (cmd->des->opts & DES_OPT_D && !ret)
+			generate_keys_vector(cmd->des);
+		if (cmd->des->opts & DES_OPT_CAP_P)
+			display_skv(cmd->des);
+		else if (cmd->des->opts & DES_OPT_D && !ret)
 			des_decrypt_message(cmd->des);
 		else if (!ret)
 			des_encrypt_message(cmd->des);
 	}
-	ft_strdel(&cmd->des->password);
-	ft_strdel((char**)&cmd->des->salt);
-	ft_memdel((void**)&cmd->des->base64);
-	ft_memdel((void**)&cmd->des);
+	reset_des(cmd);
 	return (ret);
 }
 

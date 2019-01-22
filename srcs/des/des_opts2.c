@@ -53,13 +53,20 @@ int		set_output_file(char **argv, t_des *des, int *index)
 
 int		set_init_vector(char **argv, t_des *des, int *index)
 {
+	int 	len;
+
 	if (!argv[++(*index)])
 	{
 		ft_putendl_fd("ft_ssl: init vector must be defined", STDERR_FILENO);
 		return (1);
 	}
+	if (get_hex_from_str(argv[*index], &des->init_vector))
+		return (1);
+	if ((len = ft_strlen(argv[*index])) > 16)
+		ft_memcpy(des->hex_keys + 48, argv[*index], 16);
+	else
+		ft_memcpy(des->hex_keys + 48, argv[*index], len);
 	des->opts |= DES_OPT_V;
-	get_hex_from_str(argv[*index], &des->init_vector);
 	return (0);
 }
 

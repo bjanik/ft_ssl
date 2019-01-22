@@ -43,7 +43,7 @@ static unsigned char	*pbkdf(char *password, unsigned char *salt, int des)
 	return (hash);
 }
 
-uint64_t	get_keys_vector_from_hash(unsigned char *keys)
+uint64_t				get_keys_vector_from_hash(unsigned char *keys)
 {
 	uint64_t	tmp;
 	uint64_t	key;
@@ -60,85 +60,78 @@ uint64_t	get_keys_vector_from_hash(unsigned char *keys)
 	return (key);
 }
 
-
-int	display_skv(t_des *des, unsigned char *salt,
-					unsigned char keys[][8],
-					unsigned char iv[])
+int						display_skv(t_des *des)
 {
 	int 		i;
 	uint8_t 	nb_keys;
 
 	i = -1;
 	nb_keys = (ft_strchr(des->name, '3')) ? 3 : 1;
-	if (des->opts & DES_OPT_CAP_P)
+	ft_printf("salt=");
+	print_hash((unsigned char*)des->salt, 8, 1);
+	write(STDOUT_FILENO, "\n", 1);
+	ft_printf("key=");
+	while (++i < nb_keys)
+		write(STDOUT_FILENO, des->hex_keys + i * 16, 16);
+	write(STDOUT_FILENO, "\n", 1);
+	if (!ft_strstr(des->name, "ecb"))
 	{
-		ft_printf("salt=");
-		print_hash((unsigned char*)salt, 8, 1);
-		write(STDOUT_FILENO, "\n", 1);
-		ft_printf("key=");
-		while (++i < nb_keys)
-			print_hash(keys[i], 8, 1);
-		write(STDOUT_FILENO, "\n", 1);
-		if (!ft_strstr(des->name, "ecb"))
-		{
-			ft_printf("iv=");
-			print_hash(iv, 8, 1);
-			write(STDOUT_FILENO, "\n", 1);	
-		}
-		return (1);
+		ft_printf("iv=");
+		write(STDOUT_FILENO, des->hex_keys + nb_keys * 16, 16);
+		write(STDOUT_FILENO, "\n", 1);	
 	}
 	return (0);
 }
 
-static int	set_key(t_des *des,
-								 unsigned char *hash,
-								 unsigned char iv[],
-								 unsigned char keys[][8])
+static void				set_key(t_des *des,
+								unsigned char *hash,
+								unsigned char keys[][8],
+								int nb)
 {
 	uint64_t		key;
-	int 			nb;
 	int 			i;
+	char			*s;
 
-	nb = (ft_strchr(des->name, '3')) ? 3 : 1;
-	i = 0;
-	while (i < nb)
+	i = -1;
+	while (++i < nb)
 	{
 		ft_memcpy(keys[i], hash + i * 8, 8);
 		key = get_keys_vector_from_hash(keys[i]);
+		if (!(s = ft_itoa_base_llu(key, "0123456789ABCDEF")))
+			ft_error_msg("ft_ssl: Malloc failed");
+		ft_memcpy(des->hex_keys + i * 16, s, 16);
+		ft_strdel(&s);
 		key = get_56bits_key(key);
 		get_subkeys(key >> 28, (key << 36) >> 36, des->keys[i]);
-		i++;
 	}
 	if (!(des->opts & DES_OPT_V))
 	{
-		ft_memcpy(iv, hash + i * 8, 8);
-		des->init_vector = get_keys_vector_from_hash(iv);
+		ft_memcpy(keys[3], hash + i * 8, 8);
+		des->init_vector = get_keys_vector_from_hash(keys[3]);
+		if (!(s = ft_itoa_base_llu(des->init_vector, "0123456789ABCDEF")))
+			ft_error_msg("ft_ssl: Malloc failed");
+		ft_memcpy(des->hex_keys + i * 16, s, 16);
+		ft_strdel(&s);
 	}
-	return (0);
 }
 
-int	generate_keys_vector(t_des *des)
+int			generate_keys_vector(t_des *des)
 {
 	unsigned char 	*hash;
-	unsigned char	keys[3][8];
-	unsigned char	iv[8];
+	unsigned char	keys[4][8];
+	int 			nb;
 
 	if (!des->password)
 		if (!(des->password = get_password(des->opts & DES_OPT_D)))
 			return (1);
 	!des->salt ? get_salt(des) : 0;
-	if (ft_strchr(des->name, '3'))
-		hash = pbkdf(des->password, des->salt, TRIPLE_DES);
-	else
-		hash = pbkdf(des->password, des->salt, SINGLE_DES);
-	if (!hash)
+	nb = (ft_strchr(des->name, '3')) ? TRIPLE_DES : SINGLE_DES;
+	if (!(hash = pbkdf(des->password, des->salt, nb)))
 		return (1);
 	if (des->opts & DES_OPT_V)
-		cipher_to_string(des->init_vector, iv);
-	set_key(des, hash, iv, keys);
+		cipher_to_string(des->init_vector, keys[3]);
+	set_key(des, hash, keys, nb);
 	ft_strdel((char**)&hash);
-	if (display_skv(des, des->salt, keys, iv))
-		return (1);
 	(des->opts & DES_OPT_D) ? swap_keys(des->keys[0]) : 0;
 	(des->opts & DES_OPT_D) ? swap_keys(des->keys[1]) : 0;
 	(des->opts & DES_OPT_D) ? swap_keys(des->keys[2]) : 0;

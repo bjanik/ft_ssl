@@ -82,6 +82,7 @@ typedef struct 			s_des
 	unsigned char		*salt;
 	unsigned char		in[BASE64_BUF_SIZE + 1];
 	uint64_t			keys[3][DES_ROUNDS];
+	unsigned char		hex_keys[64];
 	uint64_t			init_vector;
 	uint64_t			(*des_mode[2])(uint64_t plain, struct s_des *des);
 	uint8_t				opts;
@@ -208,6 +209,8 @@ uint32_t				pbox_permutation(uint32_t block);
 uint64_t				final_permutation(uint32_t left, uint32_t right);
 
 int						generate_keys_vector(t_des *des);
+int						display_skv(t_des *des);
+
 char					*get_password(int encryption);
 int						get_salt(t_des *des);
    

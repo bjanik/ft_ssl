@@ -49,3 +49,20 @@ int		set_base64(char **argv, t_des *des, int *index)
 		ft_error_msg("Malloc failed");
 	return (0);
 }
+
+int			set_salt(char **argv, t_des *des, int *index)
+{
+	uint64_t	salt;
+
+	if (!argv[++(*index)])
+	{
+		ft_putendl_fd("ft_ssl: missing argument salt for -s", STDERR_FILENO);
+		return (1);
+	}
+	if (get_hex_from_str(argv[*index], &salt))
+		return (1);
+	des->salt = (unsigned char*)malloc(sizeof(unsigned char) * 8);
+	ft_memset(des->salt, 0, 8);
+	cipher_to_string(salt, des->salt);
+	return (0);
+}
