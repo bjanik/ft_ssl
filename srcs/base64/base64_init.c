@@ -12,14 +12,15 @@
 
 #include "ft_ssl.h"
 
-static void	set_base64_fds(t_base64 *base)
+static int	set_base64_fds(t_base64 *base)
 {
 	if (base->input_file)
 		if ((base->fd[IN] = open(base->input_file, O_RDONLY, 0644)) < 0)
 		{
 			ft_putstr_fd("ft_ssl: ", STDERR_FILENO);
-			ft_memdel((void**)&base);
 			perror(base->input_file);
+			ft_memdel((void**)&base);
+			return (1);
 		}
 	if (base->output_file)
 		if ((base->fd[OUT] = open(base->output_file, O_WRONLY |
@@ -27,9 +28,11 @@ static void	set_base64_fds(t_base64 *base)
 													O_TRUNC, 0644)) < 0)
 		{
 			ft_putstr_fd("ft_ssl: ", STDERR_FILENO);
-			ft_memdel((void**)&base);
 			perror(base->input_file);
+			ft_memdel((void**)&base);
+			return (1);
 		}
+	return (0);
 }
 
 int			base64_opts(char **argv, t_base64 *base)
@@ -54,7 +57,8 @@ int			base64_opts(char **argv, t_base64 *base)
 			return (1);
 		}
 	}
-	set_base64_fds(base);
+	if (set_base64_fds(base))
+		return (1);
 	return (0);
 }
 
