@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   des_utils.c                                        :+:      :+:    :+:   */
+/*   gen_key.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: bjanik <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/27 10:33:59 by bjanik            #+#    #+#             */
-/*   Updated: 2019/01/16 19:01:26 by bjanik           ###   ########.fr       */
+/*   Updated: 2019/01/23 13:12:49 by bjanik           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,17 @@ uint64_t				get_56bits_key(uint64_t key)
 	return (key56);
 }
 
+static void				init_key(unsigned char full_key[], char *str_key)
+{
+	int	len;
+
+	len = ft_strlen(str_key);
+	ft_memset(full_key, '0', MAX_KEY_LEN);
+	full_key[MAX_KEY_LEN] = '\0';
+	(len < MAX_KEY_LEN) ? ft_memcpy(full_key, str_key, len) :
+		ft_memcpy(full_key, str_key, MAX_KEY_LEN);
+}
+
 int						get_hex_from_str(char *str_key, uint64_t *key)
 {
 	unsigned char	full_key[MAX_KEY_LEN + 1];
@@ -54,10 +65,7 @@ int						get_hex_from_str(char *str_key, uint64_t *key)
 	int				val;
 
 	len = ft_strlen(str_key);
-	ft_memset(full_key, '0', MAX_KEY_LEN);
-	full_key[MAX_KEY_LEN] = '\0';
-	(len < MAX_KEY_LEN) ? ft_memcpy(full_key, str_key, len) :
-		ft_memcpy(full_key, str_key, MAX_KEY_LEN);
+	init_key(full_key, str_key);
 	len = -1;
 	while (++len < MAX_KEY_LEN)
 	{
@@ -104,7 +112,7 @@ void					get_subkeys(uint32_t left_key,
 	}
 }
 
-void	swap_keys(uint64_t keys[])
+void					swap_keys(uint64_t keys[])
 {
 	uint8_t		i;
 	uint64_t	tmp;

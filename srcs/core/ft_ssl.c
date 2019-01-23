@@ -30,7 +30,7 @@ t_ssl_command		g_commands[] = {
 	{NULL, 0, NULL, 0, NULL, NULL, NULL, {NULL, NULL}},
 };
 
-t_msg				*malloc_msg(void)
+static t_msg		*malloc_msg(void)
 {
 	t_msg	*msg;
 

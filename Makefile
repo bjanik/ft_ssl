@@ -8,7 +8,9 @@ LIBFT  = libft/
 
 LIB = libft/libft.a
 
-HEADERS = includes/
+INC_PATH = includes/
+INC_NAME = includes/ft_ssl.h \
+		   includes/lexer.h \
 
 SRC_PATH = srcs/
 OBJ_PATH = obj/
@@ -18,6 +20,7 @@ SRC_NAME = base64/base64_core.c \
 		base64/base64_encode.c \
 		base64/base64_init.c \
 		core/ft_ssl.c \
+		core/interactive_mode.c \
 		core/main.c \
 		core/msg.c \
 		core/opt.c \
@@ -73,8 +76,8 @@ $(OBJ_PATH) :
 	@mkdir -p $(OBJ_PATH)
 	@mkdir -p $(dir $(OBJ))
 
-$(OBJ_PATH)%.o: $(SRC_PATH)%.c ./includes
-	$(CC) $(FLAGS) -I$(HEADERS) -I$(LIBFT)includes -c $< -o $@
+$(OBJ_PATH)%.o: $(SRC_PATH)%.c
+	$(CC) $(FLAGS) -I$(INC_PATH) -I$(LIBFT)includes -c $< -o $@
 
 clean :
 	/bin/rm -rf $(OBJ_PATH)

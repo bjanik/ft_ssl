@@ -6,7 +6,7 @@
 /*   By: bjanik <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/04 14:53:54 by bjanik            #+#    #+#             */
-/*   Updated: 2019/01/16 18:45:46 by bjanik           ###   ########.fr       */
+/*   Updated: 2019/01/23 15:03:42 by bjanik           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,9 +28,31 @@ const t_des_opts	g_des_opts[] =
 	{NULL, NULL}
 };
 
-int			set_subkeys(char **argv, t_des *des, int *index)
+static int	create_subkeys(t_des *des, char *tmp)
 {
 	uint64_t	key;
+	int			len;
+	int			i;
+
+	i = 0;
+	while (i < 3)
+	{
+		if (get_hex_from_str(tmp, &key))
+			return (1);
+		len = ft_strlen(tmp);
+		key = get_56bits_key(key);
+		get_subkeys(key >> 28, (key << 36) >> 36, des->keys[i]);
+		if (len > MAX_KEY_LEN)
+			tmp += MAX_KEY_LEN;
+		else
+			tmp += len;
+		i++;
+	}
+	return (0);
+}
+
+int			set_subkeys(char **argv, t_des *des, int *index)
+{
 	uint8_t		i;
 	uint8_t		len;
 	char		*tmp;
@@ -47,19 +69,7 @@ int			set_subkeys(char **argv, t_des *des, int *index)
 		ft_memcpy(des->hex_keys, argv[*index], 48);
 	else
 		ft_memcpy(des->hex_keys, argv[*index], len);
-	while (i < 3)
-	{
-		if (get_hex_from_str(tmp, &key))
-			return (1);
-		len = ft_strlen(tmp);
-		key = get_56bits_key(key);
-		get_subkeys(key >> 28, (key << 36) >> 36, des->keys[i]);
-		if (len > MAX_KEY_LEN)
-			tmp += MAX_KEY_LEN;
-		else
-			tmp += len;
-		i++;
-	}
+	create_subkeys(des, tmp);
 	swap_keys(des->keys[1]);
 	return (0);
 }
@@ -105,7 +115,7 @@ int			des_opts(char **argv, t_des *des)
 		{
 			ft_putstr_fd("ft_ssl: invalid option: ", STDERR_FILENO);
 			ft_putendl_fd(argv[i], STDERR_FILENO);
-			return (1);
+			return (des_usage());
 		}
 	}
 	return (finalize_opts(des));

@@ -6,7 +6,7 @@
 /*   By: bjanik <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/15 11:19:04 by bjanik            #+#    #+#             */
-/*   Updated: 2019/01/15 11:19:05 by bjanik           ###   ########.fr       */
+/*   Updated: 2019/01/23 12:56:29 by bjanik           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ typedef struct		s_lexer
 	int				token_size;
 	int				state;
 	int				event;
-	size_t 			count;
+	size_t			count;
 	t_list			*tokens[2];
 }					t_lexer;
 
@@ -58,7 +58,6 @@ void				delimitate_token(t_lexer *lexer);
 void				realloc_current_token(t_lexer *lexer);
 int					lexer_input(t_lexer *lexer, char *input);
 void				del(void *content, size_t size);
-
 
 const t_transition	g_lexer[MAX_STATE][MAX_EVENT];
 #endif

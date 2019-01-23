@@ -6,7 +6,7 @@
 /*   By: bjanik <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/16 14:46:01 by bjanik            #+#    #+#             */
-/*   Updated: 2019/01/16 18:52:37 by bjanik           ###   ########.fr       */
+/*   Updated: 2019/01/23 11:41:53 by bjanik           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@ int		set_base64(char **argv, t_des *des, int *index)
 	return (0);
 }
 
-int			set_salt(char **argv, t_des *des, int *index)
+int		set_salt(char **argv, t_des *des, int *index)
 {
 	uint64_t	salt;
 

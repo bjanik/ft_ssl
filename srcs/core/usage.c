@@ -6,7 +6,7 @@
 /*   By: bjanik <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/29 15:23:30 by bjanik            #+#    #+#             */
-/*   Updated: 2019/01/17 12:10:34 by bjanik           ###   ########.fr       */
+/*   Updated: 2019/01/23 17:47:26 by bjanik           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,5 +38,21 @@ int	commands_usage(char *command)
 	while (g_commands[++i].name)
 		(!g_commands[i].hash_func) ?
 			ft_putendl_fd(g_commands[i].name, STDERR_FILENO) : 0;
+	return (1);
+}
+
+int	des_usage(void)
+{
+	ft_putendl_fd("Options are:", STDERR_FILENO);
+	ft_putendl_fd("-i [file]     input file", STDERR_FILENO);
+	ft_putendl_fd("-o [file]     output file", STDERR_FILENO);
+	ft_putendl_fd("-e            encrypt", STDERR_FILENO);
+	ft_putendl_fd("-d            decrypt", STDERR_FILENO);
+	ft_putendl_fd("-a            base64 encode/decode", STDERR_FILENO);
+	ft_putendl_fd("-k            key is the next argument", STDERR_FILENO);
+	ft_putendl_fd("-p            password is the next argument", STDERR_FILENO);
+	ft_putendl_fd("-s            salt is the next argument", STDERR_FILENO);
+	ft_putendl_fd("-v            init vector is the next argument",
+				STDERR_FILENO);
 	return (1);
 }

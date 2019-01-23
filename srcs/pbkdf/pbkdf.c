@@ -6,7 +6,7 @@
 /*   By: bjanik <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/07 15:43:54 by bjanik            #+#    #+#             */
-/*   Updated: 2018/12/07 15:43:56 by bjanik           ###   ########.fr       */
+/*   Updated: 2019/01/23 11:59:04 by bjanik           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,8 +62,8 @@ uint64_t				get_keys_vector_from_hash(unsigned char *keys)
 
 int						display_skv(t_des *des)
 {
-	int 		i;
-	uint8_t 	nb_keys;
+	int		i;
+	uint8_t	nb_keys;
 
 	i = -1;
 	nb_keys = (ft_strchr(des->name, '3')) ? 3 : 1;
@@ -78,7 +78,7 @@ int						display_skv(t_des *des)
 	{
 		ft_printf("iv=");
 		write(STDOUT_FILENO, des->hex_keys + nb_keys * 16, 16);
-		write(STDOUT_FILENO, "\n", 1);	
+		write(STDOUT_FILENO, "\n", 1);
 	}
 	return (0);
 }
@@ -88,9 +88,9 @@ static void				set_key(t_des *des,
 								unsigned char keys[][8],
 								int nb)
 {
-	uint64_t		key;
-	int 			i;
-	char			*s;
+	uint64_t	key;
+	int			i;
+	char		*s;
 
 	i = -1;
 	while (++i < nb)
@@ -115,11 +115,11 @@ static void				set_key(t_des *des,
 	}
 }
 
-int			generate_keys_vector(t_des *des)
+int						generate_keys_vector(t_des *des)
 {
-	unsigned char 	*hash;
+	unsigned char	*hash;
 	unsigned char	keys[4][8];
-	int 			nb;
+	int				nb;
 
 	if (!des->password)
 		if (!(des->password = get_password(des->opts & DES_OPT_D)))
@@ -131,6 +131,7 @@ int			generate_keys_vector(t_des *des)
 	if (des->opts & DES_OPT_V)
 		cipher_to_string(des->init_vector, keys[3]);
 	set_key(des, hash, keys, nb);
+	des->opts |= DES_OPT_K;
 	ft_strdel((char**)&hash);
 	(des->opts & DES_OPT_D) ? swap_keys(des->keys[0]) : 0;
 	(des->opts & DES_OPT_D) ? swap_keys(des->keys[1]) : 0;

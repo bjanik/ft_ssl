@@ -6,7 +6,7 @@
 /*   By: bjanik <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/31 16:31:13 by bjanik            #+#    #+#             */
-/*   Updated: 2018/11/05 10:22:58 by bjanik           ###   ########.fr       */
+/*   Updated: 2019/01/23 11:33:06 by bjanik           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ int			illegal_opt(char c, char *cmd_name)
 
 static int	hash_string(t_msg *msg, char **argv, int *ind, int i)
 {
-		char	*s;
+	char	*s;
 
 	if (argv[*ind][i + 1])
 		s = &argv[*ind][i + 1];

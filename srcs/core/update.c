@@ -6,21 +6,11 @@
 /*   By: bjanik <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/01 11:34:27 by bjanik            #+#    #+#             */
-/*   Updated: 2018/11/01 14:15:12 by bjanik           ###   ########.fr       */
+/*   Updated: 2019/01/23 19:35:41 by bjanik           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ssl.h"
-
-static int			display_buf(t_msg *msg, uint32_t opts)
-{
-	if (opts & OPT_P)
-	{
-		write(STDOUT_FILENO, msg->buf, BUF_SIZE);
-		ft_memset(msg->buf, 0x0, BUF_SIZE + 1);
-	}
-	return (0);
-}
 
 static void			read_error(char *input_file, int ret)
 {
@@ -40,35 +30,52 @@ static void			transform_block(t_ctx *ctx)
 	ctx->len = 0;
 }
 
-static int			read_from_fd(t_msg *msg, t_ctx *ctx, uint32_t opts)
+static int			read_from_stdin(t_msg *msg, t_ctx *ctx, uint32_t opts)
 {
 	int			buflen;
 	int			ret;
+	char		c;
 
 	buflen = 0;
+	while ((ret = read(msg->fd, &c, 1)) > 0)
+	{
+		ctx->block[ctx->len++] = c;
+		msg->buf[buflen++] = c;
+		if (buflen == BUF_SIZE)
+		{
+			if (opts & OPT_P)
+			{
+				write(STDOUT_FILENO, msg->buf, BUF_SIZE);
+				ft_memset(msg->buf, 0x0, BUF_SIZE + 1);
+			}
+			buflen = 0;
+		}
+		(ctx->len == BLOCK_SIZE) ? transform_block(ctx) : 0;
+	}
+	read_error(msg->input_file, ret);
+	if (!msg->fd && (opts & OPT_P))
+		write(STDOUT_FILENO, msg->buf, buflen);
+	return (ret);
+}
+
+static int			read_from_file(t_msg *msg, t_ctx *ctx)
+{
+	int			ret;
+
 	while ((ret = read(msg->fd, ctx->block + ctx->len, BLOCK_SIZE)) > 0)
 	{
 		ctx->len += ret;
-		if (!msg->fd && !msg->input_file)
-		{
-			ft_memcpy(msg->buf + buflen, ctx->block, ret);
-			buflen += ret;
-			if (buflen == BUF_SIZE)
-				buflen = display_buf(msg, opts);
-		}
 		if (ctx->len == BLOCK_SIZE)
 			transform_block(ctx);
 	}
-	(!msg->fd && !msg->input_file && opts & OPT_P) ? write(1, msg->buf, buflen)
-													: 0;
-	msg->input_file ? close(msg->fd) : 0;
+	close(msg->fd);
 	read_error(msg->input_file, ret);
 	return (ret);
 }
 
 int					update(t_ctx *ctx, t_msg *msg, uint32_t opts)
 {
-	uint32_t		i;
+	uint32_t	i;
 
 	i = 0;
 	if (msg->str)
@@ -79,10 +86,12 @@ int					update(t_ctx *ctx, t_msg *msg, uint32_t opts)
 			{
 				ctx->transform(ctx);
 				ctx->len = 0;
-				ctx->bitlen += 512;
+				ctx->bitlen += BLOCK_SIZE * 8;
 			}
 		}
+	else if (msg->input_file)
+		return (read_from_file(msg, ctx));
 	else
-		return (read_from_fd(msg, ctx, opts));
+		return (read_from_stdin(msg, ctx, opts));
 	return (0);
 }

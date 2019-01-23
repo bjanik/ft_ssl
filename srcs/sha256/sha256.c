@@ -6,7 +6,7 @@
 /*   By: bjanik <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/29 11:19:35 by bjanik            #+#    #+#             */
-/*   Updated: 2018/10/29 19:52:44 by bjanik           ###   ########.fr       */
+/*   Updated: 2019/01/23 11:59:33 by bjanik           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,7 +65,7 @@ unsigned char	*sha256_core(t_ctx *ctx, t_msg *msg, uint32_t opts)
 	return (NULL);
 }
 
-void				sha256(t_msg *msg, uint32_t opts)
+void			sha256(t_msg *msg, uint32_t opts)
 {
 	t_ctx			ctx;
 	unsigned char	*digest;

@@ -6,7 +6,7 @@
 /*   By: bjanik <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/16 13:00:40 by bjanik            #+#    #+#             */
-/*   Updated: 2019/01/16 18:52:16 by bjanik           ###   ########.fr       */
+/*   Updated: 2019/01/23 11:41:38 by bjanik           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@ int		set_input_file(char **argv, t_des *des, int *index)
 			perror(argv[*index]);
 			return (1);
 		}
+		des->input_file = argv[*index];
 	}
 	else
 	{
@@ -42,6 +43,7 @@ int		set_output_file(char **argv, t_des *des, int *index)
 			perror(argv[*index]);
 			return (1);
 		}
+		des->output_file = argv[*index];
 	}
 	else
 	{
@@ -53,7 +55,7 @@ int		set_output_file(char **argv, t_des *des, int *index)
 
 int		set_init_vector(char **argv, t_des *des, int *index)
 {
-	int 	len;
+	int	len;
 
 	if (!argv[++(*index)])
 	{

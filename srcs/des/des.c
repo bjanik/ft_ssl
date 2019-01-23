@@ -6,7 +6,7 @@
 /*   By: bjanik <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/03 14:22:12 by bjanik            #+#    #+#             */
-/*   Updated: 2019/01/16 18:11:50 by bjanik           ###   ########.fr       */
+/*   Updated: 2019/01/23 11:45:41 by bjanik           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,9 +26,9 @@ void			cipher_to_string(uint64_t cipher, unsigned char output[])
 
 void			des_get_cipher(t_des *des, int len, unsigned char buf[])
 {
-	uint64_t		plain;
-	uint64_t		cipher;
-	int				offset;
+	uint64_t	plain;
+	uint64_t	cipher;
+	int			offset;
 
 	offset = 0;
 	if (!ft_strncmp((char*)buf, "Salted__", 8) && des->salt)
@@ -47,14 +47,14 @@ void			des_get_cipher(t_des *des, int len, unsigned char buf[])
 
 static void		des_final(t_des *des, int len, unsigned char buf[])
 {
-	int 	length;
+	int	length;
 
 	length = len;
 	if (!(des->opts & DES_NOPAD) || !len)
 	{
 		ft_memset(buf + len, 8 - len % 8, 8 - len % 8);
 		length = len + 8 - len % 8;
-	}	
+	}
 	des_get_cipher(des, length, buf);
 	if (des->opts & DES_OPT_A)
 		base64_encode(buf, length, des->fd[OUT]);
@@ -62,8 +62,7 @@ static void		des_final(t_des *des, int len, unsigned char buf[])
 		write(des->fd[OUT], buf, length);
 }
 
-
-static void plop(t_des *des, unsigned char buf[], int *len)
+static void		plop(t_des *des, unsigned char buf[], int *len)
 {
 	*len = 0;
 	if (des->salt)
@@ -74,7 +73,7 @@ static void plop(t_des *des, unsigned char buf[], int *len)
 	}
 }
 
-int			des_encrypt_message(t_des *des)
+int				des_encrypt_message(t_des *des)
 {
 	int				ret;
 	int				len;

@@ -6,7 +6,7 @@
 /*   By: bjanik <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/29 11:18:58 by bjanik            #+#    #+#             */
-/*   Updated: 2019/01/17 12:14:17 by bjanik           ###   ########.fr       */
+/*   Updated: 2019/01/23 12:36:58 by bjanik           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,16 +72,19 @@ static int		hash_algo(char **argv, t_ssl_command *command)
 
 static void		reset_des(t_ssl_command *cmd)
 {
+	if (cmd->des->input_file)
+		close(cmd->des->fd[IN]);
+	if (cmd->des->output_file)
+		close(cmd->des->fd[OUT]);
 	ft_strdel(&cmd->des->password);
 	ft_strdel((char**)&cmd->des->salt);
 	ft_memdel((void**)&cmd->des->base64);
-	ft_memset(cmd->des->hex_keys, '0', MAX_KEY_LEN * 4);
 	ft_memdel((void**)&cmd->des);
 }
 
 static int		data_encryption_standard(char **argv, t_ssl_command *cmd)
 {
-	int 			ret;
+	int	ret;
 
 	ret = 0;
 	if (des_opts(argv, cmd->des))
@@ -101,7 +104,7 @@ static int		data_encryption_standard(char **argv, t_ssl_command *cmd)
 	return (ret);
 }
 
-static int		ft_ssl_routine(char **argv)
+int				ft_ssl_routine(char **argv)
 {
 	t_ssl_command	*command;
 	int				ret;
@@ -117,38 +120,6 @@ static int		ft_ssl_routine(char **argv)
 	else
 		ret = base64_core(argv, command->base64);
 	return (ret);
-}
-
-int				interactive_mode(char **argv)
-{
-	t_lexer	lexer;
-	char	*input;
-	t_list	*lst;
-	char	**av;
-
-	init_lexer(&lexer);
-	while (42)
-	{
-		write(STDOUT_FILENO, "ft_ssl> ", 8);
-		if (get_next_line(STDIN_FILENO, &input) < 0)
-			ft_error_msg("ft_ssl: Reading user input failed");
-		if (!input)
-			break ;
-		if (lexer_input(&lexer, input))
-			continue ;
-		if (!(lst = ft_lstnew(argv[0], ft_strlen(argv[0]) + 1)))
-			ft_error_msg("Malloc failed");
-		lst->next = lexer.tokens[0];
-		lexer.tokens[0] = lst;
-		if (!(av = lst_to_tab(lexer.tokens[0], lexer.count + 1)))
-			ft_error_msg("Malloc failed");
-		ft_ssl_routine(av);
-		ft_strdel(&input);
-		reset_lexer(&lexer);
-		ft_free_string_tab(&av);
-	}
-	ft_strdel(&lexer.current_token);
-	return (0);
 }
 
 int				main(int argc, char **argv)
