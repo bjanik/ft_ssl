@@ -49,10 +49,18 @@ static void		md5_final(t_ctx *ctx)
 
 unsigned char	*md5_core(t_ctx *ctx, t_msg *msg, uint32_t opts)
 {
+	unsigned char	*digest;
+
+
 	if (update(ctx, msg, opts) == 0)
 	{
 		md5_final(ctx);
-		return ((unsigned char*)ft_strdup((char*)ctx->digest));
+		digest = (unsigned char*)malloc(MD5_DIGEST_LEN *sizeof(unsigned char));
+		if (!digest)
+			return (NULL);
+		ft_memcpy(digest, ctx->digest, MD5_DIGEST_LEN);
+		return (digest);
+		// return ((unsigned char*)ft_strdup((char*)ctx->digest));
 	}
 	return (NULL);
 }

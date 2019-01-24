@@ -158,12 +158,14 @@ void					print_hash(unsigned char digest[],
 int						parse_opt(t_ssl_command *command,
 									char **argv,
 									int *index);
+int						set_options(t_ssl_command *command, char **argv, int *index);
 int						usage(void);
 int						commands_usage(char *command);
-
 uint32_t				rotleft(uint32_t x, uint32_t n);
 uint32_t				rotright(uint32_t x, uint32_t n);
 uint64_t				shift_left(uint32_t key, uint8_t x);
+// unsigned char			*itoua_base_llu(uint64_t value, char *base);
+
 
 /*
 ** BASE64
@@ -171,6 +173,7 @@ uint64_t				shift_left(uint32_t key, uint8_t x);
 
 void					init_processing(t_base64 *base);
 t_base64				*init_base64(void);
+int 					base64_usage(char *opt);
 int						base64_core(char **argv, t_base64 *base);
 void					base64_encode(unsigned char in[], int ret, int fd);
 int						base64_decode(unsigned char in[],
@@ -188,10 +191,11 @@ int						base64_opts(char **argv, t_base64 *base);
 ** DES
 */
 
-int 					 des_usage(void);
+int 					des_usage(const char *name, char *opt);
 t_des					*init_des(char *name,
 								uint64_t (*des_mode[2])(uint64_t plain,
 														t_des *des));
+void					reset_des(t_ssl_command *cmd);
 int						des_opts(char **argv, t_des *des);
 int						set_password(char **argv, t_des *des, int *index);
 int						set_subkeys(char **argv, t_des *des, int *index);
@@ -242,12 +246,10 @@ uint64_t				des_bc_e(uint64_t plain, t_des *des);
 uint64_t				des_bc_d(uint64_t plain, t_des *des);
 uint64_t				des_pcbc_e(uint64_t plain, t_des *des);
 uint64_t				des_pcbc_d(uint64_t plain, t_des *des);
-
 uint64_t				des3_bc_e(uint64_t plain, t_des *des);
 uint64_t				des3_bc_d(uint64_t plain, t_des *des);
 uint64_t				des3_ecb_e(uint64_t plain, t_des *des);
 uint64_t				des3_ecb_d(uint64_t cipher, t_des *des);
-
 uint64_t				des3_cbc_e(uint64_t plain, t_des *des);
 uint64_t				des3_cbc_d(uint64_t plain, t_des *des);
 uint64_t				des3_pcbc_e(uint64_t plain, t_des *des);

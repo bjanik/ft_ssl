@@ -41,18 +41,36 @@ int	commands_usage(char *command)
 	return (1);
 }
 
-int	des_usage(void)
+int	des_usage(const char *name, char *opt)
 {
+	ft_putstr_fd("ft_ssl: ", STDERR_FILENO);
+	ft_putstr_fd(name, STDERR_FILENO);
+	ft_putstr_fd(": invalid option: ", STDERR_FILENO);
+	ft_putendl_fd(opt, STDERR_FILENO);
 	ft_putendl_fd("Options are:", STDERR_FILENO);
-	ft_putendl_fd("-i [file]     input file", STDERR_FILENO);
-	ft_putendl_fd("-o [file]     output file", STDERR_FILENO);
-	ft_putendl_fd("-e            encrypt", STDERR_FILENO);
-	ft_putendl_fd("-d            decrypt", STDERR_FILENO);
-	ft_putendl_fd("-a            base64 encode/decode", STDERR_FILENO);
-	ft_putendl_fd("-k            key is the next argument", STDERR_FILENO);
-	ft_putendl_fd("-p            password is the next argument", STDERR_FILENO);
-	ft_putendl_fd("-s            salt is the next argument", STDERR_FILENO);
-	ft_putendl_fd("-v            init vector is the next argument",
-				STDERR_FILENO);
+	ft_putendl_fd("-i [file] input file", STDERR_FILENO);
+	ft_putendl_fd("-o [file] output file", STDERR_FILENO);
+	ft_putendl_fd("-e        encrypt", STDERR_FILENO);
+	ft_putendl_fd("-d        decrypt", STDERR_FILENO);
+	ft_putendl_fd("-a        base64 encode/decode", STDERR_FILENO);
+	ft_putendl_fd("-k        key is the next argument", STDERR_FILENO);
+	ft_putendl_fd("-p        password is the next argument", STDERR_FILENO);
+	ft_putendl_fd("-P        output keys/iv/salt values", STDERR_FILENO);
+	ft_putendl_fd("-s        salt is the next argument", STDERR_FILENO);
+	ft_putendl_fd("-v        init vector is the next argument", STDERR_FILENO);
+	ft_putendl_fd("-nopad    disables padding for encryption", STDERR_FILENO);
 	return (1);
+}
+
+int base64_usage(char *opt)
+{
+	ft_putstr_fd("ft_ssl: base64: invalid option: ", STDERR_FILENO);
+	ft_putendl_fd(opt, STDERR_FILENO);
+	ft_putendl_fd("Options are:", STDERR_FILENO);
+	ft_putendl_fd("-i [file] input file", STDERR_FILENO);
+	ft_putendl_fd("-o [file] output file", STDERR_FILENO);
+	ft_putendl_fd("-e        encode", STDERR_FILENO);
+	ft_putendl_fd("-d        decode", STDERR_FILENO);
+	return (1);
+
 }

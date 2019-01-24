@@ -53,8 +53,7 @@ int			base64_opts(char **argv, t_base64 *base)
 		else
 		{
 			ft_memdel((void**)&base);
-			ft_putendl_fd("ft_ssl: base64: invalid option", STDERR_FILENO);
-			return (1);
+			return (base64_usage(argv[i]));
 		}
 	}
 	if (set_base64_fds(base))

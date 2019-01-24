@@ -1,6 +1,10 @@
 #!/bin/sh
 set -e
 echo ----------------- DES-ECB -------------------
+openssl des-ecb -in auteur -K  789789789 > open
+./ft_ssl des-ecb -i auteur -k 789789789 > ft
+diff open ft
+echo ---------------------------------------------
 openssl des-ecb -in /bin/ls -K  789789789 > open
 ./ft_ssl des-ecb -i /bin/ls -k 789789789 > ft
 diff open ft

@@ -125,6 +125,8 @@ int						generate_keys_vector(t_des *des)
 		if (!(des->password = get_password(des->opts & DES_OPT_D)))
 			return (1);
 	!des->salt ? get_salt(des) : 0;
+	// write(2, des->salt, 8);
+	// dprintf(2, "pass = %s\n", des->password);
 	nb = (ft_strchr(des->name, '3')) ? TRIPLE_DES : SINGLE_DES;
 	if (!(hash = pbkdf(des->password, des->salt, nb)))
 		return (1);

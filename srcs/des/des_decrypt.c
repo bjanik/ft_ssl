@@ -61,12 +61,13 @@ static int			check_errors(unsigned char buf[], int len, int ret)
 				g_padding_patterns[buf[len - 1] - 1],
 				buf[len - 1]))
 	{
+		// dprintf(2, "buf[len - 1] = %d\n", buf[len - 1]);
 		ft_putendl_fd("ft_ssl: Bad decrypt", STDERR_FILENO);
 		return (1);
 	}
 	else if (len % DES_BLOCK_SIZE)
 	{
-		ft_putendl_fd("ft_ssl: bad block lenght", STDERR_FILENO);
+		ft_putendl_fd("ft_ssl: bad block length", STDERR_FILENO);
 		return (1);
 	}
 	return (0);
@@ -82,7 +83,7 @@ static int			des_decrypt_message_reg(t_des *des)
 		return (1);
 	while ((ret = read(des->fd[IN], des->in, BUF_SIZE)) > 0)
 	{
-		!(len + ret <= BUF_SIZE) ? ft_memcpy(buf + len, des->in, ret) :
+		(len + ret <= BUF_SIZE) ? ft_memcpy(buf + len, des->in, ret) :
 						ft_memcpy(buf + len, des->in, BUF_SIZE - len);
 		len += ret;
 		if (len >= BUF_SIZE)
@@ -94,9 +95,9 @@ static int			des_decrypt_message_reg(t_des *des)
 			len = (len > BASE64_BUF_SIZE) ? len - BUF_SIZE : 0;
 		}
 	}
+	des_get_cipher(des, len, buf);
 	if (check_errors(buf, len, ret))
 		return (1);
-	des_get_cipher(des, len, buf);
 	write(des->fd[OUT], buf, len - buf[len - 1]);
 	return (0);
 }
@@ -119,11 +120,11 @@ static int			remove_newlines_from_input(unsigned char input[], int ret)
 
 static int			init_decryption64_with_salt(t_des *des,
 											unsigned char buf[],
-											int length)
+											int *length)
 {
 	if (!(des->opts & DES_OPT_K))
 	{
-		if (length < 16)
+		if (*length < 16)
 		{
 			ft_putendl_fd("ft_ssl: error reading input file", STDERR_FILENO);
 			return (1);
@@ -136,8 +137,8 @@ static int			init_decryption64_with_salt(t_des *des,
 				ft_error_msg("ft_ssl: Malloc failed");
 			ft_memcpy(des->salt, buf + 8, 8);
 			generate_keys_vector(des);
-			ft_memmove(buf, buf + 16, length - 16);
-			length -= 16;
+			ft_memmove(buf, buf + 16, *length - 16);
+			*length -= 16;
 		}
 	}
 	return (0);
@@ -150,7 +151,7 @@ static int			write_b64_decoding(t_des *des,
 	int	length;
 
 	length = base64_decode(buf, len, des->fd[OUT], 1);
-	if (init_decryption64_with_salt(des, buf, length))
+	if (init_decryption64_with_salt(des, buf, &length))
 		return (1);
 	if (length % DES_BLOCK_SIZE)
 	{
@@ -179,7 +180,7 @@ static int			des_decrypt_message_base64(t_des *des)
 	while ((ret = read(des->fd[IN], des->in, BASE64_BUF_SIZE)) > 0)
 	{
 		ret = remove_newlines_from_input(des->in, ret);
-		!(len + ret <= BASE64_BUF_SIZE) ? ft_memcpy(buf + len, des->in, ret) :
+		(len + ret > BASE64_BUF_SIZE) ? ft_memcpy(buf + len, des->in, ret) :
 						ft_memcpy(buf + len, des->in, BASE64_BUF_SIZE - len);
 		len += ret;
 		if (len >= BASE64_BUF_SIZE)

@@ -71,3 +71,17 @@ int			parse_opt(t_ssl_command *command, char **argv, int *index)
 	}
 	return (0);
 }
+
+int			set_options(t_ssl_command *command, char **argv, int *index)
+{
+	int	ret;
+
+	if ((ret = parse_opt(command, argv, index)))
+		return (ret);
+	if (command->msg->str || command->msg->fd > -1)
+	{
+		command->hash_func(command->msg, command->opts);
+		reset_msg(command->msg);
+	}
+	return (0);
+}

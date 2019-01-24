@@ -33,20 +33,6 @@ static int		hash_files(char **argv, t_ssl_command *command)
 	return (rett);
 }
 
-static int		set_options(t_ssl_command *command, char **argv, int *index)
-{
-	int	ret;
-
-	if ((ret = parse_opt(command, argv, index)))
-		return (ret);
-	if (command->msg->str || command->msg->fd > -1)
-	{
-		command->hash_func(command->msg, command->opts);
-		reset_msg(command->msg);
-	}
-	return (0);
-}
-
 static int		hash_algo(char **argv, t_ssl_command *command)
 {
 	int	i;
@@ -68,18 +54,6 @@ static int		hash_algo(char **argv, t_ssl_command *command)
 	i = hash_files(argv + i, command);
 	ft_memdel((void**)&command->msg);
 	return (i);
-}
-
-static void		reset_des(t_ssl_command *cmd)
-{
-	if (cmd->des->input_file)
-		close(cmd->des->fd[IN]);
-	if (cmd->des->output_file)
-		close(cmd->des->fd[OUT]);
-	ft_strdel(&cmd->des->password);
-	ft_strdel((char**)&cmd->des->salt);
-	ft_memdel((void**)&cmd->des->base64);
-	ft_memdel((void**)&cmd->des);
 }
 
 static int		data_encryption_standard(char **argv, t_ssl_command *cmd)

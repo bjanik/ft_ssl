@@ -113,9 +113,9 @@ int			des_opts(char **argv, t_des *des)
 		}
 		if (!g_des_opts[j].opt)
 		{
-			ft_putstr_fd("ft_ssl: invalid option: ", STDERR_FILENO);
-			ft_putendl_fd(argv[i], STDERR_FILENO);
-			return (des_usage());
+			// ft_putstr_fd("ft_ssl: invalid option: ", STDERR_FILENO);
+			// ft_putstr_fd(argv[i], STDERR_FILENO);
+			return (des_usage(des->name, argv[i]));
 		}
 	}
 	return (finalize_opts(des));

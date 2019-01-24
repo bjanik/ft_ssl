@@ -62,15 +62,15 @@ static void		des_final(t_des *des, int len, unsigned char buf[])
 		write(des->fd[OUT], buf, length);
 }
 
-static void		plop(t_des *des, unsigned char buf[], int *len)
+static int		insert_salt(t_des *des, unsigned char buf[])
 {
-	*len = 0;
 	if (des->salt)
 	{
 		ft_memcpy(buf, "Salted__", 8);
 		ft_memcpy(buf + 8, des->salt, 8);
-		*len = 16;
+		return (16);
 	}
+	return (0);
 }
 
 int				des_encrypt_message(t_des *des)
@@ -79,7 +79,7 @@ int				des_encrypt_message(t_des *des)
 	int				len;
 	unsigned char	buf[BASE64_BUF_SIZE + 1];
 
-	plop(des, buf, &len);
+	len = insert_salt(des, buf);
 	while ((ret = read(des->fd[IN], des->in, BUF_SIZE)) > 0)
 	{
 		(len + ret > BUF_SIZE) ? ft_memcpy(buf + len, des->in, ret) :
