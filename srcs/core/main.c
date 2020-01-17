@@ -78,10 +78,20 @@ static int		data_encryption_standard(char **argv, t_ssl_command *cmd)
 	return (ret);
 }
 
+
+static int 		standard_rsa_commands(char **argv)
+{
+	int 	ret = 0;
+
+	(void)argv;
+	return (ret);
+}
+
 int				ft_ssl_routine(char **argv)
 {
 	t_ssl_command	*command;
 	int				ret;
+	// char			*rsa_cmd[] = {"genrsa", "rsa", "rsautl", NULL};
 
 	if (!argv[1])
 		return (1);
@@ -91,8 +101,10 @@ int				ft_ssl_routine(char **argv)
 		ret = hash_algo(argv, command);
 	else if (command->des)
 		ret = data_encryption_standard(argv, command);
-	else
+	else if (command->base64)
 		ret = base64_core(argv, command->base64);
+	else
+		ret = standard_rsa_commands(argv);
 	return (ret);
 }
 

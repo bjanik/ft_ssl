@@ -47,6 +47,14 @@
 # define DES_OPT_P 32
 # define DES_OPT_CAP_P 64
 
+# define RSA_CHECK 1
+# define RSA_DES 2
+# define RSA_MODULUS 4
+# define RSA_NOOUT 8
+# define RSA_TEXT 16
+# define RSA_PUBIN 32
+# define RSA_PUBOUT 64
+
 # define MAX_KEY_LEN 16
 
 # define END_OF_OPT "--"
@@ -96,6 +104,39 @@ typedef struct			s_des_opts
 	char				*opt;
 	int					(*opt_f)(char **argv, t_des *des, int *index);
 }						t_des_opts;
+
+
+// typedef struct 			s_rsa_data
+// {
+// 	t_bn				p;
+// 	t_bn				q;
+// 	t_bn				n; // Result of p * q
+// 	t_bn				phi;
+// 	t_bn				private_key;
+// 	t_bn				public_key;
+// }						t_rsa_data;
+
+typedef struct 			s_genrsa
+{
+	char				*in;
+	char				*out;
+	int 				fd[2];
+	char				*rand_file;
+	uint64_t			numbits;
+}						t_genrsa;
+
+typedef struct 			s_rsa
+{
+	char				*inform;
+	char				*outform;
+	char				*in;
+	char				*out;
+	int 				fd[2];
+	char				*passin;
+	char				*passout;
+	uint8_t				opts;
+	t_des 				*des;
+}						t_rsa;
 
 typedef struct			s_msg
 {
@@ -255,6 +296,24 @@ uint64_t				des3_cbc_d(uint64_t plain, t_des *des);
 uint64_t				des3_pcbc_e(uint64_t plain, t_des *des);
 uint64_t				des3_pcbc_d(uint64_t plain, t_des *des);
 char					**lst_to_tab(t_list *tokens, int count);
+
+/*
+ RSA flags functions
+ */
+
+int 					set_inform(char **argv, t_rsa *rsa, int *index);
+int 					set_outform(char **argv, t_rsa *rsa, int *index);
+int						set_in_file(char **argv, t_rsa *rsa, int *index);
+int						set_out_file(char **argv, t_rsa *rsa, int *index);
+int						set_password_rsa(char **argv, t_rsa *rsa, int *index);
+int						set_password_output(char **argv, t_rsa *rsa, int *index);
+int						set_des_encryption(char **argv, t_rsa *rsa, int *index);
+int						set_text(char **argv, t_rsa *rsa, int *index);
+int						set_noout(char **argv, t_rsa *rsa, int *index);
+int						set_modulus(char **argv, t_rsa *rsa, int *index);
+int						set_check(char **argv, t_rsa *rsa, int *index);
+int						set_pubin(char **argv, t_rsa *rsa, int *index);
+int						set_pubout(char **argv, t_rsa *rsa, int *index);
 
 extern t_ssl_command	g_commands[];
 #endif
