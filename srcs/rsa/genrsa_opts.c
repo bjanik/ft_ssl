@@ -58,13 +58,18 @@ int 	genrsa_opts(char **argv, t_genrsa *genrsa)
 	while (argv[++i])
 	{
 		j = -1;
+		if (ft_str_isdigit(argv[i]))
+		{
+			genrsa->numbits = ft_atoi(argv[i]);
+			break ;
+		}
 		while (g_genrsa_opts[++j].opt)
 		{
-			if (ft_strcmp(g_genrsa_opts[++j].opt, argv[i]) == 0)
+			if (ft_strcmp(g_genrsa_opts[j].opt, argv[i]) == 0)
 			{
 				if (g_genrsa_opts[j].opt_func(argv, genrsa, &i))
 					return (1);
-				break ;	
+				break ;
 			}
 		}
 	}

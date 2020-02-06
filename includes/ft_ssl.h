@@ -22,6 +22,7 @@
 
 # include "libft.h"
 # include "lexer.h"
+# include "gmp.h"
 
 # define FT_SSL_USAGE "usage: ft_ssl command [command opts] [command args]\n"
 # define HASH_CMD_USAGE " [-pqr] -s [string] [files ...]\n"
@@ -157,6 +158,8 @@ typedef struct			s_ssl_command
 	t_base64			*base64;
 	t_des				*des;
 	uint64_t			(*des_mode[2])(uint64_t plain, struct s_des *des);
+	t_rsa 				*rsa;
+	t_genrsa 			*genrsa;
 }						t_ssl_command;
 
 typedef struct			s_ctx
@@ -314,6 +317,15 @@ int						set_modulus(char **argv, t_rsa *rsa, int *index);
 int						set_check(char **argv, t_rsa *rsa, int *index);
 int						set_pubin(char **argv, t_rsa *rsa, int *index);
 int						set_pubout(char **argv, t_rsa *rsa, int *index);
+
+
+t_genrsa				*genrsa_init(void);
+int 					genrsa_opts(char **argv, t_genrsa *rsa);
+
+
+int						set_random_mpz_size(mpz_t n, size_t size);
+void					display_mpz(mpz_t n);
+
 
 extern t_ssl_command	g_commands[];
 #endif

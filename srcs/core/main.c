@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "ft_ssl.h"
+#include "gmp.h"
 
 static int		hash_files(char **argv, t_ssl_command *command)
 {
@@ -79,11 +80,50 @@ static int		data_encryption_standard(char **argv, t_ssl_command *cmd)
 }
 
 
-static int 		standard_rsa_commands(char **argv)
+static int 		genrsa_command(char **argv, t_ssl_command *cmd)
 {
 	int 	ret = 0;
 
 	(void)argv;
+	if (genrsa_opts(argv, cmd->genrsa))
+		ret = 1;
+	mpz_t 	p, q, n, phi, p_1, q_1, eps, gcd, t, s;
+
+
+	mpz_init2(p, cmd->genrsa->numbits);
+	mpz_init2(q, cmd->genrsa->numbits);
+	mpz_init2(p_1, cmd->genrsa->numbits);
+	mpz_init2(q_1, cmd->genrsa->numbits);
+	mpz_init2(phi, cmd->genrsa->numbits * 2);
+	mpz_init2(n, cmd->genrsa->numbits * 2);
+	mpz_inits(gcd, t, s, NULL);
+
+	mpz_init2(eps, 16);
+	mpz_add_ui(eps, eps, 0x10001);
+
+	if (set_random_mpz_size(p, cmd->genrsa->numbits / 2) < 0 ||	set_random_mpz_size(q, cmd->genrsa->numbits / 2) < 0)
+	{
+		mpz_clears(p, q, n, phi, p_1, q_1, NULL);
+		return (1);
+	}	
+
+	if (mpz_probab_prime_p(n, 10) == 0)
+		mpz_nextprime(q, q);
+	if (mpz_probab_prime_p(n, 10) == 0)
+		mpz_nextprime(p, p);
+	mpz_mul(n, p, q);
+	mpz_sub_ui(p_1, p, 1);
+	mpz_sub_ui(q_1, q, 1);
+	mpz_mul(phi, p_1, q_1);
+	mpz_gcdext(gcd, s, t, phi, eps); // s * phi + eps * t = gcd ; t is the private key
+	// If gcd is not equal to 1, it means phi and eps and not coprime so we have to start all over again
+	if (gcd->_mp_size == 1 && gcd->_mp_d[0] == 1)
+	{
+		printf("phi and eps are coprime!\nPrivate key is in hexa:\n");
+		display_mpz(t);
+	}
+		
+
 	return (ret);
 }
 
@@ -91,7 +131,6 @@ int				ft_ssl_routine(char **argv)
 {
 	t_ssl_command	*command;
 	int				ret;
-	// char			*rsa_cmd[] = {"genrsa", "rsa", "rsautl", NULL};
 
 	if (!argv[1])
 		return (1);
@@ -104,7 +143,7 @@ int				ft_ssl_routine(char **argv)
 	else if (command->base64)
 		ret = base64_core(argv, command->base64);
 	else
-		ret = standard_rsa_commands(argv);
+		ret = genrsa_command(argv, command);
 	return (ret);
 }
 
