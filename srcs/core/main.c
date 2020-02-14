@@ -10,6 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "bn.h"
 #include "ft_ssl.h"
 #include "gmp.h"
 
@@ -82,46 +83,71 @@ static int		data_encryption_standard(char **argv, t_ssl_command *cmd)
 
 static int 		genrsa_command(char **argv, t_ssl_command *cmd)
 {
+	t_bn 	*p, *q, *n, *p_1, *q_1, *phi, *eps;
 	int 	ret = 0;
 
-	(void)argv;
 	if (genrsa_opts(argv, cmd->genrsa))
 		ret = 1;
-	mpz_t 	p, q, n, phi, p_1, q_1, eps, gcd, t, s;
+
+	printf("%llu\n", cmd->genrsa->numbits);
+	p = bn_init_size(cmd->genrsa->numbits / 2);
+	q = bn_init_size(cmd->genrsa->numbits / 2);
+	p_1 = bn_init_size(cmd->genrsa->numbits / 2);
+	q_1 = bn_init_size(cmd->genrsa->numbits / 2);
+	n = bn_init_size(cmd->genrsa->numbits);
+	phi = bn_init_size(cmd->genrsa->numbits);
+	eps = bn_init_size(64);
+	bn_add_ui(eps, 0x10001);
+	bn_set_random(p, cmd->genrsa->numbits / 2);
+	bn_set_random(q, cmd->genrsa->numbits / 2);
+	bn_mul(n, q, p);
+	bn_sub_ui(p_1, p, 1);
+	bn_sub_ui(q_1, q, 1);
+
+	display_bn(*n);
+	display_bn(*p);
+	// display_bn(*p_1);
+	display_bn(*q);
+	// display_bn(*q_1);
+	bn_mul(phi, p_1, q_1);
+	display_bn(*phi);
+	display_bn(*eps);
+
+	// mpz_t 	p, q, n, phi, p_1, q_1, eps, gcd, t, s;
 
 
-	mpz_init2(p, cmd->genrsa->numbits);
-	mpz_init2(q, cmd->genrsa->numbits);
-	mpz_init2(p_1, cmd->genrsa->numbits);
-	mpz_init2(q_1, cmd->genrsa->numbits);
-	mpz_init2(phi, cmd->genrsa->numbits * 2);
-	mpz_init2(n, cmd->genrsa->numbits * 2);
-	mpz_inits(gcd, t, s, NULL);
+	// mpz_init2(p, cmd->genrsa->numbits);
+	// mpz_init2(q, cmd->genrsa->numbits);
+	// mpz_init2(p_1, cmd->genrsa->numbits);
+	// mpz_init2(q_1, cmd->genrsa->numbits);
+	// mpz_init2(phi, cmd->genrsa->numbits * 2);
+	// mpz_init2(n, cmd->genrsa->numbits * 2);
+	// mpz_inits(gcd, t, s, NULL);
 
-	mpz_init2(eps, 16);
-	mpz_add_ui(eps, eps, 0x10001);
+	// mpz_init2(eps, 16);
+	// mpz_add_ui(eps, eps, 0x10001);
 
-	if (set_random_mpz_size(p, cmd->genrsa->numbits / 2) < 0 ||	set_random_mpz_size(q, cmd->genrsa->numbits / 2) < 0)
-	{
-		mpz_clears(p, q, n, phi, p_1, q_1, NULL);
-		return (1);
-	}	
+	// if (set_random_mpz_size(p, cmd->genrsa->numbits / 2) < 0 ||	set_random_mpz_size(q, cmd->genrsa->numbits / 2) < 0)
+	// {
+	// 	mpz_clears(p, q, n, phi, p_1, q_1, NULL);
+	// 	return (1);
+	// }	
 
-	if (mpz_probab_prime_p(n, 10) == 0)
-		mpz_nextprime(q, q);
-	if (mpz_probab_prime_p(n, 10) == 0)
-		mpz_nextprime(p, p);
-	mpz_mul(n, p, q);
-	mpz_sub_ui(p_1, p, 1);
-	mpz_sub_ui(q_1, q, 1);
-	mpz_mul(phi, p_1, q_1);
-	mpz_gcdext(gcd, s, t, phi, eps); // s * phi + eps * t = gcd ; t is the private key
-	// If gcd is not equal to 1, it means phi and eps and not coprime so we have to start all over again
-	if (gcd->_mp_size == 1 && gcd->_mp_d[0] == 1)
-	{
-		printf("phi and eps are coprime!\nPrivate key is in hexa:\n");
-		display_mpz(t);
-	}
+	// if (mpz_probab_prime_p(n, 10) == 0)
+	// 	mpz_nextprime(q, q);
+	// if (mpz_probab_prime_p(n, 10) == 0)
+	// 	mpz_nextprime(p, p);
+	// mpz_mul(n, p, q);
+	// mpz_sub_ui(p_1, p, 1);
+	// mpz_sub_ui(q_1, q, 1);
+	// mpz_mul(phi, p_1, q_1);
+	// mpz_gcdext(gcd, s, t, phi, eps); // s * phi + eps * t = gcd ; t is the private key
+	// // If gcd is not equal to 1, it means phi and eps and not coprime so we have to start all over again
+	// if (gcd->_mp_size == 1 && gcd->_mp_d[0] == 1)
+	// {
+	// 	printf("phi and eps are coprime!\nPrivate key is in hexa:\n");
+	// 	display_mpz(t);
+	// }
 		
 
 	return (ret);

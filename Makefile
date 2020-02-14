@@ -57,7 +57,7 @@ SRC_NAME = base64/base64_core.c \
 		rsa/rsa_opts.c\
 		rsa/genrsa_opts.c\
 		rsa/genrsa.c\
-		rsa/mpz_interface.c\
+		rsa/lib_bn.c\
 		sha1/sha1.c \
 		sha1/sha1_transform.c \
 		sha256/sha256.c \

@@ -28,7 +28,7 @@ t_ssl_command		g_commands[] = {
 	{"des3-ecb", 0, DES_OPTS, 0, NULL, NULL, NULL, {des3_ecb_e, des3_ecb_d}, NULL, NULL},
 	{"des3-pcbc", 0, DES_OPTS, 0, NULL, NULL, NULL, {des3_pcbc_e, des3_pcbc_d}, NULL, NULL},
 	{"rsa", 0, 0, 0, NULL, NULL, NULL, {NULL, NULL}, NULL, NULL},
-	{"gensrsa", 0, 0, 0, NULL, NULL, NULL, {NULL, NULL}, NULL, NULL},
+	{"genrsa", 0, 0, 0, NULL, NULL, NULL, {NULL, NULL}, NULL, NULL},
 	{"rsautl", 0, 0, 0, NULL, NULL, NULL, {NULL, NULL}, NULL, NULL},
 	{NULL, 0, NULL, 0, NULL, NULL, NULL, {NULL, NULL}, NULL, NULL},
 };
