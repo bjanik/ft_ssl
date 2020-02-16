@@ -2,6 +2,7 @@
 # define BN_H
 # include <stdint.h>
 
+# define BIGGEST_BN(x, y) ((x->size >= y->size) ? x : y)
 
 typedef struct 	big_num
 {
@@ -34,7 +35,11 @@ int 			bn_cmp(t_bn *a, t_bn *b);
 int				bn_pow(t_bn *a, t_bn *b, t_bn *c);
 void			bn_div(t_bn *q, t_bn *rem, t_bn *num, t_bn *den);
 void			bn_mod(t_bn *r, t_bn *n, t_bn *d);
+void			bn_mod_pow(t_bn *res, t_bn *b, t_bn *exp, t_bn *mod);
 void			bn_gcd(t_bn *gcd, t_bn *a, t_bn *b);
 
+int 			witness(t_bn *a, t_bn *b);
+int				miller_rabin(t_bn *n, int s);
+int 			pseudo_prime(t_bn *n);
 
 #endif

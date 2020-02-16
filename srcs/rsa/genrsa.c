@@ -11,6 +11,6 @@ t_genrsa	*genrsa_init(void)
 	genrsa->fd[IN] = STDIN_FILENO;
 	genrsa->fd[OUT] = STDOUT_FILENO;
 	genrsa->rand_file = NULL;
-	genrsa->numbits = 2048;
+	genrsa->numbits = 0;
 	return (genrsa);
 }
