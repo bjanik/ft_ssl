@@ -1,12 +1,48 @@
 #include "bn.h"
 #include "gmp.h"
 #include <stdio.h>
+#include <fcntl.h>
+#include <unistd.h>
+
+# define ITERATION 512
+
+int 	cmp_bn_mpz(t_bn *n, mpz_t m) // n and m have same size
+{
+	for (int64_t i = 0; i < n->size; i++)
+	{
+		if (n->num[i] != m->_mp_d[i])
+		{
+			printf("ERROR\n");
+			return 1;
+		}
+	}
+	return 0;
+}
+
+void	set_randomly_mpz_bn(t_bn *n, mpz_t m, int64_t size)
+{
+	unsigned char buffer[4096];
+	int to_read = 0;
+
+	if (size % 8)
+		to_read++;
+	to_read += size / 8;
+	int fd = open("/dev/random", O_RDONLY);
+	read(fd, buffer, to_read);
+	memcpy((uint8_t*)n->num, buffer, to_read);
+	memcpy((uint8_t*)m->_mp_d, buffer, to_read);
+	n->size = size / 64;
+	if (size % 64)
+		n->size++;
+	m->_mp_size = n->size;
+	close(fd);
+}
 
 void	display_mpz(mpz_t n)
 {
-	for (int i = abs(n->_mp_size) - 1; i > -1; i--)
+	for (int64_t i = n->_mp_size - 1; i > -1; i--)
 	{
-		if (i == (int)n->_mp_size - 1)
+		if (i == n->_mp_size - 1)
 			printf("%lX", n->_mp_d[i]);
 		else
 			printf("%016lX", n->_mp_d[i]);
@@ -14,7 +50,7 @@ void	display_mpz(mpz_t n)
 	printf("\n");
 }
 
-void	test_mul(uint64_t val, uint64_t size)
+void	test_mul(uint64_t size)
 {
 	t_bn	*x, *y, *z;
 	mpz_t	a, b, c;
@@ -27,40 +63,21 @@ void	test_mul(uint64_t val, uint64_t size)
 	mpz_init2(b, size);
 	mpz_init2(c, size);
 
-	for (uint64_t i = 0; i < size / 64; i++)
-	{
-		if (i % 2)
-		{
-			x->num[i] = y->num[i] = val / i;
-			a->_mp_d[i] = b->_mp_d[i] = val / i;
-		}
-		else
-		{
-			x->num[i] = y->num[i] = val + i*i;
-			a->_mp_d[i] = b->_mp_d[i] = val + i*i;
-		}
-	}
-	x->size = y->size =  size / 64;
-	a->_mp_size = b->_mp_size = size / 64;
-	// display_bn(*x);
-	// display_bn(*y);
+	set_randomly_mpz_bn(y, a, size);
+	set_randomly_mpz_bn(x, b, size);
 	mpz_mul(c, a, b);
-	display_mpz(c);
 	bn_mul(z, y, x);
-	display_bn(*z);
-	bn_clear(&x);
-	bn_clear(&y);
-	bn_clear(&z);
+	cmp_bn_mpz(z, c);
+	bn_clears(3, &x, &y, &z);
 	mpz_clear(a);
 	mpz_clear(b);
 	mpz_clear(c);
 }
 
-void	test_add(uint64_t val, uint64_t size)
+void	test_add(int64_t size)
 {
 	t_bn	*x, *y, *z;
 	mpz_t	a, b, c;
-	uint64_t blocks = size / 64;
 
 	x = bn_init_size(size);
 	y = bn_init_size(size);
@@ -70,25 +87,15 @@ void	test_add(uint64_t val, uint64_t size)
 	mpz_init2(b, size);
 	mpz_init2(c, size);
 
-	for (uint64_t i = 0; i < size / 64; i++)
-	{
-
-		x->num[i] = a->_mp_d[i] = val;
-		if (i != blocks - 1)
-			y->num[i] = b->_mp_d[i] = val;
-	}
-	x->size = a->_mp_size = blocks;
-	y->size = b->_mp_size = blocks - 1;
+	set_randomly_mpz_bn(y, a, size);
+	set_randomly_mpz_bn(x, b, size);
 	bn_add(z, x, y);
 	mpz_add(c, a, b);
-	display_bn(*z);
-	display_mpz(c);
-	bn_clear(&x);
-	bn_clear(&y);
-	bn_clear(&z);
+	cmp_bn_mpz(z, c);
+	bn_clears(3, &x, &y, &z);
 	mpz_clear(a);
 	mpz_clear(b);
-	// mpz_clear(c);
+	mpz_clear(c);
 }
 
 void	test_pow(uint64_t val, uint64_t size)
@@ -122,62 +129,35 @@ void	test_pow(uint64_t val, uint64_t size)
 	display_bn(*z);
 }
 
-void	test_shift_left(uint64_t val, int size, uint64_t shift)
+void	test_shift_left(int size, uint64_t shift)
 {
 	t_bn 		*x = bn_init_size(size);
-	uint64_t 	blocks = size / 64;
+	mpz_t		a;
 
-	for (uint64_t i = 0; i < blocks; i++)
-		x->num[i] = val;
-	x->size = blocks;
+	mpz_init2(a, size);
+	set_randomly_mpz_bn(x, a, size);
+
 	display_bn(*x);
 	bn_shift_left(x, shift);
 	display_bn(*x);
+	bn_clear(&x);
 }
 
-// void	test_display_bn_ascii(unsigned char c, int size)
-// {
-// 	t_bn *n = bn_init_size(size);
-// 	uint64_t 	blocks = size / 64;
-
-
-// 	memset((unsigned char*)n->num, c, size);
-// 	display_bn_ascii(*n);
-// }
-
-void	test_sub(uint64_t val, uint64_t size)
+void	test_shift_right(int size, uint64_t shift)
 {
-	t_bn		*x, *y, *z;
-	mpz_t		a, b, c;
-	uint64_t 	blocks = size / 64;
+	t_bn 		*x = bn_init_size(size);
+	mpz_t		a;
 
-	x = bn_init_size(size);
-	y = bn_init_size(size);
-	z = bn_init_size(size);
 	mpz_init2(a, size);
-	mpz_init2(b, size);
-	mpz_init2(c, size);
+	set_randomly_mpz_bn(x, a, size);
 
-	for (uint64_t i = 0; i < blocks; i++)
-	{
-		if (i % 2)
-		{	
-			y->num[i] = b->_mp_d[i] = val;
-			z->num[i] = c->_mp_d[i] = val / 3;
-		}
-		else
-		{
-			y->num[i] = b->_mp_d[i] = val / 50;
-			z->num[i] = c->_mp_d[i] = val / 555;	
-		}
-	}
-	y->size = z->size = blocks;
-	b->_mp_size = c->_mp_size = blocks;
-	bn_sub(x, y, z);
+
 	display_bn(*x);
-	mpz_sub(a, b, c);
-	display_mpz(a);
+	bn_shift_right(x, shift);
+	display_bn(*x);
+	bn_clear(&x);
 }
+
 
 void	test_div(uint64_t val, uint64_t size)
 {
@@ -226,30 +206,35 @@ void	test_sub_ui(uint64_t val, uint64_t size, uint64_t to_sub)
 	display_mpz(a);
 }
 
-// void	test_gcd(uint64_t a, uint64_t b)
-// {
-// 	t_bn		*x, *y, *gcd;
-// 	mpz_t		u, v;
+void	test_sub(int64_t size)
+{
+	t_bn		*x, *a, *b;
+	mpz_t 		n, p, q;
 
-// 	y = bn_init_size(64);
-// 	x = bn_init_size(64);
-// 	gcd = bn_init_size(x->size);
-// 	mpz_init2(u, 64);
-// 	mpz_init2(v, 64);
+	x = bn_init_size(size);
+	a = bn_init_size(size);
+	b = bn_init_size(size);
 
-// 	x->size = y->size = 1;
-// 	u->_mp_size = v->_mp_size = 1;
-// 	x->num[0] = u->_mp_d[0] = a;
-// 	y->num[0] = v->_mp_d[0] = b;
-// 	// bn_gcd(gcd, x, y);
-// 	display_bn(*gcd);
-// }
+	mpz_init2(n, size);
+	mpz_init2(p, size);
+	mpz_init2(q, size);	
 
-void	test_mod(uint64_t val, uint64_t size)
+	set_randomly_mpz_bn(x, n, size);
+	set_randomly_mpz_bn(a, p, size);
+	set_randomly_mpz_bn(b, q, size);
+
+	bn_sub(x, a, b);
+	mpz_sub(n, p, q);
+	bn_clears(3, &x, &a, &b);
+	mpz_clear(n);
+	mpz_clear(p);
+	mpz_clear(q);
+}
+
+void	test_mod(int64_t size)
 {
 	t_bn		*r, *n, *d;
 	mpz_t 		a, b, c;
-	uint64_t	blocks = size / 64;
 
 	r = bn_init_size(size);
 	n = bn_init_size(size);
@@ -258,27 +243,23 @@ void	test_mod(uint64_t val, uint64_t size)
 	mpz_init2(a, size);
 	mpz_init2(b, size);
 	mpz_init2(c, size);
+	// set_randomly_mpz_bn(r, a, size);
+	set_randomly_mpz_bn(n, b, size);
+	set_randomly_mpz_bn(d, c, size);
 
-	for (uint64_t i = 0; i < blocks; i++)
-	{
-		n->num[i] = val + 1;
-		d->num[i] = val;
-		b->_mp_d[i] = val + 1;
-		c->_mp_d[i] = val;
-	}
-	n->size = d->size = blocks;
-	b->_mp_size = c->_mp_size = blocks;
 	bn_mod(r, n, d);
 	mpz_mod(a, b, c);
-	display_bn(*r);
-	display_mpz(a);
+	cmp_bn_mpz(r, a);
+	bn_clears(3, &r, &n, &d);
+	mpz_clear(a);
+	mpz_clear(b);
+	mpz_clear(c);
 }
 
-void	test_pow_mod(uint64_t ba, uint64_t expo, uint64_t modulus, uint64_t size)
+void	test_pow_mod(uint64_t size)
 {
 	t_bn		*res, *base, *exp, *mod;
 	mpz_t		r, b, e, m;
-	uint64_t 	blocks = size / 64;
 
 	res = bn_init_size(size);
 	base = bn_init_size(size);
@@ -289,222 +270,218 @@ void	test_pow_mod(uint64_t ba, uint64_t expo, uint64_t modulus, uint64_t size)
 	mpz_init2(e, size);
 	mpz_init2(m, size);
 
-	base->num[0] = b->_mp_d[0] = ba;
-	for (int i = 0; i < 3; i++)
-		exp->num[i] = e->_mp_d[i] = expo;
-	exp->size = e->_mp_size = 3;
-	for (uint64_t i = 0; i < blocks; i++)
-	{
-		mod->num[i] = modulus * 89;
-		m->_mp_d[i] = modulus * 89;
-	}
-	base->size = b->_mp_size= 1;
-	mod->size = blocks;
-	m->_mp_size = blocks;
+	set_randomly_mpz_bn(base, b, 64);
+	set_randomly_mpz_bn(exp, e, 128);
+	set_randomly_mpz_bn(mod, m, size);
+
 	bn_mod_pow(res, base, exp, mod);
 	mpz_powm(r, b, e, m);
-	display_bn(*res);
-	display_mpz(r);
+	cmp_bn_mpz(res, r);
+	bn_clears(4, &res, &base, &exp, &mod);
+	mpz_clear(r);
+	mpz_clear(b);
+	mpz_clear(e);
+	mpz_clear(m);
 }
 
-int	test_isprime(uint64_t num)
+int	test_isprime(uint64_t size)
 {
-	t_bn 	*n;
-	mpz_t	m;
+	t_bn 			*n = NULL;
+	mpz_t			m;
+	int 			ret = 0;
+	int 			ret2 = 0;
 
-	mpz_init2(m, 64);
-	n = bn_init_size(64);
-	// printf("%llu\n", n->size);
-	bn_add_ui(n, num);
-	// printf("%llu\n", n->size);
-	mpz_add_ui(m, m, num);
-	int ret = pseudo_prime(n);
-	// int ret = miller_rabin(n, 15);
-	printf("%d\n",ret);
-	printf("%d\n",mpz_probab_prime_p(m, 15));
+	mpz_init2(m, size);
+	n = bn_init_size(size);
+	set_randomly_mpz_bn(n, m, size);
+	ret = miller_rabin(n, 5);
+	ret2 = mpz_probab_prime_p(m, 10);
+	bn_clear(&n);
+	mpz_clear(m);
+	printf("%d %d\n",ret, ret2);
 	return ret;
+}
 
+int test_gcd(int64_t size)
+{
+	t_bn *gcd, *x, *y;
+	mpz_t g, b, c;
+
+	gcd = bn_init_size(size);
+	x = bn_init_size(size);
+	y = bn_init_size(size);
+
+	mpz_init2(g, size);
+	mpz_init2(b, size);
+	mpz_init2(c, size);
+
+	set_randomly_mpz_bn(x, b, size);
+	set_randomly_mpz_bn(y, c, size);
+
+	bn_gcd(gcd, x, y);
+	mpz_gcd(g, b, c);
+	cmp_bn_mpz(gcd, g);
+	bn_clears(3, &gcd, &x, &y);
+	mpz_clear(g);
+	mpz_clear(b);
+	mpz_clear(c);
+	return 0;
+
+}
+
+int 	test_gcd_u(int64_t val_a, int64_t val_b)
+{
+	// Calculate extented euclid 
+	int64_t	gcd, s, t, a, b;
+	mpz_t gcdm, sm, tm, am, bm;
+
+	mpz_init2(gcdm, 64);
+	mpz_init2(sm, 64);
+	mpz_init2(tm, 64);
+	mpz_init2(am, 64);
+	mpz_init2(bm, 64);
+
+	mpz_add_ui(am, am, (uint64_t)val_a);
+	mpz_add_ui(bm, bm, (uint64_t)val_b);
+	a = val_a;
+	b = val_b;
+	ext_euclid(&a, &b, &s, &t, &gcd);
+	mpz_gcdext(gcdm, sm, tm, am, bm);
+
+	printf("a = %lld am = %lu\n", a, am->_mp_d[0]);
+	printf("b = %lld bm = %lu\n", b, bm->_mp_d[0]);
+	printf("gcd = %lld gcdm = %lu\n", gcd, gcdm->_mp_d[0]);
+	printf("t = %lld tm = %lu\n", t, tm->_mp_d[0]);
+	printf("s = %lld sm = %lu\n", s, sm->_mp_d[0]);
+}
+
+int test_gcdext(int64_t size)
+{
+	t_bn 	*x, *y, *s, *t, *gcd;
+	mpz_t 	a, b, s1, t1, g;
+
+	printf("START GCDEXT TEST\n");
+
+	gcd = bn_init_size(size);
+	x = bn_init_size(size);
+	y = bn_init_size(size);
+	s = bn_init_size(size);
+	t = bn_init_size(size);
+
+	mpz_init2(a, size);
+	mpz_init2(b, size);
+	mpz_init2(s1, size);
+	mpz_init2(t1, size);
+	mpz_init2(g, size);
+
+	set_randomly_mpz_bn(x, a, size);
+	set_randomly_mpz_bn(y, b, size);
+	printf("BEFORE GCDEXT CALL\n");
+	bn_gcdext(x, y, s, t, gcd);
+	printf("AFTER GCDEXT CALL\n");
+	mpz_gcdext(g, s1, t1, a, b);
+	// for (int64_t i = 0; i < gcd->size; i++)
+	// {
+	// 	if (gcd->num[i] != g->_mp_d[i])
+	// 	{
+	// 		printf("ERROR\n");
+	// 		return 1;
+	// 	}
+	// }
+	// for (int64_t i = 0; i < s->size; i++)
+	// {
+	// 	if (s->num[i] != s1->_mp_d[i])
+	// 	{
+	// 		printf("ERROR\n");
+	// 		return 1;
+	// 	}
+	// }
+	// for (int64_t i = 0; i < t->size; i++)
+	// {
+	// 	if (t->num[i] != t1->_mp_d[i])
+	// 	{
+	// 		printf("ERROR\n");
+	// 		return 1;
+	// 	}
+	// }
+	bn_clears(5, &gcd, &x, &y, &s, &t);
+	mpz_clear(g);
+	mpz_clear(a);
+	mpz_clear(b);
+	mpz_clear(s1);
+	mpz_clear(t1);
+	printf("END GCDEXT TEST\n");
+	return 0;
 }
 
 int main()
 {
-	for (uint64_t i = 3; i < INT_MAX; i++)
-	{
-		if (i % 2)
-		{
-			if (test_isprime(i) == 1) // i is even so not prime
-			{
-				printf("ERROR on %llu\n", i);
-				return 1;
-			}
-			printf("OK for %llu\n", i);
-		}
-	}
-
+	test_gcd_u(12, 42);
+	// for (int i = 0; i < ITERATION; i++)
+	// {
+	// 	test_isprime(64);
+	// 	test_isprime(128);
+	// 	test_isprime(256);
+	// 	test_isprime(384);
+	// 	test_isprime(512);
+	// 	test_isprime(1024);
+	// 	test_isprime(768);
+	// 	test_isprime(2048);
 	// }
-	// printf("----------------------------\n");
-	// test_isprime(135);
-	// printf("----------------------------\n");
-	// test_isprime(7);
-	// printf("----------------------------\n");
-	// test_isprime(11);
-	// printf("----------------------------\n");
-	// test_isprime(110);
-	// printf("----------------------------\n");
-	// test_isprime(111);
-	// printf("----------------------------\n");
-	// test_isprime(114);
-	// printf("----------------------------\n");
-	// test_isprime(113);
-	// printf("----------------------------\n");
-
-
-	// test_isprime(135);
-	// printf("----------------------------\n");
-	// test_isprime(1000);
-	// printf("----------------------------\n");
-	// test_isprime(1234568);
-	// printf("----------------------------\n");
-	// test_isprime(10231515846848);
-	// printf("----------------------------\n");
-	// test_isprime(1350000000004);
-	// printf("----------------------------\n");
-	// // test_isprime(17);
-	// printf("----------------------------\n");
-	// // test_isprime(7);
-	// printf("----------------------------\n");
-	// // test_isprime(11);
-	// printf("----------------------------\n");
-
-
-	// test_pow_mod(0xFAD6498498ECB, 0x10001, 0x654654ADDD, 4096);
-	// printf("----------------------------\n");
-	// test_pow_mod(0xFAF, 128);
-	// printf("----------------------------\n");
-	// test_pow_mod(0xFAF, 128);
-	// printf("----------------------------\n");
-	// test_pow_mod(0xFAF, 2048);
-	// printf("----------------------------\n");
-
-	// test_mod(0x64684ADAFF, 64);
-	// printf("----------------------------\n");
-	// test_mod(0x684ADA, 128);
-	// printf("----------------------------\n");
-	// test_mod(0xFFFF0004ADA, 512);
-	// printf("----------------------------\n");
-	// test_mod(0xFFFF0004ADA, 4096);
-	// printf("----------------------------\n");
-	// test_gcd(30, 21);
-	// test_sub_ui(LONG_MAX + 1, 64, ULLONG_MAX);
-	// printf("----------------------------\n");
-	// test_sub_ui(ULLONG_MAX, 64, ULLONG_MAX);
-	// printf("----------------------------\n");
-	// test_sub_ui(ULLONG_MAX, 128, 464987987);
-	// printf("----------------------------\n");
-	// test_sub_ui(ULLONG_MAX, 256, INT_MAX);
-	// printf("----------------------------\n");
-	// test_sub_ui(INT_MAX, 256, ULLONG_MAX);
-	// printf("----------------------------\n");
-	
-	// test_div(0x88, 128);
-	// test_div(21, 64);
-	// test_div(0x17, 64);
-	// test_div(0x10, 64);
-	// test_sub(0X4648949, 512);
-	// printf("----------------------------\n");
-
-	// printf("----------------------------\n");
-	// test_sub(0X46489, 512);
-	// printf("----------------------------\n");
-	// test_sub(0XFFFFFFF, 512);
-	// printf("----------------------------\n");
-	// test_sub(0XFFFF98764FFF, 1024);
-	// printf("----------------------------\n");
-	// test_sub(0X1, 1024);
-	// printf("%llu\n", (uint64_t)(0 - 1));
-	// printf("%llu\n", (uint64_t)(0 - ULLONG_MAX));
-	// printf("%llu\n", (uint64_t)(0 - (ULLONG_MAX - 1)));
-	// test_display_bn_ascii(65, 64);
-	// test_shift_left(ULLONG_MAX - 6500004684684, 256 , 55);
-	// printf("----------------------------\n");
-	// test_shift_left(0x8000000000000000, 64, 32);
-	// printf("----------------------------\n");
-	// test_shift_left(1, 64, 1);
-	// printf("----------------------------\n");
-	// test_shift_left(1, 128, 64);
-	// printf("----------------------------\n");
-	// test_shift_left(1, 256, 128);
-	// printf("----------------------------\n");
-	// test_shift_left(1, 512, 256);
-	// printf("----------------------------\n");
-	// test_shift_left(2048, 512, 256);
-	// printf("----------------------------\n");
-	// test_shift_left(ULLONG_MAX, 64, 32);
-	// printf("----------------------------\n");
-	// test_shift_left(ULLONG_MAX, 64, 48);
-	// printf("----------------------------\n");
-	// test_pow(50, 64);
-	// printf("----------------------------\n");
-	// test_pow(12, 128);
-	// printf("----------------------------\n");
-	// test_pow(640, 128);
-	// printf("----------------------------\n");
-	// test_pow(500, 64);
-	// printf("----------------------------\n");
-	// test_pow(1, 128);
-	// printf("----------------------------\n");
-	// test_pow(8192, 128);
-	// printf("----------------------------\n");
-
-
-	// test_add(10, 64);
-	// printf("----------------------------\n");
-	// test_add(654984684, 128);
-	// printf("----------------------------\n");
-	// test_add(1649654, 256);
-	// printf("----------------------------\n");
-	// test_add(7984654984, 4096);
-	// printf("----------------------------\n");
-	// test_add(798460054984, 8192);
-	// printf("----------------------------\n");
-	// test_add(798, 512);
-	// printf("----------------------------\n");
-	// test_add(7984984, 512);
-	// printf("----------------------------\n");
-	// test_add(9984654984, 512);
-	// printf("----------------------------\n");
-	// test_add(0xFF54654, 1024);
-	// printf("----------------------------\n");
-
-
-	// test_mul(ULLONG_MAX / INT_MAX, 2048);
-	// printf("----------------------------\n");
-	// test_mul(150, 64);
-	// printf("----------------------------\n");
-	// test_mul(654984894, 64);
-	// printf("----------------------------\n");
-	// test_mul(987456321120, 64);
-	// printf("----------------------------\n");
-	// test_mul(INT_MAX * 8, 64);
-	// printf("----------------------------\n");
-	// test_mul(1000, 64);
-	// printf("----------------------------\n");
-	// test_mul(8978789456, 512);
-	// printf("----------------------------\n");
-	// test_mul(1789000000000000700, 64);
-	// printf("----------------------------\n");
-	// test_mul(1, 128);
-	// printf("----------------------------\n");
-	// test_mul(79864900000, 256);
-	// printf("----------------------------\n");
-	// test_mul(798640007, 512);
-	// printf("----------------------------\n");
-	// test_mul(79860000, 384);
-	// printf("----------------------------\n");
-	// test_mul(165459860000, 1024);
-	// printf("----------------------------\n");
-	// test_mul(ULLONG_MAX, 1024);
-	// printf("----------------------------\n");
-	// test_mul(ULLONG_MAX - INT_MAX * 200, 8192);
+	// printf("PRIME PASSED\n");
+	// for (int i = 0 ; i < ITERATION; i++)
+	// {
+	// 	test_sub(64);
+	// 	test_sub(256);
+	// 	test_sub(512);
+	// 	test_sub(128);
+	// 	test_sub(1024);
+	// 	test_sub(2048);
+	// }
+	// printf("SUB PASSED\n");
+	// for (int i = 0 ; i < ITERATION; i++)
+	// {
+	// 	test_add(64);
+	// 	test_add(256);
+	// 	test_add(512);
+	// 	test_add(64);
+	// 	test_add(128);
+	// 	test_add(1024);
+	// 	test_add(2048);
+	// }
+	// printf("ADD PASSED\n");
+	// for (int i = 0 ; i < ITERATION; i++)
+	// {
+	// 	test_mod(64);
+	// 	test_mod(256);
+	// 	test_mod(512);
+	// 	test_mod(64);
+	// 	test_mod(128);
+	// 	test_mul(1024);
+	// 	test_mul(2048);
+	// }
+	// printf("MOD PASSED\n");
+	// for (int i = 0 ; i < ITERATION; i++)
+	// {
+	// 	test_mul(64);
+	// 	test_mul(256);
+	// 	test_mul(512);
+	// 	test_mul(64);
+	// 	test_mul(128);
+	// 	test_mul(1024);
+	// 	test_mul(2048);
+	// }
+	// printf("MUL PASSED\n");	
+	// for (int i = 0 ; i < ITERATION; i++)
+	// {
+	// 	test_pow_mod(1024);
+	// 	test_pow_mod(512);
+	// 	test_pow_mod(64);
+	// 	test_pow_mod(128);
+	// 	test_pow_mod(384);
+	// 	test_pow_mod(256);
+	// }
+	// printf("POW MOD PASSED\n");
+	// while (1);
 	return 0;
 }

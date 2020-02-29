@@ -2,6 +2,7 @@
 #include "gmp.h"
 #include <fcntl.h>
 #include <limits.h>
+#include <stdarg.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -11,14 +12,30 @@
 #define MIN(x, y) ((x < y) ? x : y)
 #define MAX(x, y) ((x > y) ? x : y)
 #define IS_ODD(x) ((x) & 1)
+#define IS_EVEN(x) (((x) & 1) == 0)
+#define ABS(x) ((x > 0) ? x : -x)
+#define SIZE(n) (ABS(n->size))
+
+#define INC_SIZE(x) (((x)->size < 0) ? (x)->size-- : (x)->size++)
+#define DEC_SIZE(x) (((x)->size < 0) ? (x)->size++ : (x)->size--)
 
 void	bn_set_zero(t_bn *n)
 {
 	if (n)
 	{
-		for (uint64_t i = 0; i < n->size; i++)
+		for (int64_t i = 0; i < SIZE(n); i++)
 			n->num[i] = 0;
 		n->size = 0;
+	}
+}
+
+void	bn_set_ui(t_bn *n, uint64_t ui)
+{
+	bn_set_zero(n);
+	if (ui > 0)
+	{
+		n->size = 1;
+		n->num[0] = ui;
 	}
 }
 
@@ -30,18 +47,18 @@ uint64_t 	bn_get_bit(t_bn *n, uint64_t pos)
 	return (n->num[limb] >> (pos % 64)) & 1;
 }
 
-void	bn_concat(t_bn *n, t_bn low, t_bn high)
+void	bn_concat(t_bn *n, t_bn *low, t_bn *high)
 {
-	if (n->alloc < low.size + high.size)
-		bn_realloc_size(n, low.size + high.size + 1);
+	if (n->alloc < SIZE(low) + SIZE(high))
+		bn_realloc_size(n, SIZE(low) + SIZE(high) + 1);
 	bn_set_zero(n);
-	while (n->size < low.size) {
-		n->num[n->size] = low.num[n->size];
-		n->size++;
+	while (SIZE(n) < SIZE(low)) {
+		n->num[SIZE(n)] = low->num[SIZE(n)];
+		INC_SIZE(n);
 	}
-	while (n->size < low.size + high.size) {
-		n->num[n->size] = high.num[n->size - low.size];
-		n->size++;
+	while (SIZE(n) < SIZE(low) + SIZE(high)) {
+		n->num[SIZE(n)] = high->num[SIZE(n) - SIZE(low)];
+		INC_SIZE(n);
 	}
 }
 
@@ -52,7 +69,7 @@ int		get_strongest_bit_pos(t_bn *n)
 
 	mask = (uint64_t)1 << 63;
 
-	if (n->size == 0)
+	if (SIZE(n) == 0)
 		pos = 0;
 	else
 	{
@@ -86,7 +103,7 @@ t_bn	*bn_init(void)
 	return (bn_init_size(1));
 }
 
-int 	bn_set_random(t_bn *n, uint64_t size)
+int 	bn_set_random(t_bn *n, int64_t size)
 {
 	int to_read = 0;
 	int fd = open("/dev/random", O_RDONLY);
@@ -98,7 +115,9 @@ int 	bn_set_random(t_bn *n, uint64_t size)
 	to_read += size / 8;
 	if (read(fd, (void*)n->num, to_read) < 0)
 		return 1;
-	n->size = size / 64 + 1;
+	n->size = size / 64;
+	if (size % 64)
+		n->size++;
 	close(fd);
 	return 0;
 }
@@ -109,7 +128,7 @@ void	display_bn(t_bn n)
 		printf("0");
 	else
 	{	
-		for (int i = (int)n.size - 1; i > -1; i--)
+		for (int64_t i = n.size - 1; i > -1; i--)
 		{
 			if (i == (int)n.size - 1)
 				printf("%llX", n.num[i]);
@@ -123,7 +142,7 @@ void	display_bn(t_bn n)
 void	display_stats(t_bn n)
 {
 	printf("Alloc = %llu\n",n.alloc);
-	printf("Size = %llu\n",n.size);
+	printf("Size = %llu\n", n.size);
 }
 
 void	display_bn_ascii(t_bn n)
@@ -131,7 +150,7 @@ void	display_bn_ascii(t_bn n)
 	unsigned char	*s;
 	uint64_t		block;
 
-	for (int i = (int)n.size - 1; i >= 0; i--)
+	for (int64_t i = n.size - 1; i >= 0; i--)
 	{
 		block = n.num[i];
 		s = (unsigned char *)block;
@@ -149,13 +168,13 @@ int		bn_realloc(t_bn *n)
 	if (n->num == NULL)
 		return (1);
 	memset(n->num, 0, n->alloc * 2 * sizeof(uint64_t));
-	memcpy((void*)n->num, (void*)tmp, n->size * 8);
+	memcpy((void*)n->num, (void*)tmp, SIZE(n) * 8);
 	n->alloc *= 2;
 	free(tmp);
 	return (0);
 }
 
-int 	bn_realloc_size(t_bn *n, uint64_t new_alloc)
+int 	bn_realloc_size(t_bn *n, int64_t new_alloc)
 {
 	uint64_t 	*tmp;
 
@@ -164,19 +183,19 @@ int 	bn_realloc_size(t_bn *n, uint64_t new_alloc)
 	if (n->num == NULL)
 		return (1);
 	memset(n->num, 0, new_alloc * sizeof(uint64_t));
-	memcpy((void*)n->num, (void*)tmp, n->size * 8);
+	memcpy((void*)n->num, (void*)tmp, SIZE(n) * 8);
 	n->alloc = new_alloc;
 	free(tmp);
 	return (0);
 }
 
-int 	bn_realloc_size_zero(t_bn *n, uint64_t new_alloc)
+int 	bn_realloc_size_zero(t_bn *n, int64_t new_alloc)
 {
 	free(n->num);
 	n->num = (uint64_t*)malloc(sizeof(uint64_t) * new_alloc);
 	if (n->num == NULL)
 		return (1);
-	for (uint64_t i = 0; i < new_alloc; i++)
+	for (int64_t i = 0; i < new_alloc; i++)
 		n->num[i] = 0;
 	n->alloc = new_alloc;
 	return (0);
@@ -186,16 +205,17 @@ void	bn_add_ui(t_bn *n, uint64_t ui)
 {
 	if (n->size == 0)
 	{
-		n->num[n->size++] = ui;
+		n->num[SIZE(n)] = ui;
+		INC_SIZE(n);
 		return ;
 	}
-	for (uint64_t i = 0; i < n->size; i++)
+	for (int64_t i = 0; i < SIZE(n); i++)
 	{
 		if (n->num[i] + ui < n->num[i])
 		{
 			n->num[i] += ui;
 			ui = 1;
-			if (n->size > n->alloc)
+			if (SIZE(n) > n->alloc)
 				bn_realloc(n);
 		}
 		else
@@ -206,7 +226,7 @@ void	bn_add_ui(t_bn *n, uint64_t ui)
 		}
 	}
 	if (ui == 1)
-		n->num[n->size++] = ui;
+		n->num[SIZE(n)] = ui;
 }
 
 int 	bn_cmp(t_bn *a, t_bn *b) // Return 1 if a > b, 0 if a == b, -1 if a < b
@@ -215,7 +235,7 @@ int 	bn_cmp(t_bn *a, t_bn *b) // Return 1 if a > b, 0 if a == b, -1 if a < b
 		return (1);
 	else if (a->size < b->size)
 		return (-1);
-	for (int i = (int)a->size; i >= 0; i--)
+	for (int64_t i = SIZE(a) - 1; i >= 0; i--)
 	{
 		if (a->num[i] > b->num[i])
 			return (1);
@@ -227,17 +247,23 @@ int 	bn_cmp(t_bn *a, t_bn *b) // Return 1 if a > b, 0 if a == b, -1 if a < b
 
 int 	bn_cmp_ui(t_bn *n, uint64_t ui)
 {
+	if (n->size > 1)
+		return (1);
 	if (n->size == 0 && ui == 0)
-		return (1);
+		return (0);
 	if (n->size == 1 && n->num[0] == ui)
+		return (0);
+	if (n->size == 1 && n->num[0] > ui)
 		return (1);
-	return (0);
+	if (n->size == 1 && n->num[0] < ui)
+		return (-1);
+	return (1);
 }
 
 t_bn 	*bn_clone(t_bn *a) // Returns a freshly allocated copy of bn a
 {
 	t_bn 		*n;
-	uint64_t 	i;
+	int64_t 	i;
 
 	n = (t_bn*)malloc(sizeof(t_bn));
 	if (n == NULL)
@@ -247,7 +273,8 @@ t_bn 	*bn_clone(t_bn *a) // Returns a freshly allocated copy of bn a
 		return (NULL);
 	n->size = a->size;
 	n->alloc = a->alloc;
-	for (i = 0 ; i < n->size; i++)
+	// printf("%lld\n", SIZE(n));
+	for (i = 0 ; i < SIZE(n); i++)
 		n->num[i] = a->num[i];
 	while (i < n->alloc)
 		n->num[i++] = 0;
@@ -256,11 +283,11 @@ t_bn 	*bn_clone(t_bn *a) // Returns a freshly allocated copy of bn a
 
 void	bn_copy(t_bn *a, t_bn *b) // Copy value of b into a. Reallocate a if necessary
 {
-	uint64_t i;
+	int64_t i;
 
-	if (a->alloc < b->size)
-		bn_realloc_size_zero(a, b->size);
-	for (i = 0 ; i < b->size; i++)
+	if (a->alloc < SIZE(b))
+		bn_realloc_size_zero(a, SIZE(b));
+	for (i = 0 ; i < SIZE(b); i++)
 		a->num[i] = b->num[i];
 	while (i < a->alloc)
 		a->num[i++] = 0;
@@ -269,10 +296,10 @@ void	bn_copy(t_bn *a, t_bn *b) // Copy value of b into a. Reallocate a if necess
 
 void	bn_add(t_bn *res, t_bn *op1, t_bn *op2)
 {
-	uint8_t 	carry = 0;
-	uint64_t	max = MAX(op1->size, op2->size);
+	int64_t 	carry = 0;
+	int64_t		max = MAX(SIZE(op1), SIZE(op2));
 	t_bn 		*cres;
-	uint64_t	i, tmp;
+	int64_t		i, tmp;
 
 	if (op1->size == 0 && op2->size == 0)
 	{
@@ -286,7 +313,8 @@ void	bn_add(t_bn *res, t_bn *op1, t_bn *op2)
 		bn_copy(res, (op1->size > op2->size) ? op1 : op2);
 		return ;
 	}
-	cres = bn_clone(res);
+	if ((cres = bn_clone(res)) == NULL)
+		return ;
 	for (i = 0; i < max; i++)
 	{
 		tmp = op1->num[i] + op2->num[i] + carry;
@@ -308,7 +336,7 @@ void	bn_add(t_bn *res, t_bn *op1, t_bn *op2)
 
 void 	power_of_two(t_bn *n, unsigned int pow)
 {
-	uint64_t 	limb;
+	int64_t 	limb;
 
 	limb = pow / 64;
 	while (limb >= n->alloc)
@@ -321,7 +349,7 @@ void 	power_of_two(t_bn *n, unsigned int pow)
 
 void	bn_set_bit(t_bn *n, uint64_t pos)
 {
-	uint64_t 	limb;
+	int64_t 	limb;
 
 	limb = pos / 64;
 	n->num[limb] |=  (uint64_t)1 << (pos % 64);
@@ -333,16 +361,16 @@ void	bn_set_bit(t_bn *n, uint64_t pos)
 void	bn_shift_right(t_bn *n, uint64_t shift)
 {
 	uint64_t	lost, previous_lost;
-	int 		q, r, i;
+	int64_t 	q, r, i;
 
 	q = shift / 64;
 	r = shift % 64;
 	previous_lost = lost = 0;
-	if (q >= (int)n->size)
+	if (q >= SIZE(n))
 		bn_set_zero(n);
 	else
 	{
-		for (i = 0; i < (int)n->size && q > 0; i++)
+		for (i = 0; i < SIZE(n) && q > 0; i++)
 		{
 			if (i < q)
 				n->num[i] = n->num[i + q];
@@ -350,14 +378,14 @@ void	bn_shift_right(t_bn *n, uint64_t shift)
 				n->num[i] = 0;
 		}
 		n->size -= q;
-		for (i = (int)n->size - 1 ; i >= 0 ; i--)
+		for (i = SIZE(n) - 1 ; i >= 0 ; i--)
 		{
 			previous_lost = lost;
 			lost = n->num[i] << (64 - r) >> (64 - r);
 			n->num[i] >>= r;
 			n->num[i] |= previous_lost << (64 - r);
-			if (i == (int)n->size - 1 && n->num[i] == 0)
-				n->size--;
+			if (i == n->size - 1 && n->num[i] == 0)
+				DEC_SIZE(n);
 		}
 	}
 }
@@ -365,18 +393,18 @@ void	bn_shift_right(t_bn *n, uint64_t shift)
 void	bn_shift_left(t_bn *n, uint64_t shift)
 {
 	uint64_t	lost, previous_lost;
-	int 		q, r, i;
+	int64_t 	q, r, i;
 
 	if (n->size == 0)
 		return ;
 	q = shift / 64;
 	r = shift % 64;
 	previous_lost = lost = 0;
-	if (q >= (int)n->size)
+	if (q >= SIZE(n))
 		bn_set_zero(n);
 	else
 	{
-		for (i = (int)n->size - 1; i >= 0 && q > 0; i--)
+		for (i = n->size - 1; i >= 0 && q > 0; i--)
 		{
 			if (i >= q)
 				n->num[i] = n->num[i - q];
@@ -384,7 +412,7 @@ void	bn_shift_left(t_bn *n, uint64_t shift)
 				n->num[i] = 0;
 		}
 	}
-	for (i = 0 ; i < (int)n->size; i++)
+	for (i = 0 ; i < SIZE(n); i++)
 	{
 		previous_lost = lost;
 		lost = n->num[i] >> (64 - r);
@@ -393,7 +421,7 @@ void	bn_shift_left(t_bn *n, uint64_t shift)
 	}
 	n->num[i] |= lost;
 	if (n->num[i])
-		n->size++;
+		INC_SIZE(n);
 }
 
 void	print_stats(t_bn n)
@@ -404,12 +432,17 @@ void	print_stats(t_bn n)
 
 void	bn_mul(t_bn *res, t_bn *m, t_bn *q)
 {
-	t_bn 		*a = bn_init_size(MAX(m->size, q->size) * 64 + 1000);
+	t_bn 		*a = bn_init_size(MAX(m->size, q->size) * 64 + 1);
 	t_bn		*cq = bn_clone(q);
 	t_bn 		*cm = bn_clone(m);
-	uint64_t 	orig_q_size = q->size;
+	int64_t 	orig_q_size = SIZE(q);
 
-	for (uint64_t i = 0; i < orig_q_size * 64; i++)
+	if (!a || !cq || !cm)
+	{
+		bn_clears(3, &a, &cq, &cm);
+		return ;
+	}
+	for (int64_t i = 0; i < orig_q_size * 64; i++)
 	{
 		if (IS_ODD(cq->num[0]))
 			bn_add(a, a, cm);
@@ -419,10 +452,8 @@ void	bn_mul(t_bn *res, t_bn *m, t_bn *q)
 			cq->num[orig_q_size - 1] |= 0x8000000000000000;
 		bn_shift_right(a, 1);
 	}
-	bn_concat(res, *cq, *a);
-	bn_clear(&a);
-	bn_clear(&cq);
-	bn_clear(&cm);
+	bn_concat(res, cq, a);
+	bn_clears(3, &a, &cq, &cm);
 }
 
 void	bn_clear(t_bn **n)
@@ -435,6 +466,19 @@ void	bn_clear(t_bn **n)
 	}
 }
 
+void	bn_clears(int num, ...)
+{
+	va_list args;
+
+	va_start(args, num);
+	for (int i = 0; i < num; i++)
+	{
+		t_bn **n = va_arg(args, t_bn **);
+		bn_clear(n);
+	}
+	va_end(args);
+}
+
 int		bn_pow(t_bn *n, t_bn *b, t_bn *exp)
 {
 	t_bn	*cb = bn_clone(b);
@@ -444,7 +488,7 @@ int		bn_pow(t_bn *n, t_bn *b, t_bn *exp)
 		return (1);
 	bn_set_zero(n);
 	bn_add_ui(n, 1);
-	while (cexp->size > 0 || cexp->num[0] > 0)
+	while (SIZE(cexp) > 0 || cexp->num[0] > 0)
 	{
 		if (IS_ODD(cexp->num[0]))
 			bn_mul(n, n, cb);
@@ -460,29 +504,33 @@ void 	bn_mod_pow(t_bn *res, t_bn *b, t_bn *exp, t_bn *mod)
 {
 	t_bn	*cb = bn_clone(b);
 	t_bn	*cexp = bn_clone(exp);
+	t_bn	*cmod = bn_clone(mod);;
 
 	bn_set_zero(res);
 	bn_add_ui(res, 1);
-	bn_mod(cb, cb, mod);
-	while (bn_cmp_ui(cexp, 0) == 0)
+	// display_bn(*cb);
+	// display_bn(*cmod);
+	bn_mod(cb, cb, cmod);
+	// display_bn(*cb);
+	while (bn_cmp_ui(cexp, 0))
 	{
+		// display_bn(*cexp);
 		if (IS_ODD(cexp->num[0]))
 		{
 			bn_mul(res, res, cb);
-			bn_mod(res, res, mod);
+			bn_mod(res, res, cmod);
 		}
 		bn_shift_right(cexp, 1);
 		bn_mul(cb, cb, cb);
-		bn_mod(cb, cb, mod);
+		bn_mod(cb, cb, cmod);
 	}
-	bn_clear(&cb);
-	bn_clear(&cexp);
+	bn_clears(3, &cb, &cexp, &cmod);
 }
 
 
 void	bn_sub_ui(t_bn *res, t_bn *a, uint64_t ui)
 {
-	t_bn		*ca;
+	t_bn		*ca = NULL;
 	uint64_t	j;
 
 	if (bn_cmp_ui(a, ui) < 0)
@@ -503,26 +551,26 @@ void	bn_sub_ui(t_bn *res, t_bn *a, uint64_t ui)
 	bn_copy(res, ca);
 	res->num[0] = ca->num[0] - ui;
 	bn_clear(&ca);
-}
+}	
 
 void	bn_sub(t_bn *res, t_bn *a, t_bn *b)
 {
-	t_bn 		*ca;
-	t_bn 		*cb;
-	uint64_t	j;
+	t_bn 		*ca = NULL;
+	t_bn 		*cb = NULL;
+	int64_t		j;
 
 	if (bn_cmp(a, b) < 0)
 		return ;
 	ca = bn_clone(a);
 	cb = bn_clone(b);
-	bn_set_zero(res);
-	for (uint64_t i = 0; i < ca->size; i++)
+	bn_set_ui(res, 0);
+	for (int64_t i = 0; i < SIZE(ca); i++)
 	{
 		res->num[i] = ca->num[i] - cb->num[i];
 		if (cb->num[i] && res->num[i] >= ca->num[i])
 		{
 			j = i + 1;
-			while (ca->num[j] == 0)
+			while (ca->num[j] == 0 && j < SIZE(ca))
 				ca->num[j++] = ULLONG_MAX;
 			ca->num[j] -= 1;
 		}
@@ -535,46 +583,33 @@ void	bn_sub(t_bn *res, t_bn *a, t_bn *b)
 			break;
 		}
 	}
-	bn_clear(&ca);
-	bn_clear(&cb);
-}
-
-
-void	bn_gcd(t_bn *gcd, t_bn *a, t_bn *b)
-{
-	t_bn	*rem;
-
-	if (bn_cmp_ui(b, 0) == 0)
-	{
-		bn_copy(gcd, a);
-		return;
-	}
-	rem = bn_init_size(b->size);
-	bn_div(NULL, rem, a, b);
-	bn_gcd(gcd, b, rem);
+	bn_clears(2, &ca, &cb);
 }
 
 void	bn_mod(t_bn *r, t_bn *n, t_bn *d)
 {
-	t_bn	*cn;
+	t_bn	*cn = NULL;
+	t_bn	*cd = NULL;
 
 	if (bn_cmp(n, d) < 0)
 	{
-		bn_copy(r, n);
+		if (r != n)
+			bn_copy(r, n);
 		return;
 	}
 	cn = bn_clone(n);
+	cd = bn_clone(d);
 	bn_set_zero(r);
-	for (int i = cn->size * 64 - 1; i >= 0; i--)
+	for (int64_t i = SIZE(cn) * 64 - 1; i >= 0; i--)
 	{
 		bn_shift_left(r, 1);
 		r->num[0] ^= bn_get_bit(cn, i);
-		if (r->size == 0 && r->num[0] > 0)
-			r->size++;
-		if (bn_cmp(r, d) >= 0)
-			bn_sub(r, r, d);
+		if (SIZE(r) == 0 && r->num[0] > 0)
+			INC_SIZE(r);
+		if (bn_cmp(r, cd) >= 0)
+			bn_sub(r, r, cd);
 	}
-	bn_clear(&cn);
+	bn_clears(2, &cn, &cd);
 }
 
 void	bn_div(t_bn *q, t_bn *r, t_bn *n, t_bn *d)
@@ -583,7 +618,7 @@ void	bn_div(t_bn *q, t_bn *r, t_bn *n, t_bn *d)
 
 	bn_set_zero(r);
 	bn_set_zero(q);
-	for (int i = n->size * 64 - 1; i >= 0; i--)
+	for (int64_t i = n->size * 64 - 1; i >= 0; i--)
 	{
 		bn_shift_left(r, 1);
 		r->num[0] ^= bn_get_bit(n, i);
@@ -603,4 +638,20 @@ void	bn_div(t_bn *q, t_bn *r, t_bn *n, t_bn *d)
 		}
 	}
 	bn_clear(&cn);
+}
+
+void	bn_swap(t_bn *a, t_bn *b)
+{
+	uint64_t	*n;
+	int64_t		tmp;
+
+	n = a->num;
+	a->num = b->num;
+	b->num = n;
+	tmp = a->size;
+	a->size = b->size;
+	b->size = tmp;
+	tmp = a->alloc;
+	a->alloc = b->alloc;
+	b->alloc = tmp;
 }

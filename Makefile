@@ -2,7 +2,7 @@ NAME = ft_ssl
 
 CC = gcc
 
-FLAGS = -Wall -Wextra -Werror -g
+FLAGS = -Wall -Wextra -g
 
 LIBFT_DIR  = libft/
 
@@ -58,6 +58,7 @@ SRC_NAME = base64/base64_core.c \
 		rsa/genrsa_opts.c\
 		rsa/genrsa.c\
 		rsa/lib_bn.c\
+		rsa/miller_rabin.c\
 		sha1/sha1.c \
 		sha1/sha1_transform.c \
 		sha256/sha256.c \
