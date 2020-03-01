@@ -14,6 +14,25 @@
 #include "ft_ssl.h"
 #include "gmp.h"
 
+#define ABS(x) ((x < 0) ? -x : x)
+
+void    display_mpz(mpz_t n)
+{
+	if (n->_mp_size == 0)
+		printf("0");
+	else
+	{
+	    for (int64_t i = ABS(n->_mp_size) - 1; i > -1; i--)
+	    {
+	        if (i == ABS(n->_mp_size) - 1)
+	            printf("%lX", n->_mp_d[i]);
+	        else
+	            printf("%016lX", n->_mp_d[i]);
+	    }
+	}
+    printf("\n");
+}
+
 static int		hash_files(char **argv, t_ssl_command *command)
 {
 	int	i;
@@ -81,75 +100,81 @@ static int		data_encryption_standard(char **argv, t_ssl_command *cmd)
 }
 
 
+static void		generate_prime(t_bn *n, uint64_t bits)
+{
+	int iterations;
+
+	do {
+		bn_set_random(n, bits);
+	} while (miller_rabin(n, 5) == 0);
+}
+
+void	copy_bn_to_mpz(t_bn *n, mpz_t m)
+{
+	for (int64_t i = 0; i < n->size; i++)
+		m->_mp_d[i] = n->num[i];
+	m->_mp_size = n->size;
+}
+
 static int 		genrsa_command(char **argv, t_ssl_command *cmd)
 {
-	t_bn 	*p, *q, *n, *p_1, *q_1, *phi, *eps;
+	t_bn 	*p, *q, *n, *p_1, *q_1, *phi, *eps, *gcd, *s, *t;
+	mpz_t	phim, epsm, sm, tm, gcdm;
 	int 	ret = 0;
 
 	if (genrsa_opts(argv, cmd->genrsa))
 		ret = 1;
+	else
+	{
+		mpz_init2(phim, cmd->genrsa->numbits);
+		mpz_init2(epsm, 64);
+		mpz_init2(sm, cmd->genrsa->numbits);
+		mpz_init2(tm, cmd->genrsa->numbits);
+		mpz_init2(gcdm, cmd->genrsa->numbits);
 
-	printf("%llu\n", cmd->genrsa->numbits);
-	p = bn_init_size(cmd->genrsa->numbits / 2);
-	q = bn_init_size(cmd->genrsa->numbits / 2);
-	p_1 = bn_init_size(cmd->genrsa->numbits / 2);
-	q_1 = bn_init_size(cmd->genrsa->numbits / 2);
-	n = bn_init_size(cmd->genrsa->numbits);
-	phi = bn_init_size(cmd->genrsa->numbits);
-	eps = bn_init_size(64);
-	bn_add_ui(eps, 0x10001);
-	bn_set_random(p, cmd->genrsa->numbits / 2);
-	bn_set_random(q, cmd->genrsa->numbits / 2);
-	bn_mul(n, q, p);
-	bn_sub_ui(p_1, p, 1);
-	bn_sub_ui(q_1, q, 1);
+		printf("%llu\n", cmd->genrsa->numbits);
+		printf("%llu\n", cmd->genrsa->numbits / 2);
+		p = bn_init_size(cmd->genrsa->numbits / 2);
+		q = bn_init_size(cmd->genrsa->numbits / 2);
+		p_1 = bn_init_size(cmd->genrsa->numbits / 2);
+		q_1 = bn_init_size(cmd->genrsa->numbits / 2);
+		n = bn_init_size(cmd->genrsa->numbits);
+		phi = bn_init_size(cmd->genrsa->numbits);
+		t = bn_init_size(cmd->genrsa->numbits);
+		s = bn_init_size(cmd->genrsa->numbits);
+		gcd = bn_init_size(cmd->genrsa->numbits);
+		eps = bn_init_size(64);
+		bn_set_ui(eps, 0x10001); // eps = 0x10001
+		generate_prime(p, cmd->genrsa->numbits / 2);
+		generate_prime(q, cmd->genrsa->numbits / 2);
+		bn_sub_ui(p_1, p, 1); // p_1 = p -1
+		bn_sub_ui(q_1, q, 1); // q_1 = q - 1
+		bn_mul(n, q, p); // n = p * q
+		bn_mul(phi, p_1, q_1); // phi = q_1 * p_1
+		bn_gcdext(phi, eps, s, t, gcd);
 
-	display_bn(*n);
-	display_bn(*p);
-	// display_bn(*p_1);
-	display_bn(*q);
-	// display_bn(*q_1);
-	bn_mul(phi, p_1, q_1);
-	display_bn(*phi);
-	display_bn(*eps);
+		copy_bn_to_mpz(phi, phim);
+		mpz_set_ui(sm, 0);
+		mpz_set_ui(tm, 0);
+		mpz_set_ui(gcdm, 0);
+		mpz_set_ui(epsm, 0x10001);
+		mpz_gcdext(gcdm, sm, tm, phim, epsm);
 
-	// mpz_t 	p, q, n, phi, p_1, q_1, eps, gcd, t, s;
-
-
-	// mpz_init2(p, cmd->genrsa->numbits);
-	// mpz_init2(q, cmd->genrsa->numbits);
-	// mpz_init2(p_1, cmd->genrsa->numbits);
-	// mpz_init2(q_1, cmd->genrsa->numbits);
-	// mpz_init2(phi, cmd->genrsa->numbits * 2);
-	// mpz_init2(n, cmd->genrsa->numbits * 2);
-	// mpz_inits(gcd, t, s, NULL);
-
-	// mpz_init2(eps, 16);
-	// mpz_add_ui(eps, eps, 0x10001);
-
-	// if (set_random_mpz_size(p, cmd->genrsa->numbits / 2) < 0 ||	set_random_mpz_size(q, cmd->genrsa->numbits / 2) < 0)
-	// {
-	// 	mpz_clears(p, q, n, phi, p_1, q_1, NULL);
-	// 	return (1);
-	// }	
-
-	// if (mpz_probab_prime_p(n, 10) == 0)
-	// 	mpz_nextprime(q, q);
-	// if (mpz_probab_prime_p(n, 10) == 0)
-	// 	mpz_nextprime(p, p);
-	// mpz_mul(n, p, q);
-	// mpz_sub_ui(p_1, p, 1);
-	// mpz_sub_ui(q_1, q, 1);
-	// mpz_mul(phi, p_1, q_1);
-	// mpz_gcdext(gcd, s, t, phi, eps); // s * phi + eps * t = gcd ; t is the private key
-	// // If gcd is not equal to 1, it means phi and eps and not coprime so we have to start all over again
-	// if (gcd->_mp_size == 1 && gcd->_mp_d[0] == 1)
-	// {
-	// 	printf("phi and eps are coprime!\nPrivate key is in hexa:\n");
-	// 	display_mpz(t);
-	// }
+		printf("gcdm = ");
+		display_mpz(gcdm);
+		printf("gcd = ");
+		display_bn(*gcd);
 		
+		printf("t = ");
+		display_bn(*t);
+		printf("tm = ");
+		display_mpz(tm);
 
+		printf("s = ");
+		display_bn(*s);
+		printf("sm = ");
+		display_mpz(sm);
+	}
 	return (ret);
 }
 

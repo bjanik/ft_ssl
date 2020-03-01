@@ -1019,29 +1019,6 @@ uint64_t g_primes[] = {
 };
 **/
 
-int 	pseudo_prime(t_bn *n)
-{
-	t_bn 	*n_1;
-	t_bn 	*two;
-	t_bn 	*res;
-	int 	ret;
-
-	if (initial_sieve_test(n) == 1)
-		return (0);
-	two = bn_init_size(64);
-	res = bn_init_size(n->size * 64);
-	n_1 = bn_clone(n);
-	bn_set_ui(two, 2);
-	bn_sub_ui(n_1, n, 1);
-	bn_mod_pow(res, two, n_1, n);
-	bn_mod(res, res, n);
-	ret = bn_cmp_ui(res, 1);
-	bn_clear(&n_1);
-	bn_clear(&n_1);
-	bn_clear(&res);
-	return !ret;
-}
-
 int 	initial_sieve_test(t_bn *n)
 {
 	t_bn 	*mod = bn_init_size(64);
@@ -1059,7 +1036,7 @@ int 	initial_sieve_test(t_bn *n)
 		}
 		bn_set_zero(mod);
 	}
-	// ft_putchar('.');
+	ft_putchar('.');
 	bn_clears(2, &mod, &den);
 	return (0);  // n passed initial sieve test and might be prime
 }
@@ -1081,9 +1058,9 @@ int		miller_rabin(t_bn *n, int s)
 			bn_clear(&a);
 			return (0); // n is composite 
 		}
-		// ft_putchar('+');
+		ft_putchar('+');
 	}
-	// ft_putchar('\n');
+	ft_putchar('\n');
 	bn_clear(&a);
 	return (1); // n is prime (surely)
 }
