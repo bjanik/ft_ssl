@@ -14,7 +14,6 @@
 #include "ft_ssl.h"
 #include "gmp.h"
 
-#define ABS(x) ((x < 0) ? -x : x)
 
 void    display_mpz(mpz_t n)
 {
@@ -100,14 +99,7 @@ static int		data_encryption_standard(char **argv, t_ssl_command *cmd)
 }
 
 
-static void		generate_prime(t_bn *n, uint64_t bits)
-{
-	int iterations;
 
-	do {
-		bn_set_random(n, bits);
-	} while (miller_rabin(n, 5) == 0);
-}
 
 void	copy_bn_to_mpz(t_bn *n, mpz_t m)
 {
@@ -118,62 +110,46 @@ void	copy_bn_to_mpz(t_bn *n, mpz_t m)
 
 static int 		genrsa_command(char **argv, t_ssl_command *cmd)
 {
-	t_bn 	*p, *q, *n, *p_1, *q_1, *phi, *eps, *gcd, *s, *t;
-	mpz_t	phim, epsm, sm, tm, gcdm;
-	int 	ret = 0;
+	t_rsa_data	rsa = {NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL};
+	int 		ret = 0;
 
 	if (genrsa_opts(argv, cmd->genrsa))
 		ret = 1;
 	else
 	{
-		mpz_init2(phim, cmd->genrsa->numbits);
-		mpz_init2(epsm, 64);
-		mpz_init2(sm, cmd->genrsa->numbits);
-		mpz_init2(tm, cmd->genrsa->numbits);
-		mpz_init2(gcdm, cmd->genrsa->numbits);
-
-		printf("%llu\n", cmd->genrsa->numbits);
-		printf("%llu\n", cmd->genrsa->numbits / 2);
-		p = bn_init_size(cmd->genrsa->numbits / 2);
-		q = bn_init_size(cmd->genrsa->numbits / 2);
-		p_1 = bn_init_size(cmd->genrsa->numbits / 2);
-		q_1 = bn_init_size(cmd->genrsa->numbits / 2);
-		n = bn_init_size(cmd->genrsa->numbits);
-		phi = bn_init_size(cmd->genrsa->numbits);
-		t = bn_init_size(cmd->genrsa->numbits);
-		s = bn_init_size(cmd->genrsa->numbits);
-		gcd = bn_init_size(cmd->genrsa->numbits);
-		eps = bn_init_size(64);
-		bn_set_ui(eps, 0x10001); // eps = 0x10001
-		generate_prime(p, cmd->genrsa->numbits / 2);
-		generate_prime(q, cmd->genrsa->numbits / 2);
-		bn_sub_ui(p_1, p, 1); // p_1 = p -1
-		bn_sub_ui(q_1, q, 1); // q_1 = q - 1
-		bn_mul(n, q, p); // n = p * q
-		bn_mul(phi, p_1, q_1); // phi = q_1 * p_1
-		bn_gcdext(phi, eps, s, t, gcd);
-
-		copy_bn_to_mpz(phi, phim);
-		mpz_set_ui(sm, 0);
-		mpz_set_ui(tm, 0);
-		mpz_set_ui(gcdm, 0);
-		mpz_set_ui(epsm, 0x10001);
-		mpz_gcdext(gcdm, sm, tm, phim, epsm);
-
-		printf("gcdm = ");
-		display_mpz(gcdm);
-		printf("gcd = ");
-		display_bn(*gcd);
+		if (genrsa_command_run(&rsa, cmd->genrsa))
+			return (1);
+		pem(&rsa, cmd->genrsa->fd[IN]);
 		
-		printf("t = ");
-		display_bn(*t);
-		printf("tm = ");
-		display_mpz(tm);
 
-		printf("s = ");
-		display_bn(*s);
-		printf("sm = ");
-		display_mpz(sm);
+		// p = bn_init_size(primes_size);
+		// q = bn_init_size(primes_size);
+		// p_1 = bn_init_size(primes_size);
+		// q_1 = bn_init_size(primes_size);
+		// n = bn_init_size(cmd->genrsa->numbits);
+		// phi = bn_init_size(cmd->genrsa->numbits);
+		// t = bn_init_size(cmd->genrsa->numbits);
+		// s = bn_init_size(cmd->genrsa->numbits);
+		// gcd = bn_init_size(cmd->genrsa->numbits);
+		// eps = bn_init_size(64);
+		// bn_set_ui(eps, 0x10001); // eps = 0x10001
+		// generate_prime(p, primes_size);
+		// generate_prime(q, primes_size);
+		// bn_sub_ui(p_1, p, 1); // p_1 = p -1
+		// bn_sub_ui(q_1, q, 1); // q_1 = q - 1
+		// bn_mul(n, q, p); // n = p * q
+		// bn_mul(phi, p_1, q_1); // phi = q_1 * p_1
+		// bn_gcdext(phi, eps, s, t, gcd);
+		// ft_printf("e is 65537 (0x10001)\n");
+		// printf("bytes in modulus = %u\n", bn_get_byte_number(n));
+		// printf("bits in modulus = %u\n", bn_get_bit_number(n));
+		// display_bn(*n);
+		// printf("bytes in private exp = %u\n", bn_get_byte_number(t));
+		// printf("bits in private exp = %u\n", bn_get_bit_number(t));
+
+		// display_bn(*t);
+
+		// copy_bn_to_mpz(phi, phim);
 	}
 	return (ret);
 }

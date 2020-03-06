@@ -20,6 +20,7 @@
 # include <fcntl.h>
 # include <pwd.h>
 
+# include "bn.h"
 # include "libft.h"
 # include "lexer.h"
 # include "gmp.h"
@@ -107,15 +108,17 @@ typedef struct			s_des_opts
 }						t_des_opts;
 
 
-// typedef struct 			s_rsa_data
-// {
-// 	t_bn				p;
-// 	t_bn				q;
-// 	t_bn				n; // Result of p * q
-// 	t_bn				phi;
-// 	t_bn				private_key;
-// 	t_bn				public_key;
-// }						t_rsa_data;
+typedef struct 			s_rsa_data
+{
+	t_bn				*modulus;
+	t_bn				*public_exp;
+	t_bn				*private_exp;
+	t_bn				*prime1;
+	t_bn				*prime2;
+	t_bn				*exponent1;
+	t_bn				*exponent2;
+	t_bn				*coef;
+}						t_rsa_data;
 
 typedef struct 			s_genrsa
 {
@@ -123,7 +126,7 @@ typedef struct 			s_genrsa
 	char				*out;
 	int 				fd[2];
 	char				*rand_file;
-	uint64_t			numbits;
+	int					numbits;
 }						t_genrsa;
 
 typedef struct 			s_rsa
@@ -321,6 +324,10 @@ int						set_pubout(char **argv, t_rsa *rsa, int *index);
 
 t_genrsa				*genrsa_init(void);
 int 					genrsa_opts(char **argv, t_genrsa *rsa);
+int 					genrsa_command_run(t_rsa_data *rsa, t_genrsa *genrsa);
+
+int						pem(t_rsa_data *rsa, int fd);
+
 
 
 int						set_random_mpz_size(mpz_t n, size_t size);

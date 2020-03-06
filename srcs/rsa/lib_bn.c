@@ -13,11 +13,8 @@
 #define MAX(x, y) ((x > y) ? x : y)
 #define IS_ODD(x) ((x) & 1)
 #define IS_EVEN(x) (((x) & 1) == 0)
-#define ABS(x) ((x > 0) ? x : -x)
-#define SIZE(n) (ABS(n->size))
 
-#define INC_SIZE(x) (((x)->size < 0) ? (x)->size-- : (x)->size++)
-#define DEC_SIZE(x) (((x)->size < 0) ? (x)->size++ : (x)->size--)
+
 
 void	bn_set_zero(t_bn *n)
 {
@@ -38,6 +35,56 @@ void	bn_set_ui(t_bn *n, uint64_t ui)
 		n->num[0] = ui;
 	}
 }
+
+uint32_t bn_get_bit_number(t_bn *n)
+{
+	unsigned int 	bits = 64;
+	uint64_t		mask = 0x8000000000000000;
+	int64_t			size;
+
+	if (SIZE(n) == 0)
+		return (0);
+	while ((n->num[SIZE(n) - 1] & mask) == 0)
+	{
+		bits--;
+		mask >>= 1;
+	}
+	size = SIZE(n);
+	while (--size)
+		bits += 64;
+	return (bits);
+
+}
+
+uint32_t bn_get_byte_number_last_limb(uint64_t limb)
+{
+	if (limb <= 0xFF)
+		return (1);
+	if (limb <= 0xFFFF)
+		return (2);
+	if (limb <= 0xFFFFFF)
+		return (3);
+	if (limb <= 0xFFFFFFFF)
+		return (4);
+	if (limb <= 0xFFFFFFFFFF)
+		return (5);
+	if (limb <= 0xFFFFFFFFFFFF)
+		return (6);
+	if (limb <= 0xFFFFFFFFFFFFFF)
+		return (7);
+	return (8);
+}
+
+uint32_t bn_get_byte_number(t_bn *n)
+{
+    unsigned int    bytes;
+
+    if (SIZE(n) == 0)
+    	return (0);
+    bytes = (SIZE(n) - 1) * 8;
+    return (bytes + bn_get_byte_number_last_limb(n->num[SIZE(n) - 1]));
+}
+
 
 uint64_t 	bn_get_bit(t_bn *n, uint64_t pos)
 {
@@ -106,8 +153,9 @@ t_bn	*bn_init(void)
 
 int 	bn_set_random(t_bn *n, int64_t size)
 {
-	int to_read = 0;
-	int fd = open("/dev/random", O_RDONLY);
+	int 		to_read = 0;
+	int 		fd = open("/dev/random", O_RDONLY);
+	uint32_t 	bits;
 
 	if (fd < 0)
 		return 1;
@@ -119,6 +167,11 @@ int 	bn_set_random(t_bn *n, int64_t size)
 	n->size = size / 64;
 	if (size % 64 && n->num[n->size])
 		n->size++;
+	bits = bn_get_bit_number(n);
+	if (bits > size)
+		bn_shift_right(n, bits - size);
+	else if (bits < size)
+		bn_shift_left(n, size - bits);
 	close(fd);
 	return 0;
 }

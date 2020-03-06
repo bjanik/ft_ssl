@@ -2,7 +2,12 @@
 # define BN_H
 # include <stdint.h>
 
+
+# define ABS(x) ((x > 0) ? x : -x)
+# define SIZE(n) (ABS(n->size))
 # define BIGGEST_BN(x, y) ((x->size >= y->size) ? x : y)
+# define INC_SIZE(x) (((x)->size < 0) ? (x)->size-- : (x)->size++)
+# define DEC_SIZE(x) (((x)->size < 0) ? (x)->size++ : (x)->size--)
 
 typedef struct 	big_num
 {
@@ -41,6 +46,11 @@ void			bn_swap(t_bn *a, t_bn *b);
 void			bn_gcd(t_bn *gcd, t_bn *a, t_bn *b);
 void			bn_gcdext(t_bn *a, t_bn *b, t_bn *s, t_bn *t, t_bn *gcd);
 int				get_strongest_bit_pos(t_bn *n);
+uint32_t 		bn_get_byte_number(t_bn *n);
+uint32_t 		bn_get_byte_number_last_limb(uint64_t limb);
+uint32_t 		bn_get_bit_number(t_bn *n);
+
+
 void 			power_of_two(t_bn *n, unsigned int pow);
 
 
