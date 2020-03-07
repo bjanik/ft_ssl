@@ -160,7 +160,7 @@ int 	initial_sieve_test(t_bn *n)
 		}
 		bn_set_zero(mod);
 	}
-	ft_putchar('.');
+    ft_putchar_fd('.', STDERR_FILENO);
 	bn_clears(2, &mod, &den);
 	return (0);  // n passed initial sieve test and might be prime
 }
@@ -182,9 +182,9 @@ int		miller_rabin(t_bn *n, int s)
 			bn_clear(&a);
 			return (0); // n is composite 
 		}
-		ft_putchar('+');
+		ft_putchar_fd('+', STDERR_FILENO);
 	}
-	ft_putchar('\n');
+	ft_putchar_fd('\n', STDERR_FILENO);
 	bn_clear(&a);
 	return (1); // n is prime (surely)
 }

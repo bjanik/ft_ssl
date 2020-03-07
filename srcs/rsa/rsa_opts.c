@@ -43,13 +43,15 @@ static int 	finalize_rsa_opts(t_rsa *rsa)
 
 int 		set_inform(char **argv, t_rsa *rsa, int *index)
 {
-	rsa->inform = argv[++(*index)];
+	(*index)++;
+	rsa->inform = argv[*index];
 	return (0);
 }
 
 int 		set_outform(char **argv, t_rsa *rsa, int *index)
 {
-	rsa->outform = argv[++(*index)];
+	(*index)++;
+	rsa->outform = argv[*index];
 	return (0);
 }
 
@@ -164,7 +166,8 @@ int 	set_password_rsa(char **argv, t_rsa *rsa, int *index)
 
 int 	set_password_output(char **argv, t_rsa *rsa, int *index)
 {
-	if ((rsa->passout = argv[++(*index)]) == NULL)
+	(*index)++;
+	if ((rsa->passout = argv[*index]) == NULL)
 		return (1);
 	return (0);
 }
@@ -179,7 +182,7 @@ int 	rsa_opts(char **argv, t_rsa *rsa)
 		j = -1;
 		while (g_rsa_opts[++j].opt)
 		{
-			if (ft_strcmp(g_rsa_opts[++j].opt, argv[i]) == 0)
+			if (ft_strcmp(g_rsa_opts[j].opt, argv[i]) == 0)
 			{
 				if (g_rsa_opts[j].opt_f(argv, rsa, &i))
 					return (1);

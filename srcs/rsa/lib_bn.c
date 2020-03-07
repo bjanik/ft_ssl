@@ -56,7 +56,7 @@ uint32_t bn_get_bit_number(t_bn *n)
 
 }
 
-uint32_t bn_get_byte_number_last_limb(uint64_t limb)
+uint32_t get_byte_number(uint64_t limb)
 {
 	if (limb <= 0xFF)
 		return (1);
@@ -82,7 +82,7 @@ uint32_t bn_get_byte_number(t_bn *n)
     if (SIZE(n) == 0)
     	return (0);
     bytes = (SIZE(n) - 1) * 8;
-    return (bytes + bn_get_byte_number_last_limb(n->num[SIZE(n) - 1]));
+    return (bytes + get_byte_number(n->num[SIZE(n) - 1]));
 }
 
 

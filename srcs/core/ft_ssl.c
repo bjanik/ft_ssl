@@ -62,6 +62,9 @@ t_ssl_command		*get_ssl_command(const char *cmd)
 			if (!ft_strcmp("genrsa", cmd))
 				if (!(g_commands[i].genrsa = genrsa_init()))
 					return (NULL);
+			if (!ft_strcmp("rsa", cmd))
+				if (!(g_commands[i].rsa = rsa_init()))
+					return (NULL);
 			return (&g_commands[i]);
 		}
 		if (!ft_strcmp(g_commands[i].name, cmd))

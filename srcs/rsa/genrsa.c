@@ -42,12 +42,14 @@ static void		generate_prime(t_bn *n, uint64_t bits)
 
 int 		genrsa_command_run(t_rsa_data *rsa, t_genrsa *genrsa)
 {
-	t_bn *p_1, *q_1, *phi, *gcd, *s; 
+	t_bn *p_1, *q_1, *phi, *gcd, *s, *p_2; 
 
-	if (init_rsa_data(rsa, genrsa->numbits))
+	if (init_rsa_data(&genrsa->rsa_data, genrsa->numbits))
 		return (1);
 
-	ft_printf("Generating RSA private key, %llu bit long modulus\n", genrsa->numbits);
+	ft_putstr_fd("Generating RSA private key, ", STDERR_FILENO);
+	ft_putnbr_fd(genrsa->numbits, STDERR_FILENO);
+	ft_putendl_fd(" bit long modulus", STDERR_FILENO);
 	bn_set_ui(rsa->public_exp, 0x10001);
 	generate_prime(rsa->prime1, genrsa->numbits);
 	generate_prime(rsa->prime2, genrsa->numbits);
@@ -57,9 +59,13 @@ int 		genrsa_command_run(t_rsa_data *rsa, t_genrsa *genrsa)
 	phi = bn_init_size(genrsa->numbits);
 	gcd = bn_init_size(genrsa->numbits);
 	s = bn_init_size(genrsa->numbits);
-	if (!phi || !p_1 || !q_1 || !gcd || !s)
+	p_2 = bn_clone(rsa->prime1);
+	bn_sub_ui(p_2, p_2, 2);
+	bn_mod_pow(rsa->coef, rsa->prime2, p_2, rsa->prime1);
+	// display_bn(*rsa->coef);
+	if (!phi || !p_1 || !q_1 || !gcd || !s || !p_2)
 	{
-		bn_clears(5, &phi, &p_1, &q_1, &gcd, &s);
+		bn_clears(6, &phi, &p_1, &q_1, &gcd, &s, &p_2);
 		return (1);
 	}
 	ft_putendl_fd("e is 65537 (0x10001)", STDERR_FILENO);
@@ -79,7 +85,7 @@ t_genrsa	*genrsa_init(void)
 
 	if ((genrsa = malloc(sizeof(t_genrsa))) == NULL)
 		return (NULL);
-	genrsa->in = NULL;
+	// genrsa->in = NULL;
 	genrsa->out = NULL;
 	genrsa->fd[IN] = STDIN_FILENO;
 	genrsa->fd[OUT] = STDOUT_FILENO;

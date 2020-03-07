@@ -56,6 +56,8 @@
 # define RSA_TEXT 16
 # define RSA_PUBIN 32
 # define RSA_PUBOUT 64
+# define PEM_HEADER "-----BEGIN RSA PRIVATE KEY-----"
+# define PEM_FOOTER "-----END RSA PRIVATE KEY-----"
 
 # define MAX_KEY_LEN 16
 
@@ -122,11 +124,12 @@ typedef struct 			s_rsa_data
 
 typedef struct 			s_genrsa
 {
-	char				*in;
+	// char				*in;
 	char				*out;
 	int 				fd[2];
 	char				*rand_file;
 	int					numbits;
+	t_rsa_data 			rsa_data;
 }						t_genrsa;
 
 typedef struct 			s_rsa
@@ -140,6 +143,7 @@ typedef struct 			s_rsa
 	char				*passout;
 	uint8_t				opts;
 	t_des 				*des;
+	t_rsa_data 			rsa_data;
 }						t_rsa;
 
 typedef struct			s_msg
@@ -327,6 +331,12 @@ int 					genrsa_opts(char **argv, t_genrsa *rsa);
 int 					genrsa_command_run(t_rsa_data *rsa, t_genrsa *genrsa);
 
 int						pem(t_rsa_data *rsa, int fd);
+int 					pem_decode(t_rsa *rsa, char *data);
+
+t_rsa					*rsa_init(void);
+int 					rsa_opts(char **argv, t_rsa *rsa);
+int 					rsa_command_run(t_rsa *rsa);
+
 
 
 

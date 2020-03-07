@@ -47,7 +47,7 @@ void			bn_gcd(t_bn *gcd, t_bn *a, t_bn *b);
 void			bn_gcdext(t_bn *a, t_bn *b, t_bn *s, t_bn *t, t_bn *gcd);
 int				get_strongest_bit_pos(t_bn *n);
 uint32_t 		bn_get_byte_number(t_bn *n);
-uint32_t 		bn_get_byte_number_last_limb(uint64_t limb);
+uint32_t 		get_byte_number(uint64_t limb);
 uint32_t 		bn_get_bit_number(t_bn *n);
 
 

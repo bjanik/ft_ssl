@@ -98,9 +98,6 @@ static int		data_encryption_standard(char **argv, t_ssl_command *cmd)
 	return (ret);
 }
 
-
-
-
 void	copy_bn_to_mpz(t_bn *n, mpz_t m)
 {
 	for (int64_t i = 0; i < n->size; i++)
@@ -110,48 +107,22 @@ void	copy_bn_to_mpz(t_bn *n, mpz_t m)
 
 static int 		genrsa_command(char **argv, t_ssl_command *cmd)
 {
-	t_rsa_data	rsa = {NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL};
-	int 		ret = 0;
-
 	if (genrsa_opts(argv, cmd->genrsa))
-		ret = 1;
-	else
-	{
-		if (genrsa_command_run(&rsa, cmd->genrsa))
-			return (1);
-		pem(&rsa, cmd->genrsa->fd[IN]);
-		
+		return (1);
+	if (genrsa_command_run(&cmd->genrsa->rsa_data, cmd->genrsa))
+		return (1);
+	pem(&cmd->genrsa->rsa_data, cmd->genrsa->fd[OUT]);
+	return (0);
+}
 
-		// p = bn_init_size(primes_size);
-		// q = bn_init_size(primes_size);
-		// p_1 = bn_init_size(primes_size);
-		// q_1 = bn_init_size(primes_size);
-		// n = bn_init_size(cmd->genrsa->numbits);
-		// phi = bn_init_size(cmd->genrsa->numbits);
-		// t = bn_init_size(cmd->genrsa->numbits);
-		// s = bn_init_size(cmd->genrsa->numbits);
-		// gcd = bn_init_size(cmd->genrsa->numbits);
-		// eps = bn_init_size(64);
-		// bn_set_ui(eps, 0x10001); // eps = 0x10001
-		// generate_prime(p, primes_size);
-		// generate_prime(q, primes_size);
-		// bn_sub_ui(p_1, p, 1); // p_1 = p -1
-		// bn_sub_ui(q_1, q, 1); // q_1 = q - 1
-		// bn_mul(n, q, p); // n = p * q
-		// bn_mul(phi, p_1, q_1); // phi = q_1 * p_1
-		// bn_gcdext(phi, eps, s, t, gcd);
-		// ft_printf("e is 65537 (0x10001)\n");
-		// printf("bytes in modulus = %u\n", bn_get_byte_number(n));
-		// printf("bits in modulus = %u\n", bn_get_bit_number(n));
-		// display_bn(*n);
-		// printf("bytes in private exp = %u\n", bn_get_byte_number(t));
-		// printf("bits in private exp = %u\n", bn_get_bit_number(t));
+static int 		rsa_command(char **argv, t_ssl_command *cmd)
+{
+	if (rsa_opts(argv, cmd->rsa))
+		return (1);
+	if (rsa_command_run(cmd->rsa))
+		return (1);
+	return (0);
 
-		// display_bn(*t);
-
-		// copy_bn_to_mpz(phi, phim);
-	}
-	return (ret);
 }
 
 int				ft_ssl_routine(char **argv)
@@ -164,14 +135,16 @@ int				ft_ssl_routine(char **argv)
 	if (!(command = get_ssl_command(argv[1])))
 		return (commands_usage(argv[1]));
 	if (command->hash_func)
-		ret = hash_algo(argv, command);
-	else if (command->des)
-		ret = data_encryption_standard(argv, command);
-	else if (command->base64)
-		ret = base64_core(argv, command->base64);
-	else
-		ret = genrsa_command(argv, command);
-	return (ret);
+		return hash_algo(argv, command);
+	if (command->des)
+		return data_encryption_standard(argv, command);
+	if (command->base64)
+		return base64_core(argv, command->base64);
+	if (command->genrsa)
+		return genrsa_command(argv, command);
+	if (command->rsa)
+		return rsa_command(argv, command);
+	return 0;
 }
 
 int				main(int argc, char **argv)

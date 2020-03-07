@@ -7,44 +7,46 @@ struct			s_genrsa_opts
 };
 
 
-static int 	set_genrsa_input(char **argv, t_genrsa *genrsa, int *index)
-{
-	if ((genrsa->in = argv[++(*index)]) == NULL)
-		return (1);
-	return (0);
-}
+// static int 	set_genrsa_input(char **argv, t_genrsa *genrsa, int *index)
+// {
+// 	(*index)++;
+// 	if ((genrsa->in = argv[*index]) == NULL)
+// 		return (1);
+// 	return (0);
+// }
 
 static int 	set_genrsa_output(char **argv, t_genrsa *genrsa, int *index)
 {
-	if ((genrsa->out = argv[++(*index)]) == NULL)
+	(*index)++;
+	if ((genrsa->out = argv[*index]) == NULL)
 		return (1);
 	return (0);
 }
 
 static int 	set_random(char **argv, t_genrsa *genrsa, int *index)
 {
-	if ((genrsa->rand_file = argv[++(*index)]) == NULL)
+	(*index)++;
+	if ((genrsa->rand_file = argv[*index]) == NULL)
 		return (1);
 	return (0);
 }
 
 static int 	finalize_genrsa_opts(t_genrsa *genrsa)
 {
-	if (genrsa->in)
-	{
-		if ((genrsa->fd[IN] = open(genrsa->in, O_RDONLY)) < 0)
-			return (1);
-	}
+	// if (genrsa->in)
+	// {
+	// 	if ((genrsa->fd[IN] = open(genrsa->in, O_RDONLY)) < 0)
+	// 		return (1);
+	// }
 	if (genrsa->out)
 	{
-		if ((genrsa->fd[OUT] = open(genrsa->out, O_WRONLY)) < 0)
+		if ((genrsa->fd[OUT] = open(genrsa->out, O_CREAT | O_WRONLY | O_TRUNC, 0644)) < 0)
 			return (1);	
 	}
 	return (0);
 }
 
 const struct s_genrsa_opts	g_genrsa_opts[] = {
-	{"-i", set_genrsa_input},
 	{"-o", set_genrsa_output},
 	{"-rand", set_random},
 	{NULL, NULL}
