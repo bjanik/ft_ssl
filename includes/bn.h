@@ -21,7 +21,7 @@ void			bn_concat(t_bn *n, t_bn *low, t_bn *high);
 t_bn 			*bn_init_size(uint64_t size);
 t_bn			*bn_init(void);
 int 			bn_set_random(t_bn *n, int64_t size);
-void			display_bn(t_bn n);
+void			display_bn(t_bn *n);
 int				bn_realloc(t_bn *n);
 int 			bn_realloc_size(t_bn *n, int64_t new_alloc);
 t_bn 			*bn_clone(t_bn *a); // Returns a freshly allocated copy of bn a
@@ -49,6 +49,9 @@ int				get_strongest_bit_pos(t_bn *n);
 uint32_t 		bn_get_byte_number(t_bn *n);
 uint32_t 		get_byte_number(uint64_t limb);
 uint32_t 		bn_get_bit_number(t_bn *n);
+
+void    		display_bn_as_text(t_bn *n);
+
 
 
 void 			power_of_two(t_bn *n, unsigned int pow);

@@ -1,7 +1,7 @@
 #include "bn.h"
 #include "ft_ssl.h"
 
-t_rsa	*rsa_init(void)
+t_rsa		*rsa_init(void)
 {
 	t_rsa	*rsa;
 
@@ -20,18 +20,18 @@ t_rsa	*rsa_init(void)
 	return (rsa);
 }
 
-int 	rsa_command_run(t_rsa *rsa)
+static char	*get_data(int fd[])
 {
 	char			*line = NULL;
 	char			*data = NULL;
 	int 			ret = 0;
 
-	while ((ret = get_next_line(rsa->fd[IN], &line)) > 0)
+	while ((ret = get_next_line(fd[IN], &line)) > 0)
 	{
 		if (ft_strcmp(line, PEM_HEADER) == 0)
 		{
 			if ((data = ft_strnew(1)) == NULL)
-				return (1);
+				return (NULL);
 			continue ;
 		}
 		if (ft_strcmp(line, PEM_FOOTER) == 0)
@@ -42,10 +42,17 @@ int 	rsa_command_run(t_rsa *rsa)
 	}
 	ft_strdel(&line);
 	if (data == NULL)
-		return (1);
-	// ft_printf("%s", data);
+		return (NULL);
 	if (ret < 0)
+		return (NULL);
+	return (data);
+}
+
+int 		rsa_command_run(t_rsa *rsa)
+{
+	char			*data = NULL;
+
+	if ((data = get_data(rsa->fd)) == NULL)
 		return (1);
-	
-	return (pem_decode(rsa, data));
+	pem_decode(rsa, data);
 }

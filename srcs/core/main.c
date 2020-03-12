@@ -122,7 +122,6 @@ static int 		rsa_command(char **argv, t_ssl_command *cmd)
 	if (rsa_command_run(cmd->rsa))
 		return (1);
 	return (0);
-
 }
 
 int				ft_ssl_routine(char **argv)

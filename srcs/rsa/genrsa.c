@@ -54,6 +54,7 @@ int 		genrsa_command_run(t_rsa_data *rsa, t_genrsa *genrsa)
 	generate_prime(rsa->prime1, genrsa->numbits);
 	generate_prime(rsa->prime2, genrsa->numbits);
 	bn_mul(rsa->modulus, rsa->prime1, rsa->prime2);
+	display_bn(rsa->modulus);
 	p_1 = bn_clone(rsa->prime1);
 	q_1 = bn_clone(rsa->prime2);
 	phi = bn_init_size(genrsa->numbits);
@@ -62,7 +63,6 @@ int 		genrsa_command_run(t_rsa_data *rsa, t_genrsa *genrsa)
 	p_2 = bn_clone(rsa->prime1);
 	bn_sub_ui(p_2, p_2, 2);
 	bn_mod_pow(rsa->coef, rsa->prime2, p_2, rsa->prime1);
-	// display_bn(*rsa->coef);
 	if (!phi || !p_1 || !q_1 || !gcd || !s || !p_2)
 	{
 		bn_clears(6, &phi, &p_1, &q_1, &gcd, &s, &p_2);
