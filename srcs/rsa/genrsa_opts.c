@@ -6,15 +6,6 @@ struct			s_genrsa_opts
 	int			(*opt_func)(char **argv, t_genrsa *genrsa, int *index);
 };
 
-
-// static int 	set_genrsa_input(char **argv, t_genrsa *genrsa, int *index)
-// {
-// 	(*index)++;
-// 	if ((genrsa->in = argv[*index]) == NULL)
-// 		return (1);
-// 	return (0);
-// }
-
 static int 	set_genrsa_output(char **argv, t_genrsa *genrsa, int *index)
 {
 	(*index)++;
@@ -23,21 +14,9 @@ static int 	set_genrsa_output(char **argv, t_genrsa *genrsa, int *index)
 	return (0);
 }
 
-static int 	set_random(char **argv, t_genrsa *genrsa, int *index)
-{
-	(*index)++;
-	if ((genrsa->rand_file = argv[*index]) == NULL)
-		return (1);
-	return (0);
-}
 
 static int 	finalize_genrsa_opts(t_genrsa *genrsa)
 {
-	// if (genrsa->in)
-	// {
-	// 	if ((genrsa->fd[IN] = open(genrsa->in, O_RDONLY)) < 0)
-	// 		return (1);
-	// }
 	if (genrsa->out)
 	{
 		if ((genrsa->fd[OUT] = open(genrsa->out, O_CREAT | O_WRONLY | O_TRUNC, 0644)) < 0)
@@ -48,7 +27,6 @@ static int 	finalize_genrsa_opts(t_genrsa *genrsa)
 
 const struct s_genrsa_opts	g_genrsa_opts[] = {
 	{"-o", set_genrsa_output},
-	{"-rand", set_random},
 	{NULL, NULL}
 };
 

@@ -9,6 +9,9 @@
 # define INC_SIZE(x) (((x)->size < 0) ? (x)->size-- : (x)->size++)
 # define DEC_SIZE(x) (((x)->size < 0) ? (x)->size++ : (x)->size--)
 
+# define NO_DISPLAY 0
+# define DISPLAY 1
+
 typedef struct 	big_num
 {
 	uint64_t	*num; // Array of long long int representing the big num
@@ -50,7 +53,7 @@ uint32_t 		bn_get_byte_number(t_bn *n);
 uint32_t 		get_byte_number(uint64_t limb);
 uint32_t 		bn_get_bit_number(t_bn *n);
 
-void    		display_bn_as_text(t_bn *n);
+// void    		display_bn_as_text(t_bn *n, int fd);
 
 
 
@@ -59,11 +62,11 @@ void 			power_of_two(t_bn *n, unsigned int pow);
 
 
 int 			witness(t_bn *a, t_bn *b);
-int				miller_rabin(t_bn *n, int s);
+int				miller_rabin(t_bn *n, int s, int display);
 int 			pseudo_prime(t_bn *n);
-int 			initial_sieve_test(t_bn *n);
+int 			initial_sieve_test(t_bn *n, int display);
 
-void			display_stats(t_bn n);
+void			display_stats(t_bn *n);
 
 void			ext_euclid(int64_t *u, int64_t *v, int64_t *u1, int64_t *u2, int64_t *u3);
 

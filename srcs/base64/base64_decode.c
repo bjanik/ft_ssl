@@ -77,3 +77,25 @@ int			base64_decode(unsigned char in[], int ret, int fd, uint8_t des)
 				(void)write(fd, out, len);
 	return (len);
 }
+
+unsigned char    *base64_decode_data(uint32_t *decoded_data_len, 
+                                     char *data, uint32_t data_len)
+{
+    uint32_t        offset;
+    unsigned char   *decoded_data;
+
+    if (data == NULL)
+        return (NULL);
+    if ((decoded_data = (unsigned char *)malloc(data_len * sizeof(char)))== NULL)
+        return (NULL);
+    offset = 0;
+    while (offset < data_len)
+    {
+        decode((unsigned char*)data + offset, decoded_data + *decoded_data_len, 4);
+        *decoded_data_len += 3;
+        offset += 4;
+    }
+    ft_strdel((char**)&data);
+    return (decoded_data);
+}
+

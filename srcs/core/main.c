@@ -94,7 +94,7 @@ static int		data_encryption_standard(char **argv, t_ssl_command *cmd)
 		else if (!ret)
 			des_encrypt_message(cmd->des);
 	}
-	reset_des(cmd);
+	reset_des(cmd->des);
 	return (ret);
 }
 
@@ -127,7 +127,6 @@ static int 		rsa_command(char **argv, t_ssl_command *cmd)
 int				ft_ssl_routine(char **argv)
 {
 	t_ssl_command	*command;
-	int				ret;
 
 	if (!argv[1])
 		return (1);

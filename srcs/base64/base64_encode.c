@@ -59,3 +59,22 @@ void	base64_encode(unsigned char in[], int ret, int fd)
 	}
 	write(fd, out, out_len);
 }
+
+char 		*base64_encode_data(unsigned char *data, uint32_t data_len)
+{
+	uint32_t 		offset, data_encoded_len;
+	char 			*data_encoded;
+
+	if ((data_encoded = (char*)ft_memalloc(data_len * 2)) == NULL)
+		return (NULL);
+	offset = 0;
+	data_encoded_len = 0;
+	while (offset < data_len)
+	{
+		encode(data + offset, data_encoded + data_encoded_len, data_len - offset);
+		offset += 3;
+		data_encoded_len += 4;
+	}
+	return (data_encoded);
+}
+

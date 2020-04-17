@@ -18,7 +18,7 @@ t_des		*init_des(char *name,
 	t_des	*des;
 
 	if (!(des = (t_des*)malloc(sizeof(t_des))))
-		ft_error_msg("ft_ssl: Malloc failed");
+		return (NULL);
 	des->input_file = NULL;
 	des->output_file = NULL;
 	des->name = name;

@@ -1,4 +1,5 @@
 #include "bn.h"
+#include <assert.h>
 
 #define IS_ODD(x) ((x) & 1)
 #define IS_EVEN(x) (((x) & 1) == 0)
@@ -22,8 +23,10 @@ void    bn_gcdext(t_bn *a, t_bn *b, t_bn *s, t_bn *t, t_bn *gcd)
     t_bn    *t3 = bn_clone(b);
     int     k;
 
+    // printf("START BN_GCDEXT------------------------------------------------------\n");
     if (bn_cmp(a, b) < 0)
         bn_swap(a, b);
+    // printf("AFTER FIRST CMP------------------------------------------------------\n");
     for (k = 0; IS_EVEN(a->num[0]) && IS_EVEN(b->num[0]); ++k)
     {
         bn_shift_right(a, 1);
@@ -33,6 +36,7 @@ void    bn_gcdext(t_bn *a, t_bn *b, t_bn *s, t_bn *t, t_bn *gcd)
     bn_set_zero(t);
     bn_copy(gcd, a);
     bn_sub_ui(t2, t2, 1);
+    // printf("START DO WHILE-----------------------------------------------------------\n");
     do {
         do {
             if (IS_EVEN(gcd->num[0]))
@@ -45,23 +49,36 @@ void    bn_gcdext(t_bn *a, t_bn *b, t_bn *s, t_bn *t, t_bn *gcd)
                 bn_shift_right(s, 1);
                 bn_shift_right(t, 1);
                 bn_shift_right(gcd, 1);
+                // printf("gcd = ");
+                // display_bn(gcd);
             }
             if (IS_EVEN(t3->num[0]) || bn_cmp(gcd, t3) < 0)
             {
+                // printf("t3 = ");
+                // display_bn(t3);
                 bn_swap(s, t1);
                 bn_swap(t, t2);
                 bn_swap(gcd, t3);
             }
         } while (IS_EVEN(gcd->num[0]));
-
+        // printf("End do while\n");
         while (bn_cmp(s, t1) < 0 || bn_cmp(t, t2) < 0)
         {
             bn_add(s, s, b);
             bn_add(t, t, a);
         }
+        assert(bn_cmp(s, t1) > 0 || bn_cmp(s, t1) == 0);
+        assert(bn_cmp(t, t2) > 0 || bn_cmp(t, t2) == 0);
+        assert(bn_cmp(gcd, t3) == 0 || bn_cmp(gcd, t3) > 0);
         bn_sub(s, s, t1);
         bn_sub(t, t, t2);
+        // printf("gcd = ");
+        // display_bn(gcd);
+        // printf("t3 = ");
+        // display_bn(t3);
         bn_sub(gcd, gcd, t3);
+        // printf("gcd2 = ");
+        // display_bn(gcd);
     } while (bn_cmp_ui(t3, 0) > 0);
     while (bn_cmp(s, b) >= 0 && bn_cmp(t, a) >= 0)
     {

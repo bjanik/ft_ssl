@@ -12,10 +12,7 @@
 
 #include "ft_ssl.h"
 
-#define SINGLE_DES 1
-#define TRIPLE_DES 3
-
-static unsigned char	*pbkdf(char *password, unsigned char *salt, int des)
+unsigned char	*pbkdf(char *password, unsigned char *salt, int des)
 {
 	unsigned char		*hash;
 	unsigned char		*ps;
@@ -24,10 +21,14 @@ static unsigned char	*pbkdf(char *password, unsigned char *salt, int des)
 
 	if (!password || !(ps = ft_memalloc(ft_strlen(password) + 9)))
 		return (NULL);
+	// printf("Salt = %llX\n", *(uint64_t*)salt);
 	ft_memcpy(ps, password, ft_strlen(password));
-	ft_memcpy(ps + ft_strlen(password), salt, 8);
+	if (salt)
+	{
+		ft_memcpy(ps + ft_strlen(password), salt, 8);
+		msg.msg_len = ft_strlen(password) + 8;
+	}
 	msg.str = ps;
-	msg.msg_len = ft_strlen(password) + 8;
 	if (des == SINGLE_DES)
 	{
 		md5_init(&ctx);
@@ -83,7 +84,7 @@ int						display_skv(t_des *des)
 	return (0);
 }
 
-static void				set_key(t_des *des,
+void				set_key(t_des *des,
 								unsigned char *hash,
 								unsigned char keys[][8],
 								int nb)
@@ -107,7 +108,8 @@ static void				set_key(t_des *des,
 	if (!(des->opts & DES_OPT_V))
 	{
 		ft_memcpy(keys[3], hash + i * 8, 8);
-		des->init_vector = get_keys_vector_from_hash(keys[3]);
+		if (des->init_vector == 0)
+			des->init_vector = get_keys_vector_from_hash(keys[3]);
 		if (!(s = ft_itoa_base_llu(des->init_vector, "0123456789ABCDEF")))
 			ft_error_msg("ft_ssl: Malloc failed");
 		ft_memcpy(des->hex_keys + i * 16, s, 16);
@@ -125,8 +127,6 @@ int						generate_keys_vector(t_des *des)
 		if (!(des->password = get_password(des->opts & DES_OPT_D)))
 			return (1);
 	!des->salt ? get_salt(des) : 0;
-	// write(2, des->salt, 8);
-	// dprintf(2, "pass = %s\n", des->password);
 	nb = (ft_strchr(des->name, '3')) ? TRIPLE_DES : SINGLE_DES;
 	if (!(hash = pbkdf(des->password, des->salt, nb)))
 		return (1);

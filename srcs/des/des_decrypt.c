@@ -61,7 +61,6 @@ static int			check_errors(unsigned char buf[], int len, int ret)
 				g_padding_patterns[buf[len - 1] - 1],
 				buf[len - 1]))
 	{
-		// dprintf(2, "buf[len - 1] = %d\n", buf[len - 1]);
 		ft_putendl_fd("ft_ssl: Bad decrypt", STDERR_FILENO);
 		return (1);
 	}
@@ -204,4 +203,24 @@ int					des_decrypt_message(t_des *des)
 	if (des->opts & DES_OPT_A)
 		return (des_decrypt_message_base64(des));
 	return (des_decrypt_message_reg(des));
+}
+
+unsigned char 		*des_decrypt_data(t_des *des, unsigned char *data, uint32_t data_len)
+{
+	unsigned char 	*data_decrypted;
+	uint64_t 		cipher, plain;
+	uint32_t 		offset = 0;
+
+	data_decrypted = (unsigned char*)malloc(data_len * sizeof(unsigned char));
+	if (data_decrypted == NULL)
+		return (NULL);
+	ft_memset(data_decrypted, 0, data_len);
+	while (offset < data_len)
+	{
+		cipher = convert_input_to_block(data + offset);
+		plain = des->des_mode[1](cipher, des);
+		cipher_to_string(plain, data_decrypted + offset);
+		offset += DES_BLOCK_SIZE;
+	}
+	return (data_decrypted);
 }
