@@ -124,6 +124,15 @@ static int 		rsa_command(char **argv, t_ssl_command *cmd)
 	return (0);
 }
 
+static int 		rsautl_command(char **argv, t_ssl_command *cmd)
+{
+	if (rsautl_opts(argv, cmd->rsautl))
+		return (1);
+	if (rsautl_command_run(cmd->rsautl))
+		return (1);
+	return (0);
+}
+
 int				ft_ssl_routine(char **argv)
 {
 	t_ssl_command	*command;
@@ -133,15 +142,17 @@ int				ft_ssl_routine(char **argv)
 	if (!(command = get_ssl_command(argv[1])))
 		return (commands_usage(argv[1]));
 	if (command->hash_func)
-		return hash_algo(argv, command);
+		return (hash_algo(argv, command));
 	if (command->des)
-		return data_encryption_standard(argv, command);
+		return (data_encryption_standard(argv, command));
 	if (command->base64)
-		return base64_core(argv, command->base64);
+		return (base64_core(argv, command->base64));
 	if (command->genrsa)
-		return genrsa_command(argv, command);
+		return (genrsa_command(argv, command));
 	if (command->rsa)
-		return rsa_command(argv, command);
+		return (rsa_command(argv, command));
+	if (command->rsautl)
+		return (rsautl_command(argv, command));
 	return 0;
 }
 
@@ -153,5 +164,6 @@ int				main(int argc, char **argv)
 		ret = interactive_mode(argv);
 	else
 		ret = ft_ssl_routine(argv);
+	// while (1);
 	return (ret);
 }

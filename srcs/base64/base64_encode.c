@@ -12,7 +12,7 @@
 
 #include "ft_ssl.h"
 
-void	encode(unsigned char in[], unsigned char out[], int diff)
+void	encode(unsigned char in[], char out[], int diff)
 {
 	uint8_t	data[4];
 	uint8_t i;
@@ -38,7 +38,7 @@ void	base64_encode(unsigned char in[], int ret, int fd)
 {
 	int				offset;
 	int				out_len;
-	unsigned char	out[BUF_SIZE + 1];
+	char			out[BUF_SIZE + 1];
 
 	offset = 0;
 	out_len = 0;

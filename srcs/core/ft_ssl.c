@@ -13,24 +13,24 @@
 #include "ft_ssl.h"
 
 t_ssl_command		g_commands[] = {
-	{"md5", md5, HASH_CMD_OPTS, 0, NULL, NULL, NULL, {NULL, NULL}, NULL, NULL},
-	{"sha256", sha256, HASH_CMD_OPTS, 0, NULL, NULL, NULL, {NULL, NULL}, NULL, NULL},
-	{"sha1", sha1, HASH_CMD_OPTS, 0, NULL, NULL, NULL, {NULL, NULL}, NULL, NULL},
-	{"base64", 0, BASE64_OPTS, 0, NULL, NULL, NULL, {NULL, NULL}, NULL, NULL},
-	{"des", 0, DES_OPTS, 0, NULL, NULL, NULL, {des_cbc_e, des_cbc_d}, NULL, NULL},
-	{"des-bc", 0, DES_OPTS, 0, NULL, NULL, NULL, {des_bc_e, des_bc_d}, NULL, NULL},
-	{"des-cbc", 0, DES_OPTS, 0, NULL, NULL, NULL, {des_cbc_e, des_cbc_d}, NULL, NULL},
-	{"des-ecb", 0, DES_OPTS, 0, NULL, NULL, NULL, {des_ecb_e_d, des_ecb_e_d}, NULL, NULL},
-	{"des-pcbc", 0, DES_OPTS, 0, NULL, NULL, NULL, {des_pcbc_e, des_pcbc_d}, NULL, NULL},
-	{"des3", 0, DES_OPTS, 0, NULL, NULL, NULL, {des3_cbc_e, des3_cbc_d}, NULL, NULL},
-	{"des3-bc", 0, DES_OPTS, 0, NULL, NULL, NULL, {des3_bc_e, des3_bc_d}, NULL, NULL},
-	{"des3-cbc", 0, DES_OPTS, 0, NULL, NULL, NULL, {des3_cbc_e, des3_cbc_d}, NULL, NULL},
-	{"des3-ecb", 0, DES_OPTS, 0, NULL, NULL, NULL, {des3_ecb_e, des3_ecb_d}, NULL, NULL},
-	{"des3-pcbc", 0, DES_OPTS, 0, NULL, NULL, NULL, {des3_pcbc_e, des3_pcbc_d}, NULL, NULL},
-	{"rsa", 0, 0, 0, NULL, NULL, NULL, {NULL, NULL}, NULL, NULL},
-	{"genrsa", 0, 0, 0, NULL, NULL, NULL, {NULL, NULL}, NULL, NULL},
-	{"rsautl", 0, 0, 0, NULL, NULL, NULL, {NULL, NULL}, NULL, NULL},
-	{NULL, 0, NULL, 0, NULL, NULL, NULL, {NULL, NULL}, NULL, NULL},
+	{"md5", md5, HASH_CMD_OPTS, 0, NULL, NULL, NULL, {NULL, NULL}, NULL, NULL, NULL},
+	{"sha256", sha256, HASH_CMD_OPTS, 0, NULL, NULL, NULL, {NULL, NULL}, NULL, NULL, NULL},
+	{"sha1", sha1, HASH_CMD_OPTS, 0, NULL, NULL, NULL, {NULL, NULL}, NULL, NULL, NULL},
+	{"base64", 0, BASE64_OPTS, 0, NULL, NULL, NULL, {NULL, NULL}, NULL, NULL, NULL},
+	{"des", 0, DES_OPTS, 0, NULL, NULL, NULL, {des_cbc_e, des_cbc_d}, NULL, NULL, NULL},
+	{"des-bc", 0, DES_OPTS, 0, NULL, NULL, NULL, {des_bc_e, des_bc_d}, NULL, NULL, NULL},
+	{"des-cbc", 0, DES_OPTS, 0, NULL, NULL, NULL, {des_cbc_e, des_cbc_d}, NULL, NULL, NULL},
+	{"des-ecb", 0, DES_OPTS, 0, NULL, NULL, NULL, {des_ecb_e_d, des_ecb_e_d}, NULL, NULL, NULL},
+	{"des-pcbc", 0, DES_OPTS, 0, NULL, NULL, NULL, {des_pcbc_e, des_pcbc_d}, NULL, NULL, NULL},
+	{"des3", 0, DES_OPTS, 0, NULL, NULL, NULL, {des3_cbc_e, des3_cbc_d}, NULL, NULL, NULL},
+	{"des3-bc", 0, DES_OPTS, 0, NULL, NULL, NULL, {des3_bc_e, des3_bc_d}, NULL, NULL, NULL},
+	{"des3-cbc", 0, DES_OPTS, 0, NULL, NULL, NULL, {des3_cbc_e, des3_cbc_d}, NULL, NULL, NULL},
+	{"des3-ecb", 0, DES_OPTS, 0, NULL, NULL, NULL, {des3_ecb_e, des3_ecb_d}, NULL, NULL, NULL},
+	{"des3-pcbc", 0, DES_OPTS, 0, NULL, NULL, NULL, {des3_pcbc_e, des3_pcbc_d}, NULL, NULL, NULL},
+	{"rsa", 0, 0, 0, NULL, NULL, NULL, {NULL, NULL}, NULL, NULL, NULL},
+	{"genrsa", 0, 0, 0, NULL, NULL, NULL, {NULL, NULL}, NULL, NULL, NULL},
+	{"rsautl", 0, 0, 0, NULL, NULL, NULL, {NULL, NULL}, NULL, NULL, NULL},
+	{NULL, 0, NULL, 0, NULL, NULL, NULL, {NULL, NULL}, NULL, NULL, NULL},
 };
 
 static t_msg		*malloc_msg(void)
@@ -64,6 +64,9 @@ t_ssl_command		*get_ssl_command(const char *cmd)
 					return (NULL);
 			if (!ft_strcmp("rsa", cmd))
 				if (!(g_commands[i].rsa = rsa_init()))
+					return (NULL);
+			if (!ft_strcmp("rsautl", cmd))
+				if (!(g_commands[i].rsautl = rsautl_init()))
 					return (NULL);
 			return (&g_commands[i]);
 		}

@@ -64,7 +64,7 @@
 # define RSAUTL_ENCRYPT 1
 # define RSAUTL_DECRYPT 2
 # define RSAUTL_HEXDUMP 4
-# define RSAUTL_PUBIN 8
+# define RSAUTL_PUBIN 64
 
 # define PEM_PRIVATE_HEADER "-----BEGIN RSA PRIVATE KEY-----"
 # define PEM_PRIVATE_FOOTER "-----END RSA PRIVATE KEY-----"
@@ -166,6 +166,8 @@ typedef struct 			s_rsautl
 	char				*inkey;
 	int 				fd[2];
 	int 				opts;
+	t_rsa_data 			rsa_data;
+	t_des 				*des;
 }						t_rsautl;
 
 typedef struct			s_msg
@@ -189,6 +191,7 @@ typedef struct			s_ssl_command
 	uint64_t			(*des_mode[2])(uint64_t plain, struct s_des *des);
 	t_rsa 				*rsa;
 	t_genrsa 			*genrsa;
+	t_rsautl			*rsautl;
 }						t_ssl_command;
 
 typedef struct			s_ctx
@@ -347,6 +350,12 @@ char					**lst_to_tab(t_list *tokens, int count);
  RSA flags functions
  */
 
+char					*get_data(const int fd,
+								  t_des **des,
+								  const char *header,
+								  const char *footer);
+
+
 int 					set_inform(char **argv, t_rsa *rsa, int *index);
 int 					set_outform(char **argv, t_rsa *rsa, int *index);
 int						set_in_file(char **argv, t_rsa *rsa, int *index);
@@ -367,35 +376,51 @@ int 					genrsa_opts(char **argv, t_genrsa *rsa);
 int 					genrsa_command_run(t_rsa_data *rsa, t_genrsa *genrsa);
 
 int						pem(t_rsa_data *rsa, int fd);
-// int 					pem_decode(t_rsa *rsa, char **data);
-// unsigned char    		*pem_get_decoded_data(uint32_t *decoded_data_len, 
-//                                               unsigned char *data, uint32_t data_len);
 char 					*pem_encode(unsigned char *data, uint32_t data_len);
 int 					pem_output(char *data, int fd);
-int      				parse_decoded_data(t_rsa *rsa,
-                        		           unsigned char *decoded_data,
-                                		   uint32_t decoded_data_len);
+int      				parse_decoded_data(t_rsa_data *rsa_data,
+										   unsigned char *decoded_data,
+										   uint32_t decoded_data_len,
+										   int opts);
 
 t_bn     				*retrieve_number_from_data(unsigned char **data);
+
 
 uint32_t 				get_number_len(unsigned char **ptr);
 
 
 void					set_len_to_data(uint32_t n, unsigned char *data, uint32_t *len);
 void					set_bn_to_data(t_bn *n, unsigned char *data, uint32_t *len);
+void 					write_bn_to_data(t_bn *n, unsigned char *data);
 
 t_rsa					*rsa_init(void);
 int 					rsa_opts(char **argv, t_rsa *rsa);
 int 					rsa_command_run(t_rsa *rsa);
-unsigned char       	*private_key_decryption(t_rsa *rsa,
-                                            	unsigned char *data,
-                                            	uint32_t *data_len);
-unsigned char          	*private_key_encryption(t_rsa *rsa,
-                  		                        unsigned char *data,
-                        		                uint32_t *data_len);
+unsigned char       	*private_key_decryption(t_des *des,
+												unsigned char *data,
+												uint32_t *data_len,
+												const char *in);
+unsigned char          	*private_key_encryption(t_des *des,
+												unsigned char *data,
+												uint32_t *data_len,
+												const char *in);
 void					flag_modulus(t_bn *n, int fd);
 void					flag_text(t_rsa *rsa);
 int						flag_check(t_rsa_data rsa_data);
+
+
+/*
+RSAUTL
+*/
+
+t_rsautl				*rsautl_init(void);
+int 					rsautl_command_run(t_rsautl *rsautl);
+unsigned char			*i2osp(t_bn *n, uint32_t len);
+t_bn 					*os2ip(unsigned char *octet_string, uint32_t len);
+
+
+
+
 
 
 int						set_random_mpz_size(mpz_t n, size_t size);

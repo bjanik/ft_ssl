@@ -67,6 +67,10 @@ SRC_NAME = base64/base64_core.c \
 		rsa/pem_public_key.c\
 		rsa/rsa.c\
 		rsa/rsa_opts.c\
+		rsa/rsautl.c\
+		rsa/rsautl_encryption.c\
+		rsa/rsautl_decryption.c\
+		rsa/rsautl_opts.c\
 		sha1/sha1.c \
 		sha1/sha1_transform.c \
 		sha256/sha256.c \

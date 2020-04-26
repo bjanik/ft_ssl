@@ -47,11 +47,15 @@ void			bn_mod(t_bn *r, t_bn *n, t_bn *d);
 void			bn_mod_pow(t_bn *res, t_bn *b, t_bn *exp, t_bn *mod);
 void			bn_swap(t_bn *a, t_bn *b);
 void			bn_gcd(t_bn *gcd, t_bn *a, t_bn *b);
-void			bn_gcdext(t_bn *a, t_bn *b, t_bn *s, t_bn *t, t_bn *gcd);
+// int 			bn_gcdext(t_bn *a, t_bn *b, t_bn *s, t_bn *t, t_bn *gcd);
+int 	   		bn_modinv(t_bn *u, t_bn *v, t_bn *modinv);
+
 int				get_strongest_bit_pos(t_bn *n);
-uint32_t 		bn_get_byte_number(t_bn *n);
+uint32_t 		bn_len(t_bn *n);
 uint32_t 		get_byte_number(uint64_t limb);
 uint32_t 		bn_get_bit_number(t_bn *n);
+t_bn    		*get_bn(unsigned char **data, uint32_t len);
+
 
 // void    		display_bn_as_text(t_bn *n, int fd);
 

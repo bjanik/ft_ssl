@@ -117,7 +117,10 @@ unsigned char 		*des_encrypt_data(t_des *des, unsigned char *data, uint32_t *dat
 	ft_memset(data_with_padding + *data_len, padding_len, padding_len);
 	data_encrypted = (unsigned char *)malloc(data_encrypted_len);
 	if (data_encrypted == NULL)
+	{
+		ft_memdel((void**)&data_with_padding);
 		return (NULL);
+	}
 	while (offset < data_encrypted_len)
 	{
 		plain = convert_input_to_block(data_with_padding + offset);
