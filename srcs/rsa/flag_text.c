@@ -4,7 +4,7 @@
 static void    display_bn_flag_text(t_bn *n, int fd, char *id)
 {
     int64_t     pos;
-    uint32_t    len, limb_len, printed;
+    uint32_t    limb_len, printed;
     uint8_t     val;
 
     if (SIZE(n) == 0)

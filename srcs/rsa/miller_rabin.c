@@ -4,8 +4,8 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-#define ABS(x) ((x > 0) ? x : -x)
-#define SIZE(n) (ABS(n->size))
+// #define ABS(x) ((x > 0) ? x : -x)
+// #define SIZE(n) (ABS(n->size))
 
 #define IS_ODD(x) ((x) & 1)
 
@@ -184,7 +184,7 @@ int   miller_rabin(t_bn *n, int s, int display)
 	}
 	display ? ft_putchar_fd('\n', STDERR_FILENO) : 0;
 	bn_clear(&a);
-  	return (0); // n is prime (surely)
+    return (0); // n is prime (surely)
 }
 
 int   witness(t_bn *a, t_bn *n)
@@ -214,13 +214,13 @@ int   witness(t_bn *a, t_bn *n)
 		bn_mod(xi, x_sq, n); // xi = x_sq % n
 		if (!bn_cmp_ui(xi, 1) && bn_cmp_ui(x, 1) && bn_cmp(x, n_1))
 		{
-	  		bn_clears(5, &n_1, &u, &x, &xi, &x_sq);
-	  		return (1);
+            bn_clears(5, &n_1, &u, &x, &xi, &x_sq);
+            return (1);
 		}
 		bn_copy(x, xi); // x = xi;
 	}
 	if (bn_cmp_ui(xi, 1)) // x != 1
 		ret = 1;
 	bn_clears(5, &n_1, &u, &x, &xi, &x_sq);
-  	return (ret);
+    return (ret);
 }

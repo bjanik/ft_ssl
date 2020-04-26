@@ -55,16 +55,11 @@ static int 		check_exponents(t_rsa_data rsa_data, const uint64_t size)
 	bn_sub_ui(prime1_1, prime1_1, 1);
 	bn_sub_ui(prime2_1, prime2_1, 1);
 	bn_mul(phi, prime1_1, prime2_1);
-	bn_gcdext(phi, rsa_data.public_exp, s, private_exp, gcd);
-	display_bn(s);	
-	// display_bn(private_exp);	
-	if (bn_cmp_ui(gcd, 1) != 0)
+	if (bn_modinv(rsa_data.public_exp, phi, private_exp) == 1)
 	{
 		ft_putendl_fd("GCD is not 1", STDERR_FILENO);
 		return (1);
 	}
-	// display_bn(rsa_data.private_exp);
-	// display_bn(private_exp);
 	if (bn_cmp(private_exp, rsa_data.private_exp) != 0)
 	{
 		ft_putendl_fd("Values of private exponent differ", STDERR_FILENO);
@@ -80,8 +75,8 @@ int				flag_check(t_rsa_data rsa_data)
 
 	size = SIZE(rsa_data.prime1) + SIZE(rsa_data.prime2);
 
-	// if (check_primality(rsa_data))
-	// 	ret = 1;
+	if (check_primality(rsa_data))
+		ret = 1;
 	if (check_modulus(rsa_data, size * 64))
 		ret = 1;
 	if (check_exponents(rsa_data, size * 64))

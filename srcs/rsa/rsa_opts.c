@@ -2,13 +2,11 @@
 #include "fcntl.h"
 #include "unistd.h"
 
-
 struct			s_rsa_opts
 {
 	char		*opt;
 	int			(*opt_f)(char **argv, t_rsa *rsa, int *index);
 };
-
 
 
 int 		set_inform(char **argv, t_rsa *rsa, int *index)
