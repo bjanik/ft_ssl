@@ -12,7 +12,7 @@
 
 #include "libft.h"
 
-int	ft_putwstr(wchar_t *str)
+int	ft_putwstr(wchar_t *str, const int fd)
 {
 	int	nb;
 
@@ -20,7 +20,7 @@ int	ft_putwstr(wchar_t *str)
 	if (str)
 	{
 		while (*str)
-			nb += ft_putwchar_t(*str++);
+			nb += ft_putwchar_t(*str++, fd);
 	}
 	return (nb);
 }

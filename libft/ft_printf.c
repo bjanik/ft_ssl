@@ -83,6 +83,29 @@ t_arg		*go_through_format(const char *format, va_list ap)
 	return (p2);
 }
 
+int 		ft_dprintf(const int fd, const char *format, ...)
+{
+	t_arg	*arg_list;
+	va_list	ap;
+	int		return_value;
+
+	return_value = 0;
+	g_error = 0;
+	if (format == NULL)
+		return (error_null_param());
+	va_start(ap, format);
+	arg_list = go_through_format(format, ap);
+	if (g_error == -1)
+	{
+		free_arg_list(&arg_list);
+		return (-1);
+	}
+	return_value = print_output(arg_list, format, fd);
+	free_arg_list(&arg_list);
+	va_end(ap);
+	return (return_value);
+}
+
 int			ft_printf(const char *format, ...)
 {
 	t_arg	*arg_list;
@@ -100,7 +123,7 @@ int			ft_printf(const char *format, ...)
 		free_arg_list(&arg_list);
 		return (-1);
 	}
-	return_value = print_output(arg_list, format);
+	return_value = print_output(arg_list, format, STDOUT_FILENO);
 	free_arg_list(&arg_list);
 	va_end(ap);
 	return (return_value);

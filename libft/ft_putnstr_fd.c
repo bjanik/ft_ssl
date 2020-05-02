@@ -1,23 +1,28 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_putstr_fd.c                                     :+:      :+:    :+:   */
+/*   ft_putnstr_fd.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: bjanik <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2016/11/03 17:58:34 by bjanik            #+#    #+#             */
-/*   Updated: 2016/12/22 12:50:48 by bjanik           ###   ########.fr       */
+/*   Created: 2016/12/18 14:45:04 by bjanik            #+#    #+#             */
+/*   Updated: 2017/01/13 17:22:29 by bjanik           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-int	ft_putstr_fd(char const *s, int fd)
+int	ft_putnstr_fd(const char *str, int n, const int fd)
 {
-	if (s != NULL)
+	int	len;
+
+	len = ft_strlen(str);
+	if (n < len && n >= 0)
 	{
-		write(fd, s, ft_strlen(s));
-		return (ft_strlen(s));
+		write(fd, str, n);
+		return (n);
 	}
-	return (0);
+	else if (n > 0)
+		write(fd, str, len);
+	return (len);
 }

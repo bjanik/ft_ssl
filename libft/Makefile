@@ -15,6 +15,7 @@ CC = gcc
 CFLAGS = -g -c -Wall -Wextra -Werror -Iincludes
 SRCS = ft_putstr.c \
 	   ft_putnstr.c \
+	   ft_putnstr_fd.c \
 	   ft_putwstr.c \
 	   ft_putnwstr.c \
 	   ft_putendl.c \
@@ -22,6 +23,7 @@ SRCS = ft_putstr.c \
 	   ft_wstrlen.c \
 	   ft_putchar.c \
 	   ft_putnchar.c \
+	   ft_putnchar_fd.c \
 	   ft_putwchar_t.c \
 	   ft_wchar_len.c \
 	   ft_putnbr.c \
@@ -97,6 +99,7 @@ SRCS = ft_putstr.c \
 	   ft_isspace.c \
 	   ft_strndup.c \
 	   ft_putnbr_base.c \
+	   ft_putnbr_base_fd.c \
 	   ft_nb_digit_base.c \
 	   ft_nb_digit_base_umax.c \
 	   ft_free_string_tab.c \

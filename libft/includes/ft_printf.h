@@ -67,6 +67,7 @@ typedef struct		s_arg
 }					t_arg;
 
 int					ft_printf(const char *format, ...);
+int					ft_dprintf(const int fd, const char *format, ...);
 const char			*parse_flags(const char *format, t_arg *p);
 const char			*parse_remain(const char *format, t_arg *p, va_list ap);
 int					check_flags(t_arg *p, char c);
@@ -106,14 +107,14 @@ int					handle_precision(t_arg *p);
 int					handle_zeros(t_arg *p);
 void				handle_wildcard(t_arg *p, va_list ap);
 const char			*start_arg(t_arg *p, const char *format, va_list ap);
-int					print_output(t_arg *p, const char *format);
+int					print_output(t_arg *p, const char *format,  const int fd);
 t_arg				*create_elem(void);
 void				init_arg(t_arg *arg);
 void				init_ret(t_arg *arg);
 void				append_list(t_arg **arg, t_arg **arg2);
 void				free_arg_list(t_arg **p);
 void				init_print(t_arg *arg);
-int					print_wide_s(t_arg *p);
-int					print_ls(t_arg *p);
-int					print_wide_c(t_arg *p);
+int					print_wide_s(t_arg *p,  const int fd);
+int					print_ls(t_arg *p,  const int fd);
+int					print_wide_c(t_arg *p, const int fd);
 #endif

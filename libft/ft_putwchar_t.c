@@ -12,7 +12,7 @@
 
 #include "libft.h"
 
-static void	handle_mask1(unsigned int mask, unsigned int value)
+static void	handle_mask1(unsigned int mask, unsigned int value, const int fd)
 {
 	unsigned char	octet;
 	unsigned char	octet1;
@@ -21,12 +21,12 @@ static void	handle_mask1(unsigned int mask, unsigned int value)
 	octet1 = value & 63;
 	octet2 = (value >> 6) & 31;
 	octet = (mask >> 8) | octet2;
-	write(1, &octet, 1);
+	write(fd, &octet, 1);
 	octet = (mask << 24) >> 24 | octet1;
-	write(1, &octet, 1);
+	write(fd, &octet, 1);
 }
 
-static void	handle_mask2(unsigned int mask, unsigned int value)
+static void	handle_mask2(unsigned int mask, unsigned int value, const int fd)
 {
 	unsigned char	octet;
 	unsigned char	octet1;
@@ -37,14 +37,14 @@ static void	handle_mask2(unsigned int mask, unsigned int value)
 	octet2 = (value >> 6) & 63;
 	octet3 = ((value >> 12) << 28) >> 28;
 	octet = (mask >> 16) | octet3;
-	write(1, &octet, 1);
+	write(fd, &octet, 1);
 	octet = ((mask << 16) >> 24) | octet2;
-	write(1, &octet, 1);
+	write(fd, &octet, 1);
 	octet = ((mask << 24) >> 24) | octet1;
-	write(1, &octet, 1);
+	write(fd, &octet, 1);
 }
 
-static void	handle_mask3(unsigned int mask, unsigned int value)
+static void	handle_mask3(unsigned int mask, unsigned int value, const int fd)
 {
 	unsigned char	octet;
 	unsigned char	octet1;
@@ -57,16 +57,16 @@ static void	handle_mask3(unsigned int mask, unsigned int value)
 	octet3 = (value >> 12) & 63;
 	octet4 = (value >> 18) & 7;
 	octet = mask >> 24 | octet4;
-	write(1, &octet, 1);
+	write(fd, &octet, 1);
 	octet = ((mask >> 16) & 255) | octet3;
-	write(1, &octet, 1);
+	write(fd, &octet, 1);
 	octet = ((mask >> 8) & 255) | octet2;
-	write(1, &octet, 1);
+	write(fd, &octet, 1);
 	octet = (mask & 255) | octet1;
-	write(1, &octet, 1);
+	write(fd, &octet, 1);
 }
 
-int			ft_putwchar_t(wchar_t c)
+int			ft_putwchar_t(wchar_t c, const int fd)
 {
 	unsigned int	mask1;
 	unsigned int	mask2;
@@ -78,12 +78,12 @@ int			ft_putwchar_t(wchar_t c)
 	mask3 = 4034953344;
 	len = ft_wchar_len(c);
 	if (len == 1)
-		write(1, &c, 1);
+		write(fd, &c, 1);
 	else if (len == 2)
-		handle_mask1(mask1, c);
+		handle_mask1(mask1, c, fd);
 	else if (len == 3)
-		handle_mask2(mask2, c);
+		handle_mask2(mask2, c, fd);
 	else if (len == 4)
-		handle_mask3(mask3, c);
+		handle_mask3(mask3, c, fd);
 	return (len);
 }
