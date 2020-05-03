@@ -15,14 +15,20 @@
 void	encode(unsigned char in[], char out[], int diff)
 {
 	uint8_t	data[4];
+	uint8_t	data_bis[3];
 	uint8_t i;
 
 	if (diff < 3)
-		ft_memset(in + diff, 0, 3 - diff);
-	data[0] = (in[0] >> 2) & 0xFF;
-	data[1] = ((in[0] & 0x03) << 4) | ((in[1] >> 4) & 0xFF);
-	data[2] = ((in[1] & 0x0F) << 2) | ((in[2] >> 6) & 0xFF);
-	data[3] = in[2] & 0x3F;
+	{
+		ft_memset(data_bis, 0x0, 3);
+		ft_memcpy(data_bis, in, diff);
+	}
+	else
+		ft_memcpy(data_bis, in, 3);
+	data[0] = (data_bis[0] >> 2) & 0xFF;
+	data[1] = ((data_bis[0] & 0x03) << 4) | ((data_bis[1] >> 4) & 0xFF);
+	data[2] = ((data_bis[1] & 0x0F) << 2) | ((data_bis[2] >> 6) & 0xFF);
+	data[3] = data_bis[2] & 0x3F;
 	i = 0;
 	while (i < 4)
 	{
@@ -77,4 +83,3 @@ char 		*base64_encode_data(unsigned char *data, uint32_t data_len)
 	}
 	return (data_encoded);
 }
-

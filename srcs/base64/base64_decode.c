@@ -83,6 +83,7 @@ unsigned char    *base64_decode_data(uint32_t *decoded_data_len,
 {
     uint32_t        offset;
     unsigned char   *decoded_data;
+    int 			ret;
 
     if (data == NULL)
         return (NULL);
@@ -91,11 +92,11 @@ unsigned char    *base64_decode_data(uint32_t *decoded_data_len,
     offset = 0;
     while (offset < data_len)
     {
-        decode((unsigned char*)data + offset, decoded_data + *decoded_data_len, 4);
-        *decoded_data_len += 3;
+        ret = decode((unsigned char*)data + offset, decoded_data + *decoded_data_len, 4);
+        *decoded_data_len += ret;
         offset += 4;
     }
-    ft_strdel((char**)&data);
+    ft_strdel(&data);
     return (decoded_data);
 }
 
