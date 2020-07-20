@@ -12,25 +12,6 @@
 
 #include "bn.h"
 #include "ft_ssl.h"
-#include "gmp.h"
-
-
-// void    display_mpz(mpz_t n)
-// {
-// 	if (n->_mp_size == 0)
-// 		printf("0");
-// 	else
-// 	{
-// 	    for (int64_t i = ABS(n->_mp_size) - 1; i > -1; i--)
-// 	    {
-// 	        if (i == ABS(n->_mp_size) - 1)
-// 	            printf("%lX", n->_mp_d[i]);
-// 	        else
-// 	            printf("%016lX", n->_mp_d[i]);
-// 	    }
-// 	}
-//     printf("\n");
-// }
 
 static int		hash_files(char **argv, t_ssl_command *command)
 {

@@ -1,5 +1,5 @@
 #include "bn.h"
-#include "gmp.h"
+// #include "gmp.h"
 #include <fcntl.h>
 #include <limits.h>
 #include <stdarg.h>

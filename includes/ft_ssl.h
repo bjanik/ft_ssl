@@ -23,7 +23,6 @@
 # include "bn.h"
 # include "libft.h"
 # include "lexer.h"
-# include "gmp.h"
 
 # define FT_SSL_USAGE "usage: ft_ssl command [command opts] [command args]\n"
 # define HASH_CMD_USAGE " [-pqr] -s [string] [files ...]\n"
@@ -394,6 +393,8 @@ void					set_bn_to_data(t_bn *n, unsigned char *data, uint32_t *len);
 void 					write_bn_to_data(t_bn *n, unsigned char *data);
 
 t_rsa					*rsa_init(void);
+void					rsa_clear(t_rsa *rsa);
+
 int 					rsa_opts(char **argv, t_rsa *rsa);
 int 					rsa_command_run(t_rsa *rsa);
 unsigned char       	*private_key_decryption(t_des *des,
@@ -410,14 +411,24 @@ void					flag_modulus(t_bn *n, int fd);
 void					flag_text(t_rsa *rsa);
 int						flag_check(t_rsa_data rsa_data);
 
+void					fill_pem_public_data(unsigned char *public_data,
+								 			 uint32_t public_data_len,
+								 			 t_bn *modulus,
+								 			 t_bn *public_exp);
+
 
 /*
 RSAUTL
 */
 
 t_rsautl				*rsautl_init(void);
+int 					rsautl_opts(char **argv, t_rsautl *rsautl);
 int 					rsautl_command_run(t_rsautl *rsautl);
 void					flag_hexdump(const int fd, const unsigned char *msg, const uint32_t len);
+int 					rsa_message_encryption(t_rsa_data *rsa_data, const int fd[], const int opts);
+int 					rsa_message_decryption(t_rsa_data *rsa_data, const int fd[]);
+
+
 
 // unsigned char			*i2osp(t_bn *n, uint32_t len);
 // t_bn 					*os2ip(unsigned char *octet_string, uint32_t len);
@@ -427,8 +438,8 @@ void					flag_hexdump(const int fd, const unsigned char *msg, const uint32_t len
 
 
 
-int						set_random_mpz_size(mpz_t n, size_t size);
-void					display_mpz(mpz_t n);
+//int						set_random_mpz_size(mpz_t n, size_t size);
+// void					display_mpz(mpz_t n);
 
 
 extern t_ssl_command	g_commands[];

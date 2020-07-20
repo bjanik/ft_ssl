@@ -15,7 +15,7 @@ static unsigned char *get_encrypted_message(const int fd, uint32_t mod_len)
 	{
 		if (mlen + ret > mod_len)
 		{
-			ft_putendl_fd("ft_ssl: message to encrypt too long", STDERR_FILENO);
+			ft_dprintf(STDERR_FILENO, "ft_ssl: message to encrypt too long\n");
 			free(message);
 			return (NULL);
 		}
@@ -24,12 +24,12 @@ static unsigned char *get_encrypted_message(const int fd, uint32_t mod_len)
 	}
 	if (ret < 0)
 	{
-		ft_putendl_fd("ft_ssl: error while reading encrypted message", STDERR_FILENO);
+		ft_dprintf(STDERR_FILENO, "ft_ssl: error while reading encrypted message\n");
 		ft_memdel((void**)&message);
 	}
 	else if (mlen != mod_len)
 	{
-		ft_putendl_fd("ft_ssl: message to decrypt not equal to modulus len", STDERR_FILENO);
+		ft_dprintf(STDERR_FILENO, "ft_ssl: message to decrypt not equal to modulus len\n");
 		ft_memdel((void**)&message);
 	}
 	return (message);
@@ -86,6 +86,7 @@ int 				rsa_message_decryption(t_rsa_data *rsa_data, const int fd[])
 		ft_putendl_fd("ft_ssl: decryption error", STDERR_FILENO);
 	else
 		write(fd[OUT], decrypted_msg + ret, mod_len - ret);
+	ret = 0;
 	free(msg);
 	free(decrypted_msg);
 	bn_clears(2, &cipher, &plain);

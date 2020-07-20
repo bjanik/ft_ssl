@@ -34,16 +34,16 @@ static unsigned char *get_raw_message(const int fd, uint32_t mod_len, uint32_t *
 	{
 		if (*mlen + ret > mod_len - 11)
 		{
-			ft_putendl_fd("ft_ssl: message to encrypt too long", STDERR_FILENO);
+			ft_dprintf(STDERR_FILENO, "ft_ssl: message to encrypt too long\n");
 			free(raw_message);
 			return (NULL);
 		}
 		ft_memcpy(raw_message + *mlen, buf, ret);
 		*mlen += ret;
 	}
-	if (ret < 0 || * mlen == 0)
+	if (ret < 0 || *mlen == 0)
 	{
-		ft_putendl_fd("ft_ssl: error reading data", STDERR_FILENO);
+		ft_dprintf(STDERR_FILENO, "ft_ssl: error reading data\n");
 		ft_memdel((void**)&raw_message);
 	}
 	return (raw_message);

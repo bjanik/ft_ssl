@@ -86,7 +86,7 @@ all : $(NAME)
 
 $(NAME) : $(OBJ)
 	@make -C $(LIBFT_DIR)
-	@$(CC) $(FLAGS) $(OBJ) $(LIBFT_LIB) -I $(INC_PATH) -I $(LIBFT_INC) -o $(NAME) -D GMP libgmp.a
+	@$(CC) $(FLAGS) $(OBJ) $(LIBFT_LIB) -I $(INC_PATH) -I $(LIBFT_INC) -o $(NAME)
 
 $(OBJ) : $(OBJ_PATH)
 

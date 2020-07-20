@@ -12,7 +12,7 @@ static int		check_modulus(t_rsa_data rsa_data, const uint64_t size)
 	bn_mul(n, rsa_data.prime1, rsa_data.prime2);
 	ret = bn_cmp(n, rsa_data.modulus);
 	if (ret) 
-		ft_dprintf(STDERR_FILENO, "Error: modulus not equal to prime1 * prime2");
+		ft_dprintf(STDERR_FILENO, "Error: modulus not equal to prime1 * prime2\n");
 	bn_clear(&n);
 	return (ret);
 }
@@ -26,12 +26,12 @@ static int 		check_primality(t_rsa_data rsa_data)
 	if (miller_rabin(rsa_data.prime1, 5, NO_DISPLAY) == 1)
 	{
 		ret = 1;
-		ft_putendl_fd("Error: prime1 is not prime", STDERR_FILENO);
+		ft_dprintf(STDERR_FILENO, "Error: prime1 is not prime\n");
 	}
 	if (miller_rabin(rsa_data.prime1, 5, NO_DISPLAY) == 1)
 	{
 		ret = 1;
-		ft_putendl_fd("Error: prime2 is not prime", STDERR_FILENO);
+		ft_dprintf(STDERR_FILENO, "Error: prime2 is not prime\n");
 	}
 	return (ret);
 }
@@ -57,12 +57,12 @@ static int 		check_exponents(t_rsa_data rsa_data, const uint64_t size)
 	bn_mul(phi, prime1_1, prime2_1);
 	if (bn_modinv(rsa_data.public_exp, phi, private_exp) == 1)
 	{
-		ft_putendl_fd("GCD is not 1", STDERR_FILENO);
+		ft_dprintf(STDERR_FILENO, "GCD is not 1\n");
 		return (1);
 	}
 	if (bn_cmp(private_exp, rsa_data.private_exp) != 0)
 	{
-		ft_putendl_fd("Values of private exponent differ", STDERR_FILENO);
+		ft_dprintf(STDERR_FILENO, "Values of private exponent differ\n");
 		return (1);
 	}
 	return (0);

@@ -121,7 +121,7 @@ char            *get_pem_passphrase(const char *in, int decryption)
         return (pwd);
     if (ft_strlen(pwd) < 4)
     {
-        ft_putendl_fd("ft_ssl: password too small, need at least 4 bytes", STDERR_FILENO);
+        ft_dprintf(STDERR_FILENO, "ft_ssl: password too small, need at least 4 bytes\n");
         ft_strdel(&pwd);
         ft_strdel(&prompt);
         return (NULL);
@@ -129,10 +129,10 @@ char            *get_pem_passphrase(const char *in, int decryption)
     if (decryption == 0)
         check_pwd = getpass("Verifying - Enter PEM pass phrase:");
     if (pwd == NULL || check_pwd == NULL)
-        ft_putendl_fd("ft_ssl: bad PEM password read", STDERR_FILENO);
+        ft_dprintf(STDERR_FILENO, "ft_ssl: bad PEM password read\n");
     else if (ft_strcmp(check_pwd, pwd) != 0)
     {
-        ft_putendl_fd("ft_ssl: Verify password failure", STDERR_FILENO);
+        ft_dprintf(STDERR_FILENO, "ft_ssl: Verify password failure\n");
         ft_strdel(&pwd);
     }
     return (pwd);
@@ -187,7 +187,7 @@ unsigned char       *private_key_decryption(t_des *des,
     decrypted_data = des_decrypt_data(des, data, *data_len);
     if (decrypted_data[*data_len - 1] > 8)
     {
-        ft_putendl_fd("ft_ssl: Bad decrypt", STDERR_FILENO);
+        ft_dprintf(STDERR_FILENO, "ft_ssl: Bad decrypt\n");
         return (NULL);
     }
     if (ft_memcmp(decrypted_data + *data_len - decrypted_data[*data_len - 1],

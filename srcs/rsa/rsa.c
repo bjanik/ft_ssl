@@ -1,6 +1,5 @@
 #include "bn.h"
 #include "ft_ssl.h"
-#include <assert.h>
 
 t_rsa				*rsa_init(void)
 {
@@ -54,7 +53,7 @@ static int 			init_rsa_data_decryption(t_des **des, char *line)
 	{
 		ft_free_string_tab(&tab);
 		ft_free_string_tab(&algo_iv);
-		ft_putendl_fd("ft_ssl: encryption algorithm not known", STDERR_FILENO);
+		ft_dprintf(STDERR_FILENO, "ft_ssl: encryption algorithm not known\n");
 		return (1);
 	}
 	if (get_hex_from_str(algo_iv[1], &(*des)->init_vector))
@@ -97,7 +96,7 @@ char			*get_data(const int fd, t_des **des, const char *header, const char *foot
 	ft_strdel(&line);
 	if (ret < 0)
 	{
-		ft_putendl_fd("ft_ssl: read error", STDERR_FILENO);
+		ft_dprintf(STDERR_FILENO, "ft_ssl: read error\n");
 		return (NULL);
 	}
 	return (data);
@@ -133,7 +132,7 @@ static void			print_rsa_key(t_rsa *rsa,
 	len = ft_strlen(data);
 	i = 0;
 	public = 0;
-	ft_dprintf(STDERR_FILENO, "writing RSA key");
+	ft_dprintf(STDERR_FILENO, "writing RSA key\n");
 	if (rsa->opts & RSA_PUBIN || rsa->opts & RSA_PUBOUT)
 		public = 1;
 	ft_putendl_fd(public ? PEM_PUBLIC_HEADER : PEM_PRIVATE_HEADER, fd);
@@ -161,11 +160,7 @@ static char 		*create_public_key(t_rsa *rsa)
     total_len = public_data_len + get_byte_number(public_data_len) + (public_data_len >= 0x80) + 1;
     if ((public_data = (unsigned char*)malloc(total_len)) == NULL)
         return (NULL);
-    if (fill_pem_public_data(public_data, public_data_len, rsa->rsa_data.modulus, rsa->rsa_data.public_exp))
-    {
-    	free(public_data);
-    	return (NULL);
-    }
+    fill_pem_public_data(public_data, public_data_len, rsa->rsa_data.modulus, rsa->rsa_data.public_exp);
     public_data_encoded = base64_encode_data(public_data, public_data_len);
     free(public_data);
     return (public_data_encoded);
@@ -251,6 +246,12 @@ int 				rsa_command_run(t_rsa *rsa)
 	}
 	if (rsa->opts & RSA_PUBIN)
 	{
+		if (rsa->opts & RSA_CHECK)
+		{
+			ft_dprintf(STDERR_FILENO, "Only private keys can be checked\n");
+			ft_strdel(&data);
+			return (1);
+		}
 		if (retrieve_data_from_public_key(&rsa->rsa_data, data))
 			return (1);
 		if (rsa->opts & RSA_TEXT)
