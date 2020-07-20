@@ -56,6 +56,7 @@ SRC_NAME = base64/base64_core.c \
 		pbkdf/pbkdf.c \
 		rsa/euclide.c\
 		rsa/flag_check.c\
+		rsa/flag_hexdump.c\
 		rsa/flag_modulus.c\
 		rsa/flag_text.c\
 		rsa/genrsa.c\

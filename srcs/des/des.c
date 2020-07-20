@@ -129,5 +129,6 @@ unsigned char 		*des_encrypt_data(t_des *des, unsigned char *data, uint32_t *dat
 		offset += DES_BLOCK_SIZE;
 	}
 	ft_memdel((void**)&data_with_padding);
+	*data_len = data_encrypted_len;
 	return (data_encrypted);
 }

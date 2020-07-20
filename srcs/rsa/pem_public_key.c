@@ -71,20 +71,19 @@ static int parse_decoded_public_data(t_rsa_data *rsa_data, unsigned char *data, 
 		return (1);
 	len = get_number_len(&ptr);
 	if (*ptr++ != 0x30)
-		return (1);
+		return (ft_dprintf(STDERR_FILENO, "ft_ssl: asn1 decoding failed"));
 	ptr += *ptr;
 	if (*ptr++ != 0x00)
-		return (1);
+		return (ft_dprintf(STDERR_FILENO, "ft_ssl: asn1 decoding failed"));
 	if (*ptr++ != 0x03)
-		return (1);
+		return (ft_dprintf(STDERR_FILENO, "ft_ssl: asn1 decoding failed"));
 	len = get_number_len(&ptr);
 	if (*ptr++ != 0x00)
-		return (1);
+		return (ft_dprintf(STDERR_FILENO, "ft_ssl: asn1 decoding failed"));
 	if (*ptr++ != 0x30)
-		return (1);
+		return (ft_dprintf(STDERR_FILENO, "ft_ssl: asn1 decoding failed"));
 	len = get_number_len(&ptr);
 	rsa_data->modulus = retrieve_number_from_data(&ptr);
-    // ptr++;
     rsa_data->public_exp = retrieve_number_from_data(&ptr);
     return (0);
 }
@@ -98,10 +97,10 @@ int 			retrieve_data_from_public_key(t_rsa_data *rsa_data, char *public_data)
 	public_data_len = ft_strlen(public_data);
     public_data_decoded_len = 0;
     if (public_data_len % 4)
-        return (1); // BASE64 ERROR
+        return (1);
     public_data_decoded = base64_decode_data(&public_data_decoded_len,
-    										   (unsigned char*)ft_strdup(public_data),
-    										   public_data_len);
+    										 ft_strdup(public_data),
+    										 public_data_len);
     if (public_data_decoded == NULL)
         return (1);
     ret = parse_decoded_public_data(rsa_data, public_data_decoded, public_data_decoded_len);

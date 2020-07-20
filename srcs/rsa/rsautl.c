@@ -29,7 +29,7 @@ static int 				get_private_key_from_inkey(t_rsautl *rsautl, char *data)
 		return (1);
 	if (rsautl->des)
 	{
-		if ((raw_data = private_key_decryption(rsautl->des, raw_data, &raw_data_len, rsautl->in)) == NULL)
+		if ((raw_data = private_key_decryption(rsautl->des, raw_data, &raw_data_len, rsautl->in, NULL)) == NULL)
 			return (1);
 	}
     ret = parse_decoded_data(&rsautl->rsa_data, raw_data, raw_data_len, rsautl->opts);
@@ -56,10 +56,11 @@ int 				rsautl_command_run(t_rsautl *rsautl)
 			ft_putendl_fd("ft_ssl: unable to load public key", STDERR_FILENO);
 			return (1);
 		}
-		data = get_data(inkey_fd, &rsautl->des, PEM_PUBLIC_HEADER, PEM_PUBLIC_FOOTER);
+		if (!(data = get_data(inkey_fd, &rsautl->des, PEM_PUBLIC_HEADER, PEM_PUBLIC_FOOTER)))
+			return (1);
 		retrieve_data_from_public_key(&rsautl->rsa_data, data);
 	}	
-	else // decryption with private key
+	else
 	{
 		if (inkey_fd < 0)
 		{
@@ -68,14 +69,14 @@ int 				rsautl_command_run(t_rsautl *rsautl)
 		}
 		if (!(data = get_data(inkey_fd, &rsautl->des, PEM_PRIVATE_HEADER, PEM_PRIVATE_FOOTER)))
 			return (1);
-		get_private_key_from_inkey(rsautl, data);
+		if (get_private_key_from_inkey(rsautl, data))
+			return (1);
 	}
 	close(inkey_fd);
 	if (rsautl->out)
 		rsautl->fd[OUT] = open(rsautl->out, O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	if (rsautl->opts & RSAUTL_DECRYPT)
-		rsa_message_decryption(&rsautl->rsa_data, rsautl->fd);
-	else if (rsautl->opts & RSAUTL_ENCRYPT)
-		rsa_message_encryption(&rsautl->rsa_data, rsautl->fd);			
-	return (0);
+		return (rsa_message_decryption(&rsautl->rsa_data, rsautl->fd));
+	else
+		return (rsa_message_encryption(&rsautl->rsa_data, rsautl->fd, rsautl->opts));
 }

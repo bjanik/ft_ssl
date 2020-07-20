@@ -35,14 +35,11 @@ uint32_t get_number_len(unsigned char **ptr)
     return (len);
 }
 
-t_bn     *retrieve_number_from_data(unsigned char **data)
+t_bn    *get_bn(unsigned char **data, uint32_t len)
 {
     t_bn        *n;
     uint8_t     bytes_in_limb;
-    uint32_t    len; 
 
-    (*data)++;
-    len = get_number_len(data);
     if ((n = bn_init_size(len * 8)) == NULL)
         return (NULL);
     n->size = len / 8;
@@ -63,9 +60,26 @@ t_bn     *retrieve_number_from_data(unsigned char **data)
     return (n);
 }
 
-int      parse_decoded_data(t_rsa *rsa,
-                                   unsigned char *decoded_data,
-                                   uint32_t decoded_data_len)
+t_bn     *retrieve_number_from_data(unsigned char **data)
+{
+    t_bn        *n;
+    uint32_t    len;
+
+    (*data)++;
+    len = get_number_len(data);
+    if (**data == 0)
+    {
+        (*data)++;
+        len--;
+    }
+    n = get_bn(data, len);
+    return (n);
+}
+
+int      parse_decoded_data(t_rsa_data *rsa_data,
+                            unsigned char *decoded_data,
+                            uint32_t decoded_data_len,
+                            int opts)
 {
     unsigned char *ptr = decoded_data;
     uint32_t      cur_len = 0;
@@ -76,16 +90,16 @@ int      parse_decoded_data(t_rsa *rsa,
     if (cur_len + ptr > decoded_data + decoded_data_len)
         return (1);
     ptr += 3;
-    rsa->rsa_data.modulus = retrieve_number_from_data(&ptr);
-    rsa->rsa_data.public_exp = retrieve_number_from_data(&ptr);
-    if ((rsa->opts & RSA_PUBIN) == 0 || (rsa->opts & RSA_PUBOUT))
+    rsa_data->modulus = retrieve_number_from_data(&ptr);
+    rsa_data->public_exp = retrieve_number_from_data(&ptr);
+    if ((opts & RSA_PUBIN) == 0)
     {
-        rsa->rsa_data.private_exp = retrieve_number_from_data(&ptr);
-        rsa->rsa_data.prime1 = retrieve_number_from_data(&ptr);
-        rsa->rsa_data.prime2 = retrieve_number_from_data(&ptr);
-        rsa->rsa_data.exponent1 = retrieve_number_from_data(&ptr);
-        rsa->rsa_data.exponent2 = retrieve_number_from_data(&ptr);
-        rsa->rsa_data.coef = retrieve_number_from_data(&ptr);
+        rsa_data->private_exp = retrieve_number_from_data(&ptr);
+        rsa_data->prime1 = retrieve_number_from_data(&ptr);
+        rsa_data->prime2 = retrieve_number_from_data(&ptr);
+        rsa_data->exponent1 = retrieve_number_from_data(&ptr);
+        rsa_data->exponent2 = retrieve_number_from_data(&ptr);
+        rsa_data->coef = retrieve_number_from_data(&ptr);
     }
     return (0);
 }
@@ -124,46 +138,53 @@ char            *get_pem_passphrase(const char *in, int decryption)
     return (pwd);
 }
 
-static int          key_from_passphrase(t_rsa *rsa, int decryption)
+static int          key_from_passphrase(t_des *des, const int decryption, const char *in, const char *pass)
 {
     unsigned char   *hash;
     unsigned char   keys[4][8];
     int             nb;
 
-    if ((rsa->des->password = get_pem_passphrase(rsa->in, decryption)) == NULL)
-        return (1);
-    if (rsa->des->init_vector == 0)
+    if (pass == NULL)
     {
-        if (get_salt(rsa->des))
+        if ((des->password = get_pem_passphrase(in, decryption)) == NULL)
+            return (1);
+    }
+    else
+        des->password = ft_strdup(pass);
+    if (des->init_vector == 0)
+    {
+        if (get_salt(des))
             return (1);
     }
     else
     {
-        rsa->des->salt = (unsigned char *)malloc(8 * sizeof(unsigned char));
-        cipher_to_string(rsa->des->init_vector, rsa->des->salt);
+        des->salt = (unsigned char *)malloc(8 * sizeof(unsigned char));
+        cipher_to_string(des->init_vector, des->salt);
     }
-    nb = (ft_strchr(rsa->des->name, '3')) ? TRIPLE_DES : SINGLE_DES;
-    if (!(hash = pbkdf(rsa->des->password, rsa->des->salt, nb)))
+    nb = (ft_strchr(des->name, '3')) ? TRIPLE_DES : SINGLE_DES;
+    if (!(hash = pbkdf(des->password, des->salt, nb)))
         return (1);
-    set_key(rsa->des, hash, keys, nb);
+    set_key(des, hash, keys, nb);
     ft_memdel((void**)&hash);
-    rsa->des->init_vector = convert_input_to_block(rsa->des->salt);
+    des->init_vector = convert_input_to_block(des->salt);
     return (0);
 }
 
-unsigned char       *private_key_decryption(t_rsa *rsa,
+unsigned char       *private_key_decryption(t_des *des,
                                             unsigned char *data,
-                                            uint32_t *data_len)
+                                            uint32_t *data_len,
+                                            const char *in,
+                                            const char *pass)
 {
     unsigned char   *decrypted_data;
     unsigned char   *decrypted_data_no_pad;
 
-    if (key_from_passphrase(rsa, 1))
+    if (key_from_passphrase(des, 1, in, pass))
         return (NULL);
-    swap_keys(rsa->des->keys[0]);
-    swap_keys(rsa->des->keys[1]);
-    swap_keys(rsa->des->keys[2]);
-    decrypted_data = des_decrypt_data(rsa->des, data, *data_len);
+    swap_keys(des->keys[0]);
+    swap_keys(des->keys[1]);
+    swap_keys(des->keys[2]);
+    decrypted_data = des_decrypt_data(des, data, *data_len);
     if (decrypted_data[*data_len - 1] > 8)
     {
         ft_putendl_fd("ft_ssl: Bad decrypt", STDERR_FILENO);
@@ -180,16 +201,18 @@ unsigned char       *private_key_decryption(t_rsa *rsa,
     ft_memdel((void**)&decrypted_data);
     ft_memdel((void**)&data);
     return (decrypted_data_no_pad);
-}
+} 
 
-unsigned char           *private_key_encryption(t_rsa *rsa,
+unsigned char           *private_key_encryption(t_des *des,
                                                 unsigned char *data,
-                                                uint32_t *data_len)
+                                                uint32_t *data_len,
+                                                const char *in, const char *pass)
 {
     unsigned char   *des_encrypted_data;
     
-    if (key_from_passphrase(rsa, 0))
+    if (key_from_passphrase(des, 0, in, pass))
         return (NULL);
-    des_encrypted_data = des_encrypt_data(rsa->des, data, data_len);
+    des_encrypted_data = des_encrypt_data(des, data, data_len);
+    ft_memdel((void**)&data);
     return (des_encrypted_data);
 }

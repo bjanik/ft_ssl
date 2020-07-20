@@ -136,91 +136,119 @@ uint64_t g_primes[] = {
    0,
 };
 
+void    bn_mod_no_alloc(t_bn *r, t_bn *n, t_bn *d)
+{
+    t_bn    *cr = NULL;
+
+    if (bn_cmp(n, d) < 0)
+    {
+        if (r != n)
+            bn_copy(r, n);
+        return;
+    }
+    cr = bn_clone(d);
+    bn_set_zero(r);
+    for (int64_t i = SIZE(n) * 64 - 1; i >= 0; i--)
+    {
+        bn_shift_left(r, 1);
+        r->num[0] ^= bn_get_bit(n, i);
+        if (SIZE(r) == 0 && r->num[0] > 0)
+            INC_SIZE(r);
+        if (SIZE(r) > r->alloc)
+            bn_realloc(r);
+        bn_copy(cr, r);
+        if (bn_cmp(r, d) >= 0)
+            bn_sub(r, cr, d);
+    }
+    bn_clear(&cr);
+}
+
 int   initial_sieve_test(t_bn *n, int display)
 {
-	t_bn  *mod = bn_init_size(64);
-	t_bn  *den = bn_init_size(64);
-	int   i = -1;
+    t_bn  *mod = bn_init_size(64);
+    t_bn  *den = bn_init_size(64);
+    int   i = -1;
 
-	if (mod == NULL || den == NULL)
-	{
-	    bn_clears(2, &mod, &den);
-	    return (1);
-	}
-	while (g_primes[++i])
-	{
-		bn_set_ui(den, g_primes[i]);
-		bn_mod(mod, n, den); // mod = n % den
-		if (bn_cmp_ui(mod, 0) == 0) // If mod == 0, den divides n so n is composite
-		{
-		  bn_clears(2, &mod, &den);
-		  return (1);
-		}
-		bn_set_zero(mod);
-	}
-	display ? ft_putchar_fd('.', STDERR_FILENO) : 0;
-	bn_clears(2, &mod, &den);
-	return (0);  // n passed initial sieve test and might be prime
+    if (mod == NULL || den == NULL)
+    {
+        bn_clears(2, &mod, &den);
+        return (1);
+    }
+    while (g_primes[++i])
+    {
+        bn_set_ui(den, g_primes[i]);
+        // printf("MOD initial_sieve_test\n");
+        bn_mod_no_alloc(mod, n, den); // mod = n % den
+        if (bn_cmp_ui(mod, 0) == 0) // If mod == 0, den divides n so n is composite
+        {
+          bn_clears(2, &mod, &den);
+          return (1);
+        }
+        bn_set_zero(mod);
+    }
+    display ? ft_putchar_fd('.', STDERR_FILENO) : 0;
+    bn_clears(2, &mod, &den);
+    return (0);  // n passed initial sieve test and might be prime
 }
 
 int   miller_rabin(t_bn *n, int s, int display)
 {
-	t_bn  *a;
+    t_bn  *a;
 
-	if (initial_sieve_test(n, display) == 1)
-		return (1);
-	a = bn_init_size(n->size * 64);
-	for (int i = 1; i <= s; i++)
-	{
-		bn_set_random(a, SIZE(n) * 64);
-		while (bn_cmp(n, a) <= 0)
-	  		bn_shift_right(a, 1);
-		if (witness(a, n) == 1)
-		{
-			bn_clear(&a);
-			return (1); // n is composite 
-		}
-		display ? ft_putchar_fd('+', STDERR_FILENO) : 0;
-	}
-	display ? ft_putchar_fd('\n', STDERR_FILENO) : 0;
-	bn_clear(&a);
+    if (initial_sieve_test(n, display) == 1)
+        return (1);
+    a = bn_init_size(n->size * 64);
+    for (int i = 1; i <= s; i++)
+    {
+        bn_set_random(a, SIZE(n) * 64);
+        while (bn_cmp(n, a) <= 0)
+            bn_shift_right(a, 1);
+        if (witness(a, n) == 1)
+        {
+            bn_clear(&a);
+            return (1); // n is composite 
+        }
+        display ? ft_putchar_fd('+', STDERR_FILENO) : 0;
+    }
+    display ? ft_putchar_fd('\n', STDERR_FILENO) : 0;
+    bn_clear(&a);
     return (0); // n is prime (surely)
 }
 
 int   witness(t_bn *a, t_bn *n)
 {
-	t_bn    *n_1;
-	t_bn    *u;
-	t_bn    *x, *x_sq, *xi;
-	int     t = 0, ret = 0;
+    t_bn    *n_1;
+    t_bn    *u;
+    t_bn    *x, *x_sq, *xi;
+    int     t = 0, ret = 0;
 
-	n_1 = bn_clone(n);
-	u = bn_clone(n_1);
-	x = bn_init_size(SIZE(n) * 64);
-	x_sq = bn_init_size(SIZE(n) * 64);
-	xi = bn_init_size(SIZE(n) * 64);
-	bn_sub_ui(n_1, n, 1);
-	bn_copy(u, n_1);
-	t = 0;
-	while (IS_ODD(u->num[0]) == 0)
-	{
-		bn_shift_right(u, 1);
-		t++;
-	}
-	bn_mod_pow(x, a, u, n); // x = a^n % n
-	for (int i = 1; i <= t; i++)
-	{
-		bn_mul(x_sq, x, x); // x_sq = x * x
-		bn_mod(xi, x_sq, n); // xi = x_sq % n
-		if (!bn_cmp_ui(xi, 1) && bn_cmp_ui(x, 1) && bn_cmp(x, n_1))
-		{
+    n_1 = bn_clone(n);
+    u = bn_clone(n_1);
+    x = bn_init_size(SIZE(n) * 64);
+    x_sq = bn_init_size(SIZE(n) * 64);
+    xi = bn_init_size(SIZE(n) * 64);
+    bn_sub_ui(n_1, n, 1);
+    bn_copy(u, n_1);
+    t = 0;
+    while (IS_ODD(u->num[0]) == 0)
+    {
+        bn_shift_right(u, 1);
+        t++;
+    }
+    bn_mod_pow(x, a, u, n); // x = a^n % n
+    for (int i = 1; i <= t; i++)
+    {
+        bn_mul(x_sq, x, x); // x_sq = x * x
+        bn_mod(xi, x_sq, n); // xi = x_sq % n
+        if (!bn_cmp_ui(xi, 1) && bn_cmp_ui(x, 1) && bn_cmp(x, n_1))
+        {
             bn_clears(5, &n_1, &u, &x, &xi, &x_sq);
             return (1);
-		}
-		bn_copy(x, xi); // x = xi;
-	}
-	if (bn_cmp_ui(xi, 1)) // x != 1
-		ret = 1;
-	bn_clears(5, &n_1, &u, &x, &xi, &x_sq);
-    return (ret);
+        }
+        bn_copy(x, xi); // x = xi;
+    }
+    if (bn_cmp_ui(xi, 1)) // x != 1
+        ret = 1;
+    bn_clears(5, &n_1, &u, &x, &xi, &x_sq);
+  return (ret);
 }

@@ -9,6 +9,10 @@
 # define INC_SIZE(x) (((x)->size < 0) ? (x)->size-- : (x)->size++)
 # define DEC_SIZE(x) (((x)->size < 0) ? (x)->size++ : (x)->size--)
 
+# define SUB(x, y, z) \
+if (bn_sub(x, y, z)) \
+	return (1);
+
 # define NO_DISPLAY 0
 # define DISPLAY 1
 
@@ -20,7 +24,7 @@ typedef struct 	big_num
 }				t_bn;
 
 void			bn_set_zero(t_bn *n);
-void			bn_concat(t_bn *n, t_bn *low, t_bn *high);
+int				bn_concat(t_bn *n, t_bn *low, t_bn *high);
 t_bn 			*bn_init_size(uint64_t size);
 t_bn			*bn_init(void);
 int 			bn_set_random(t_bn *n, int64_t size);
@@ -28,14 +32,14 @@ void			display_bn(t_bn *n);
 int				bn_realloc(t_bn *n);
 int 			bn_realloc_size(t_bn *n, int64_t new_alloc);
 t_bn 			*bn_clone(t_bn *a); // Returns a freshly allocated copy of bn a
-void			bn_copy(t_bn *a, t_bn *b); // Copy value of b into a. Reallocate a if necessary
+int				bn_copy(t_bn *a, t_bn *b); // Copy value of b into a. Reallocate a if necessary
 void			bn_set_ui(t_bn *n, uint64_t ui);
-void			bn_add_ui(t_bn *n, uint64_t ui);
-void			bn_add(t_bn *res, t_bn *op1, t_bn *op2);
+int 			bn_add_ui(t_bn *n, uint64_t ui);
+int				bn_add(t_bn *res, t_bn *op1, t_bn *op2);
 void			bn_sub(t_bn *res, t_bn *op1, t_bn *op2);
 void			bn_sub_ui(t_bn *res, t_bn *a, uint64_t ui);
-void			bn_shift_right(t_bn *n, uint64_t shift);
-void			bn_shift_left(t_bn *n, uint64_t shift);
+int 			bn_shift_right(t_bn *n, uint64_t shift);
+int 			bn_shift_left(t_bn *n, uint64_t shift);
 void			bn_mul(t_bn *res, t_bn *m, t_bn *q);
 void			bn_clear(t_bn **n);
 void			bn_clears(int num, ...);

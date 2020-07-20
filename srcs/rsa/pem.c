@@ -1,12 +1,6 @@
 #include "bn.h"
 #include "ft_ssl.h"
 
-// Strcuture : magic 0x30 0x82
-//			   data len (total len - len(magic) - len(data_len))
-//			   version (0x02 0x01 0x00)
-//			   len(modulus) +  modulus
-
-
 void	set_len_to_data(uint32_t n, unsigned char *data, uint32_t *len)
 {
 	if (n <= 0xFF)
@@ -170,5 +164,6 @@ int			pem(t_rsa_data *rsa, int fd)
 		return (1);
 	pem_output(data_encoded, fd);
 	ft_memdel((void**)&data_encoded);
+	ft_memdel((void**)&data);
 	return (0);
 }

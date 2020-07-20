@@ -104,8 +104,7 @@ int 	rsautl_opts(char **argv, t_rsautl *rsautl)
 		}
 		if (g_rsautl_opts[j].opt == NULL)
 		{
-			ft_putstr_fd("Unknown option: ", STDERR_FILENO);
-			ft_putendl_fd(argv[i], STDERR_FILENO);
+			ft_dprintf(STDERR_FILENO, "Unknown option: %s\n", argv[i]);
 			return (1);
 		}
 	}

@@ -12,7 +12,7 @@ static int		check_modulus(t_rsa_data rsa_data, const uint64_t size)
 	bn_mul(n, rsa_data.prime1, rsa_data.prime2);
 	ret = bn_cmp(n, rsa_data.modulus);
 	if (ret) 
-		ft_putendl_fd("Error: modulus not equal to prime1 * prime2", STDERR_FILENO);
+		ft_dprintf(STDERR_FILENO, "Error: modulus not equal to prime1 * prime2");
 	bn_clear(&n);
 	return (ret);
 }
@@ -74,7 +74,6 @@ int				flag_check(t_rsa_data rsa_data)
 	uint64_t 	size;
 
 	size = SIZE(rsa_data.prime1) + SIZE(rsa_data.prime2);
-
 	if (check_primality(rsa_data))
 		ret = 1;
 	if (check_modulus(rsa_data, size * 64))

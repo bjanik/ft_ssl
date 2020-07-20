@@ -15,22 +15,22 @@
 #include "gmp.h"
 
 
-void    display_mpz(mpz_t n)
-{
-	if (n->_mp_size == 0)
-		printf("0");
-	else
-	{
-	    for (int64_t i = ABS(n->_mp_size) - 1; i > -1; i--)
-	    {
-	        if (i == ABS(n->_mp_size) - 1)
-	            printf("%lX", n->_mp_d[i]);
-	        else
-	            printf("%016lX", n->_mp_d[i]);
-	    }
-	}
-    printf("\n");
-}
+// void    display_mpz(mpz_t n)
+// {
+// 	if (n->_mp_size == 0)
+// 		printf("0");
+// 	else
+// 	{
+// 	    for (int64_t i = ABS(n->_mp_size) - 1; i > -1; i--)
+// 	    {
+// 	        if (i == ABS(n->_mp_size) - 1)
+// 	            printf("%lX", n->_mp_d[i]);
+// 	        else
+// 	            printf("%016lX", n->_mp_d[i]);
+// 	    }
+// 	}
+//     printf("\n");
+// }
 
 static int		hash_files(char **argv, t_ssl_command *command)
 {
@@ -98,13 +98,6 @@ static int		data_encryption_standard(char **argv, t_ssl_command *cmd)
 	return (ret);
 }
 
-void	copy_bn_to_mpz(t_bn *n, mpz_t m)
-{
-	for (int64_t i = 0; i < n->size; i++)
-		m->_mp_d[i] = n->num[i];
-	m->_mp_size = n->size;
-}
-
 static int 		genrsa_command(char **argv, t_ssl_command *cmd)
 {
 	if (genrsa_opts(argv, cmd->genrsa))
@@ -121,6 +114,11 @@ static int 		rsa_command(char **argv, t_ssl_command *cmd)
 		return (1);
 	if (rsa_command_run(cmd->rsa))
 		return (1);
+	if (cmd->rsa->in)
+		close(cmd->rsa->fd[IN]);
+	if (cmd->rsa->out)
+		close(cmd->rsa->fd[OUT]);
+	rsa_clear(cmd->rsa);
 	return (0);
 }
 
@@ -164,6 +162,5 @@ int				main(int argc, char **argv)
 		ret = interactive_mode(argv);
 	else
 		ret = ft_ssl_routine(argv);
-	// while (1);
 	return (ret);
 }

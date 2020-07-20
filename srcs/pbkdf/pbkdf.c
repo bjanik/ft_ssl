@@ -21,7 +21,6 @@ unsigned char	*pbkdf(char *password, unsigned char *salt, int des)
 
 	if (!password || !(ps = ft_memalloc(ft_strlen(password) + 9)))
 		return (NULL);
-	// printf("Salt = %llX\n", *(uint64_t*)salt);
 	ft_memcpy(ps, password, ft_strlen(password));
 	if (salt)
 	{

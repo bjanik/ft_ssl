@@ -41,6 +41,11 @@ static unsigned char *get_raw_message(const int fd, uint32_t mod_len, uint32_t *
 		ft_memcpy(raw_message + *mlen, buf, ret);
 		*mlen += ret;
 	}
+	if (ret < 0 || * mlen == 0)
+	{
+		ft_putendl_fd("ft_ssl: error reading data", STDERR_FILENO);
+		ft_memdel((void**)&raw_message);
+	}
 	return (raw_message);
 }
 
@@ -70,81 +75,26 @@ static unsigned char *get_encoded_message(const int fd, uint32_t mod_len)
 	return (message);
 }
 
-t_bn 	*os2ip(unsigned char *octet_string, uint32_t len)
-{
-	t_bn	*n;
-	t_bn	*res;
-	t_bn	*val;
-
-	n = bn_init_size(len * 64);
-	res = bn_init_size(len * 64);
-	val = bn_init_size(64);
-	if (n == NULL || res == NULL || val == NULL)
-	{
-		bn_clears(3, &n, &res, &val);
-		return (NULL);
-	}
-	for (uint32_t i = 0; i < len; i++)
-	{
-		bn_add_ui(val, (uint64_t)octet_string[i]);
-		power_of_two(res, (uint64_t)(256 * i));
-		bn_mul(res, res, val);
-		bn_add(n, n, res);
-		bn_set_zero(val);
-		bn_set_zero(res);
-	}
-	return (n);
-}
-
-unsigned char	*i2osp(t_bn *n, uint32_t len)
-{
-	unsigned char	*octet_string;
-	t_bn			*digit, *mod, *r;
-	int 			i;
-
-	octet_string = (unsigned char*)malloc(len * sizeof(unsigned char));
-	if (octet_string == NULL)
-		return (NULL);
-	digit = bn_init_size(64);
-	mod = bn_init_size(64);
-	r = bn_init_size(64);
-	if (digit == NULL || mod == NULL)
-	{
-		free(octet_string);
-		bn_clears(2, &digit, &mod);
-		return (NULL);
-	}
-	i = 0;
-	bn_add_ui(mod, 256);
-	while (bn_cmp_ui(n, 0))
-	{
-		bn_mod(digit, n, mod);
-		bn_div(n, r, n, mod);
-		octet_string[i] = digit->num[0];
-		i++;
-	}
-	return (octet_string);
-}
-
-int 	rsa_message_encryption(t_rsa_data *rsa_data, const int fd[])
+int 	rsa_message_encryption(t_rsa_data *rsa_data, const int fd[], const int opts)
 {
 	uint32_t		mod_len;
-	unsigned char	*msg;
+	unsigned char	*plain, *ptr;
 	t_bn			*rsa_cipher;
 	t_bn			*rsa_message;
 
 	mod_len = bn_len(rsa_data->modulus);
-	if ((msg = get_encoded_message(fd[IN], mod_len)) == NULL)
+	if ((plain = get_encoded_message(fd[IN], mod_len)) == NULL)
 		return (1);
-	// rsa_message = os2ip(msg, mod_len);
+	ptr = plain;
+	rsa_message = get_bn(&ptr, mod_len);
 	if ((rsa_cipher = bn_init_size(mod_len * 8)) == NULL)
 		return (1);
-	// display_stats(rsa_data->public_exp);
-	// display_stats(rsa_data->modulus);
-	bn_mod_pow(rsa_cipher, msg, rsa_data->public_exp, rsa_data->modulus);
-	write_bn_to_data(rsa_cipher, msg);
-	// msg = i2osp(rsa_cipher, mod_len);
-	// write(1, msg, mod_len);
-	write(fd[OUT], msg, mod_len);
+	bn_mod_pow(rsa_cipher, rsa_message, rsa_data->public_exp, rsa_data->modulus);
+	ft_memset(plain, 0x0, mod_len);
+	write_bn_to_data(rsa_cipher, plain + mod_len - bn_len(rsa_cipher));
+	if ((opts & RSAUTL_HEXDUMP))
+		flag_hexdump(fd[OUT], plain, mod_len);
+	else
+		write(fd[OUT], plain, mod_len);
 	return (0);
 }

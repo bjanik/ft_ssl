@@ -399,11 +399,13 @@ int 					rsa_command_run(t_rsa *rsa);
 unsigned char       	*private_key_decryption(t_des *des,
 												unsigned char *data,
 												uint32_t *data_len,
-												const char *in);
+												const char *in,
+												const char *pass);
 unsigned char          	*private_key_encryption(t_des *des,
 												unsigned char *data,
 												uint32_t *data_len,
-												const char *in);
+												const char *in,
+												const char *pass);
 void					flag_modulus(t_bn *n, int fd);
 void					flag_text(t_rsa *rsa);
 int						flag_check(t_rsa_data rsa_data);
@@ -415,8 +417,10 @@ RSAUTL
 
 t_rsautl				*rsautl_init(void);
 int 					rsautl_command_run(t_rsautl *rsautl);
-unsigned char			*i2osp(t_bn *n, uint32_t len);
-t_bn 					*os2ip(unsigned char *octet_string, uint32_t len);
+void					flag_hexdump(const int fd, const unsigned char *msg, const uint32_t len);
+
+// unsigned char			*i2osp(t_bn *n, uint32_t len);
+// t_bn 					*os2ip(unsigned char *octet_string, uint32_t len);
 
 
 

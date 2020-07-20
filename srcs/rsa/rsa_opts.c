@@ -108,20 +108,24 @@ int 	set_pubout(char **argv, t_rsa *rsa, int *index)
 	return (0);
 }
 
-int 	set_password_rsa(char **argv, t_rsa *rsa, int *index)
+int 	set_passin_rsa(char **argv, t_rsa *rsa, int *index)
 {
 	char	**splitted_str = NULL;
 	int		fd;
 
-	if ((splitted_str = ft_strsplit(argv[++(*index)], ':')) == NULL || !splitted_str[1])
+	if (ft_strcmp(argv[++(*index)], "stdin") == 0)
+	{
+		if ((rsa->passin = ft_strnew(64)) == NULL)
+			return (1);
+		if (read(STDIN_FILENO, rsa->passin, 64) < 0)
+			return (1);
+		if (ft_strchr(rsa->passin, '\n') != 0)
+			*ft_strchr(rsa->passin, '\n') = '\0';
+	}
+	else if ((splitted_str = ft_strsplit(argv[*index], ':')) == NULL || !splitted_str[1])
 	{
 		ft_free_string_tab(&splitted_str);
 		return (1);
-	}
-	if (ft_strcmp(argv[*index], "stdin") == 0)
-	{
-		if (read(STDIN_FILENO, &rsa->passin, 64) < 0)
-			return (1);
 	}
 	else if (ft_strcmp(splitted_str[0], "pass") == 0)
 	{
@@ -141,17 +145,58 @@ int 	set_password_rsa(char **argv, t_rsa *rsa, int *index)
 			return (1);
 		close(fd);
 	}
+	else if (ft_strcmp(splitted_str[0], "fd") == 0)
+	{
+		fd = ft_atoi(splitted_str[1]);
+		if (get_next_line(fd, &rsa->passin) < 0)
+			return (1);
+	}
 	else
 		return (1);
 	ft_free_string_tab(&splitted_str);
 	return (0);
 }
 
-int 	set_password_output(char **argv, t_rsa *rsa, int *index)
+int 	set_passout_rsa(char **argv, t_rsa *rsa, int *index)
 {
-	(*index)++;
-	if ((rsa->passout = argv[*index]) == NULL)
+	char	**splitted_str = NULL;
+	int		fd;
+
+	if (ft_strcmp(argv[++(*index)], "stdin") == 0)
+	{
+		if ((rsa->passout = ft_strnew(64)) == NULL)
+			return (1);
+		if (read(STDIN_FILENO, rsa->passout, 64) < 0)
+			return (1);
+		if (ft_strlen(rsa->passout) > 0)
+			rsa->passout[ft_strlen(rsa->passout) - 1] = '\0';
+	}
+	else if ((splitted_str = ft_strsplit(argv[*index], ':')) == NULL || !splitted_str[1])
+	{
+		ft_free_string_tab(&splitted_str);
 		return (1);
+	}
+	else if (ft_strcmp(splitted_str[0], "pass") == 0)
+	{
+		if ((rsa->passout = ft_strdup(splitted_str[1])) == NULL)
+			return (1);
+	}
+	else if (ft_strcmp(splitted_str[0], "env") == 0)
+	{
+		if ((rsa->passout = ft_strdup(getenv(splitted_str[1]))) == NULL)
+			return (1);
+	}
+	else if (ft_strcmp(splitted_str[0], "file") == 0)
+	{
+		if ((fd = open(splitted_str[1], O_RDONLY)) < 0)
+			return (1);
+		if (get_next_line(fd, &rsa->passout) < 0)
+			return (1);
+		close(fd);
+	}
+	else
+		return (1);
+	ft_free_string_tab(&splitted_str);
 	return (0);
 }
 
@@ -160,8 +205,8 @@ const struct s_rsa_opts  g_rsa_opts[] = {
 	{"-outform", set_outform},
 	{"-in", set_in_file},
 	{"-out", set_out_file},
-	{"-passin", set_password_rsa},
-	{"-passout", set_password_output},
+	{"-passin", set_passin_rsa},
+	{"-passout", set_passout_rsa},
 	{"-des", set_des_encryption},
 	{"-des3", set_des3_encryption},
 	{"-text", set_text},
@@ -172,21 +217,6 @@ const struct s_rsa_opts  g_rsa_opts[] = {
 	{"-pubout", set_pubout},
 	{NULL, NULL}
 };
-
-static int 	finalize_rsa_opts(t_rsa *rsa)
-{
-	if (rsa->in)
-	{
-		if ((rsa->fd[IN] = open(rsa->in, O_RDONLY, 0644)) < 0)
-			return (1);
-	}
-	if (rsa->out)
-	{
-		if ((rsa->fd[OUT] = open(rsa->out, O_CREAT | O_WRONLY | O_TRUNC, 0644)) < 0)
-			return (1);	
-	}
-	return (0);
-}
 
 int 	rsa_opts(char **argv, t_rsa *rsa)
 {
@@ -207,10 +237,9 @@ int 	rsa_opts(char **argv, t_rsa *rsa)
 		}
 		if (g_rsa_opts[j].opt == NULL)
 		{
-			ft_putstr_fd("Unknown option: ", STDERR_FILENO);
-			ft_putendl_fd(argv[i], STDERR_FILENO);
+			ft_dprintf(STDERR_FILENO, "Unknown option: %s\n", argv[i]);
 			return (1);
 		}
 	}
-	return (finalize_rsa_opts(rsa));
+	return (0);
 }
