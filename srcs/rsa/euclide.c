@@ -1,6 +1,5 @@
 #include "ft_ssl.h"
 #include "bn.h"
-#include <assert.h>
 
 #define IS_ODD(x) ((x) & 1)
 #define IS_EVEN(x) (((x) & 1) == 0)

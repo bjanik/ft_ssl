@@ -12,9 +12,9 @@ struct			s_rsautl_opts
 static int 	set_rsautl_in(char **argv, t_rsautl *rsautl, int *index)
 {
 	(*index)++;
-	if ((rsautl->in = argv[*index]) == NULL)
+	if ((rsautl->in = ft_strdup(argv[*index])) == NULL)
 	{
-		ft_dprintf(STDERR_FILENO, "ft_ssl: Missing input file");
+		ft_dprintf(STDERR_FILENO, "ft_ssl: Missing input file\n");
 		return (1);
 	}
 	return (0);
@@ -23,9 +23,9 @@ static int 	set_rsautl_in(char **argv, t_rsautl *rsautl, int *index)
 static int 	set_rsautl_out(char **argv, t_rsautl *rsautl, int *index)
 {
 	(*index)++;
-	if ((rsautl->out = argv[*index]) == NULL)
+	if ((rsautl->out = ft_strdup(argv[*index])) == NULL)
 	{
-		ft_dprintf(STDERR_FILENO, "ft_ssl: Missing output file");
+		ft_dprintf(STDERR_FILENO, "ft_ssl: Missing output file\n");
 		return (1);
 	}
 	return (0);
@@ -34,9 +34,9 @@ static int 	set_rsautl_out(char **argv, t_rsautl *rsautl, int *index)
 static int 	set_inkey_file(char **argv, t_rsautl *rsautl, int *index)
 {
 	(*index)++;
-	if ((rsautl->inkey = argv[*index]) == NULL)
+	if ((rsautl->inkey = ft_strdup(argv[*index])) == NULL)
 	{
-		ft_dprintf(STDERR_FILENO, "ft_ssl: Missing inkey file");
+		ft_dprintf(STDERR_FILENO, "ft_ssl: Missing inkey file\n");
 		return (1);
 	}
 	return (0);

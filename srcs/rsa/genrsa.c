@@ -80,7 +80,7 @@ int 		genrsa_command_run(t_rsa_data *rsa, t_genrsa *genrsa)
 	}
 	bn_sub_ui(p_2, p_2, 2);
 	bn_mod_pow(rsa->coef, rsa->prime2, p_2, rsa->prime1);
-	ft_putendl_fd("e is 65537 (0x10001)", STDERR_FILENO);
+	ft_dprintf(STDERR_FILENO, "e is 65537 (0x10001)\n");
 	bn_sub_ui(p_1, p_1, 1);
 	bn_sub_ui(q_1, q_1, 1);
 	bn_mul(phi, p_1, q_1);
@@ -89,6 +89,19 @@ int 		genrsa_command_run(t_rsa_data *rsa, t_genrsa *genrsa)
 	bn_mod(rsa->exponent2, rsa->private_exp, q_1);
 	bn_clears(5, &phi, &p_1, &q_1, &gcd, &p_2);
 	return (0);
+}
+
+void	genrsa_clear(t_genrsa *genrsa)
+{
+	bn_clear(&genrsa->rsa_data.modulus);
+	bn_clear(&genrsa->rsa_data.private_exp);
+	bn_clear(&genrsa->rsa_data.public_exp);
+	bn_clear(&genrsa->rsa_data.prime1);
+	bn_clear(&genrsa->rsa_data.prime2);
+	bn_clear(&genrsa->rsa_data.exponent1);
+	bn_clear(&genrsa->rsa_data.exponent2);
+	bn_clear(&genrsa->rsa_data.coef);
+	ft_memdel((void**)&genrsa);
 }
 
 t_genrsa	*genrsa_init(void)

@@ -53,17 +53,19 @@
 
 # define RSA_CHECK 1
 # define RSA_DES 2
-# define RSA_DES3 4
-# define RSA_MODULUS 8
-# define RSA_NOOUT 16
-# define RSA_TEXT 32
-# define RSA_PUBIN 64
-# define RSA_PUBOUT 128
+# define RSA_MODULUS 4
+# define RSA_NOOUT 8
+# define RSA_TEXT 16
+# define RSA_PUBIN 32
+# define RSA_PUBOUT 64
+# define RSA_PASSIN 128
+# define RSA_PASSOUT 256
+
 
 # define RSAUTL_ENCRYPT 1
 # define RSAUTL_DECRYPT 2
 # define RSAUTL_HEXDUMP 4
-# define RSAUTL_PUBIN 64
+# define RSAUTL_PUBIN 32
 
 # define PEM_PRIVATE_HEADER "-----BEGIN RSA PRIVATE KEY-----"
 # define PEM_PRIVATE_FOOTER "-----END RSA PRIVATE KEY-----"
@@ -371,6 +373,8 @@ int						set_pubout(char **argv, t_rsa *rsa, int *index);
 
 
 t_genrsa				*genrsa_init(void);
+void					genrsa_clear(t_genrsa *rsa);
+
 int 					genrsa_opts(char **argv, t_genrsa *rsa);
 int 					genrsa_command_run(t_rsa_data *rsa, t_genrsa *genrsa);
 
@@ -422,24 +426,13 @@ RSAUTL
 */
 
 t_rsautl				*rsautl_init(void);
+void					rsautl_clear(t_rsautl *rsautl);
+
 int 					rsautl_opts(char **argv, t_rsautl *rsautl);
 int 					rsautl_command_run(t_rsautl *rsautl);
 void					flag_hexdump(const int fd, const unsigned char *msg, const uint32_t len);
 int 					rsa_message_encryption(t_rsa_data *rsa_data, const int fd[], const int opts);
 int 					rsa_message_decryption(t_rsa_data *rsa_data, const int fd[]);
-
-
-
-// unsigned char			*i2osp(t_bn *n, uint32_t len);
-// t_bn 					*os2ip(unsigned char *octet_string, uint32_t len);
-
-
-
-
-
-
-//int						set_random_mpz_size(mpz_t n, size_t size);
-// void					display_mpz(mpz_t n);
 
 
 extern t_ssl_command	g_commands[];

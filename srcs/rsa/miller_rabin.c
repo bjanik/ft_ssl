@@ -177,7 +177,6 @@ int   initial_sieve_test(t_bn *n, int display)
     while (g_primes[++i])
     {
         bn_set_ui(den, g_primes[i]);
-        // printf("MOD initial_sieve_test\n");
         bn_mod_no_alloc(mod, n, den); // mod = n % den
         if (bn_cmp_ui(mod, 0) == 0) // If mod == 0, den divides n so n is composite
         {
@@ -250,5 +249,5 @@ int   witness(t_bn *a, t_bn *n)
     if (bn_cmp_ui(xi, 1)) // x != 1
         ret = 1;
     bn_clears(5, &n_1, &u, &x, &xi, &x_sq);
-  return (ret);
+    return (ret);
 }

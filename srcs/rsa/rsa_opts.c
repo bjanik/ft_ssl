@@ -8,24 +8,27 @@ struct			s_rsa_opts
 	int			(*opt_f)(char **argv, t_rsa *rsa, int *index);
 };
 
-
 int 		set_inform(char **argv, t_rsa *rsa, int *index)
 {
 	(*index)++;
-	rsa->inform = argv[*index];
+	rsa->inform = ft_strdup(argv[*index]);
+	if (rsa->inform == NULL)
+		return (1);
 	return (0);
 }
 
 int 		set_outform(char **argv, t_rsa *rsa, int *index)
 {
 	(*index)++;
-	rsa->outform = argv[*index];
+	rsa->outform = ft_strdup(argv[*index]);
+	if (rsa->outform == NULL)
+		return (1);
 	return (0);
 }
 
 int		set_in_file(char **argv, t_rsa *rsa, int *index)
 {
-	rsa->in = argv[++(*index)];
+	rsa->in = ft_strdup(argv[++(*index)]);
 	if (rsa->in == NULL)
 		return (1);
 	return (0);
@@ -33,7 +36,7 @@ int		set_in_file(char **argv, t_rsa *rsa, int *index)
 
 int		set_out_file(char **argv, t_rsa *rsa, int *index)
 {
-	rsa->out = argv[++(*index)];
+	rsa->out = ft_strdup(argv[++(*index)]);
 	if (rsa->in == NULL)
 		return (1);
 	return (0);
@@ -44,21 +47,8 @@ int 	set_des_encryption(char **argv, t_rsa *rsa, int *index)
 	(void)argv;
 	(void)index;
 	rsa->opts |= RSA_DES;
-	if (rsa->opts & RSA_DES3)
-		rsa->opts &= ~RSA_DES3;
 	return (0);
 }
-
-int 	set_des3_encryption(char **argv, t_rsa *rsa, int *index)
-{
-	(void)argv;
-	(void)index;
-	rsa->opts |= RSA_DES3;
-	if (rsa->opts & RSA_DES)
-		rsa->opts &= ~RSA_DES;
-	return (0);
-}
-
 
 int 	set_check(char **argv, t_rsa *rsa, int *index)
 {
@@ -208,7 +198,6 @@ const struct s_rsa_opts  g_rsa_opts[] = {
 	{"-passin", set_passin_rsa},
 	{"-passout", set_passout_rsa},
 	{"-des", set_des_encryption},
-	{"-des3", set_des3_encryption},
 	{"-text", set_text},
 	{"-noout", set_noout},
 	{"-modulus", set_modulus},

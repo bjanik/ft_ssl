@@ -72,6 +72,7 @@ static unsigned char *get_encoded_message(const int fd, uint32_t mod_len)
 	}
 	message[offset++] = 0x0;
 	ft_memcpy(message + offset, raw_message, mlen);
+	ft_memdel((void**)&raw_message);
 	return (message);
 }
 
@@ -96,5 +97,8 @@ int 	rsa_message_encryption(t_rsa_data *rsa_data, const int fd[], const int opts
 		flag_hexdump(fd[OUT], plain, mod_len);
 	else
 		write(fd[OUT], plain, mod_len);
+	ft_strdel((char**)&plain);
+	bn_clear(&rsa_cipher);
+	bn_clear(&rsa_message);
 	return (0);
 }

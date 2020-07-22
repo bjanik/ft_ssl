@@ -24,11 +24,21 @@ void				rsa_clear(t_rsa *rsa)
 {
 	if (rsa)
 	{
+		ft_strdel(&rsa->in);
+		ft_strdel(&rsa->out);
 		ft_strdel(&rsa->inform);
 		ft_strdel(&rsa->outform);
 		ft_strdel(&rsa->passin);
 		ft_strdel(&rsa->passout);
 		reset_des(rsa->des);
+		bn_clear(&rsa->rsa_data.modulus);
+		bn_clear(&rsa->rsa_data.private_exp);
+		bn_clear(&rsa->rsa_data.public_exp);
+		bn_clear(&rsa->rsa_data.prime1);
+		bn_clear(&rsa->rsa_data.prime2);
+		bn_clear(&rsa->rsa_data.exponent1);
+		bn_clear(&rsa->rsa_data.exponent2);
+		bn_clear(&rsa->rsa_data.coef);
 	}
 	ft_memdel((void**)&rsa);
 }
@@ -47,8 +57,6 @@ static int 			init_rsa_data_decryption(t_des **des, char *line)
 	}
 	if (ft_strcmp(algo_iv[0], " DES-CBC") == 0)
 		*des = init_des("des-ecb", g_commands[6].des_mode);
-	else if (ft_strcmp(algo_iv[0], " DES-EDE3-CBC") == 0)
-		*des = init_des("des3-ecb", g_commands[11].des_mode);
 	else
 	{
 		ft_free_string_tab(&tab);
@@ -107,13 +115,9 @@ static void 		print_encryption_header(t_rsa *rsa, const int fd)
 {
 	char	*iv;
 
-	if (rsa->opts & (RSA_DES | RSA_DES3) && (rsa->opts & RSA_PUBOUT) == 0)
+	if ((rsa->opts & RSA_DES) && (rsa->opts & RSA_PUBOUT) == 0)
 	{
-		ft_dprintf(fd, "%s\n%s", PROC_TYPE, DEK_INFO);
-		if (ft_strchr(rsa->des->name, '3'))
-			ft_dprintf(fd, ": DES-EDE3-CBC,");
-		else
-			ft_dprintf(fd, ": DES-CBC,");
+		ft_dprintf(fd, "%s\n%s: DES-CBC,", PROC_TYPE, DEK_INFO);
 		iv = ft_itoa_base_llu(convert_input_to_block(rsa->des->salt), "0123456789ABCDEF");
 		ft_dprintf(fd, "%s\n\n", iv);
 		ft_strdel(&iv);
@@ -135,7 +139,7 @@ static void			print_rsa_key(t_rsa *rsa,
 	ft_dprintf(STDERR_FILENO, "writing RSA key\n");
 	if (rsa->opts & RSA_PUBIN || rsa->opts & RSA_PUBOUT)
 		public = 1;
-	ft_putendl_fd(public ? PEM_PUBLIC_HEADER : PEM_PRIVATE_HEADER, fd);
+	ft_dprintf(fd, "%s\n", public ? PEM_PUBLIC_HEADER : PEM_PRIVATE_HEADER);
 	print_encryption_header(rsa, fd);
 	while (len > 0)
 	{
@@ -147,7 +151,7 @@ static void			print_rsa_key(t_rsa *rsa,
 		len -= 64;
 		write(fd, "\n", 1);
 	}
-	ft_putendl_fd(public ? PEM_PUBLIC_FOOTER : PEM_PRIVATE_FOOTER, fd);
+	ft_dprintf(fd, "%s\n", public ? PEM_PUBLIC_FOOTER : PEM_PRIVATE_FOOTER);
 }
 
 static char 		*create_public_key(t_rsa *rsa)
@@ -162,7 +166,7 @@ static char 		*create_public_key(t_rsa *rsa)
         return (NULL);
     fill_pem_public_data(public_data, public_data_len, rsa->rsa_data.modulus, rsa->rsa_data.public_exp);
     public_data_encoded = base64_encode_data(public_data, public_data_len);
-    free(public_data);
+    ft_memdel((void**)&public_data);
     return (public_data_encoded);
 }
 
@@ -187,13 +191,10 @@ int 				rsa_private_key_routine(t_rsa *rsa, char **data)
 		flag_modulus(rsa->rsa_data.modulus, rsa->fd[OUT]);
 	if (rsa->opts & RSA_CHECK)
 		ret = flag_check(rsa->rsa_data);
-	if (rsa->opts & (RSA_DES | RSA_DES3) && (rsa->opts & RSA_PUBOUT) == 0)
+	if ((rsa->opts & RSA_DES) && (rsa->opts & RSA_PUBOUT) == 0)
     {
     	reset_des(rsa->des);
- 		if (rsa->opts & RSA_DES)
-			rsa->des = init_des("des-cbc", g_commands[6].des_mode);
-		else
-			rsa->des = init_des("des3-cbc", g_commands[11].des_mode);
+ 		rsa->des = init_des("des-cbc", g_commands[6].des_mode);
 		if ((raw_data = private_key_encryption(rsa->des, raw_data, &raw_data_len, rsa->in, rsa->passout)) == NULL)
 			return (1);
     }
@@ -239,13 +240,10 @@ int 				rsa_command_run(t_rsa *rsa)
 			return (1);
 		}
 	}
-	else
+	if (rsa->opts & RSA_PUBIN)
 	{
 		if ((data = get_data(rsa->fd[IN], &rsa->des, PEM_PUBLIC_HEADER, PEM_PUBLIC_FOOTER)) == NULL)
 			return (1);
-	}
-	if (rsa->opts & RSA_PUBIN)
-	{
 		if (rsa->opts & RSA_CHECK)
 		{
 			ft_dprintf(STDERR_FILENO, "Only private keys can be checked\n");

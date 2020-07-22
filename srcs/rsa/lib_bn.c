@@ -1,5 +1,5 @@
 #include "bn.h"
-// #include "gmp.h"
+#include "ft_ssl.h"
 #include <fcntl.h>
 #include <limits.h>
 #include <stdarg.h>
@@ -570,7 +570,7 @@ int		bn_pow(t_bn *res, t_bn *b, t_bn *exp)
 	t_bn	*cexp = bn_clone(exp);
 	t_bn	*cres = bn_clone(res);
 
-	if (cb == NULL || cexp == NULL || cres == NULL)
+	if (!cb || !cexp || !cres)
 	{
 		bn_clears(3, &cb, &cexp, &cres);
 		return (1);
@@ -597,6 +597,11 @@ void 	bn_mod_pow(t_bn *res, t_bn *b, t_bn *exp, t_bn *mod)
 	t_bn	*cexp = bn_clone(exp);
 	t_bn	*cmod = bn_clone(mod);
 
+	if (!cb || !cexp || !cmod)
+	{
+		bn_clears(3, &cb, &cexp, &cmod);
+		return ;
+	}
 	bn_set_ui(res, 1);
 	bn_mod(cb, cb, cmod);
 	while (bn_cmp_ui(cexp, 0))
@@ -695,8 +700,7 @@ void	bn_mod(t_bn *r, t_bn *n, t_bn *d)
 		if (bn_cmp(r, d) >= 0)
 			bn_sub(r, cr, d);
 	}
-	bn_clear(&cn);
-	bn_clear(&cr);
+	bn_clears(2, &cn, &cr);
 }
 
 void	bn_div(t_bn *q, t_bn *r, t_bn *n, t_bn *d)

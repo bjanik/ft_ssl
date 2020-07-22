@@ -106,8 +106,8 @@ int      parse_decoded_data(t_rsa_data *rsa_data,
 
 char            *get_pem_passphrase(const char *in, int decryption)
 {
-    char    *pwd;
-    char    *check_pwd;
+    char    *pwd = NULL;
+    char    *check_pwd = NULL;
     char    *prompt;
 
     if (decryption)
@@ -131,10 +131,8 @@ char            *get_pem_passphrase(const char *in, int decryption)
     if (pwd == NULL || check_pwd == NULL)
         ft_dprintf(STDERR_FILENO, "ft_ssl: bad PEM password read\n");
     else if (ft_strcmp(check_pwd, pwd) != 0)
-    {
         ft_dprintf(STDERR_FILENO, "ft_ssl: Verify password failure\n");
-        ft_strdel(&pwd);
-    }
+    ft_strdel(&check_pwd);
     return (pwd);
 }
 

@@ -28,13 +28,12 @@ int	commands_usage(char *command)
 	ft_dprintf(STDERR_FILENO, "Message digest commands:\n");
 	while (g_commands[++i].name)
 		(g_commands[i].hash_func) ?
-			ft_putendl_fd(g_commands[i].name, STDERR_FILENO) : 0;
-	ft_putchar_fd('\n', STDERR_FILENO);
-	ft_putendl_fd("Cipher commands:", STDERR_FILENO);
+			ft_dprintf(STDERR_FILENO, "%s", g_commands[i].name) : 0;
+	ft_dprintf(STDERR_FILENO, "\nCipher commands:");
 	i = -1;
 	while (g_commands[++i].name)
 		(!g_commands[i].hash_func) ?
-			ft_putendl_fd(g_commands[i].name, STDERR_FILENO) : 0;
+			ft_dprintf(STDERR_FILENO, "%s\n", g_commands[i].name) : 0;
 	return (1);
 }
 
@@ -59,10 +58,10 @@ int	des_usage(const char *name, char *opt)
 int base64_usage(char *opt)
 {
 	ft_dprintf(STDERR_FILENO, "ft_ssl: base64: invalid option: %s\n", opt);
-	ft_putendl_fd("Options are:", STDERR_FILENO);
-	ft_putendl_fd("-i [file] input file", STDERR_FILENO);
-	ft_putendl_fd("-o [file] output file", STDERR_FILENO);
-	ft_putendl_fd("-e        encode", STDERR_FILENO);
-	ft_putendl_fd("-d        decode", STDERR_FILENO);
+	ft_dprintf(STDERR_FILENO, "Options are:\n");
+	ft_dprintf(STDERR_FILENO, "-i [file] input file\n");
+	ft_dprintf(STDERR_FILENO, "-o [file] output file\n");
+	ft_dprintf(STDERR_FILENO, "-e        encode\n");
+	ft_dprintf(STDERR_FILENO, "-d        decode\n");
 	return (1);
 }

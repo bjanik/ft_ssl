@@ -30,7 +30,7 @@ int			interactive_mode(char **argv)
 {
 	t_lexer	lexer;
 	char	*input;
-	char	**av;
+	char	**av = NULL;
 
 	init_lexer(&lexer);
 	while (42)
@@ -48,6 +48,7 @@ int			interactive_mode(char **argv)
 		ft_ssl_routine(av);
 		ft_strdel(&input);
 		reset_lexer(&lexer);
+		// ft_display_tab(av);
 		ft_free_string_tab(&av);
 	}
 	ft_strdel(&lexer.current_token);

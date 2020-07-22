@@ -86,30 +86,38 @@ static int 		genrsa_command(char **argv, t_ssl_command *cmd)
 	if (genrsa_command_run(&cmd->genrsa->rsa_data, cmd->genrsa))
 		return (1);
 	pem(&cmd->genrsa->rsa_data, cmd->genrsa->fd[OUT]);
+	genrsa_clear(cmd->genrsa);
 	return (0);
 }
 
 static int 		rsa_command(char **argv, t_ssl_command *cmd)
 {
+	int ret;
+
+	ret = 0;
 	if (rsa_opts(argv, cmd->rsa))
-		return (1);
-	if (rsa_command_run(cmd->rsa))
-		return (1);
+		ret = 1;
+	else if (rsa_command_run(cmd->rsa))
+		ret = 1;
 	if (cmd->rsa->in)
 		close(cmd->rsa->fd[IN]);
 	if (cmd->rsa->out)
 		close(cmd->rsa->fd[OUT]);
 	rsa_clear(cmd->rsa);
-	return (0);
+	return (ret);
 }
 
 static int 		rsautl_command(char **argv, t_ssl_command *cmd)
 {
+	int ret;
+
+	ret = 0;
 	if (rsautl_opts(argv, cmd->rsautl))
-		return (1);
+		ret = 1;
 	if (rsautl_command_run(cmd->rsautl))
-		return (1);
-	return (0);
+		ret = 1;
+	rsautl_clear(cmd->rsautl);
+	return (ret);
 }
 
 int				ft_ssl_routine(char **argv)
@@ -132,7 +140,7 @@ int				ft_ssl_routine(char **argv)
 		return (rsa_command(argv, command));
 	if (command->rsautl)
 		return (rsautl_command(argv, command));
-	return 0;
+	return (0);
 }
 
 int				main(int argc, char **argv)

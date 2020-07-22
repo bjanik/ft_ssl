@@ -63,7 +63,7 @@ int					lexer_input(t_lexer *lexer, char *input)
 	{
 		reset_lexer(lexer);
 		ft_strdel(&input);
-		ft_putendl_fd("ft_ssl: Missing closing quotes", STDERR_FILENO);
+		ft_dprintf(STDERR_FILENO, "ft_ssl: Missing closing quotes\n");
 		return (1);
 	}
 	delimitate_token(lexer);

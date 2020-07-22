@@ -18,6 +18,23 @@ t_rsautl	*rsautl_init(void)
 	return (rsautl);
 }
 
+void	rsautl_clear(t_rsautl *rsautl)
+{
+	ft_strdel(&rsautl->in);
+	ft_strdel(&rsautl->out);
+	ft_strdel(&rsautl->inkey);
+	reset_des(rsautl->des);
+	bn_clear(&rsautl->rsa_data.modulus);
+	bn_clear(&rsautl->rsa_data.private_exp);
+	bn_clear(&rsautl->rsa_data.public_exp);
+	bn_clear(&rsautl->rsa_data.prime1);
+	bn_clear(&rsautl->rsa_data.prime2);
+	bn_clear(&rsautl->rsa_data.exponent1);
+	bn_clear(&rsautl->rsa_data.exponent2);
+	bn_clear(&rsautl->rsa_data.coef);
+	ft_memdel((void**)&rsautl);
+}
+
 static int 				get_private_key_from_inkey(t_rsautl *rsautl, char *data)
 {
 	unsigned char 	*raw_data;
@@ -33,6 +50,7 @@ static int 				get_private_key_from_inkey(t_rsautl *rsautl, char *data)
 			return (1);
 	}
     ret = parse_decoded_data(&rsautl->rsa_data, raw_data, raw_data_len, rsautl->opts);
+    ft_strdel((char**)&raw_data);
     return (ret);
 }
 
@@ -43,7 +61,7 @@ int 				rsautl_command_run(t_rsautl *rsautl)
 
 	if ((rsautl->opts & RSAUTL_PUBIN) && (rsautl->opts & RSAUTL_DECRYPT))
 	{
-		ft_putendl_fd("ft_ssl: private key is required for this operation", STDERR_FILENO);
+		ft_dprintf(STDERR_FILENO, "ft_ssl: private key is required for this operation\n");
 		return (1);
 	}
 	inkey_fd = open(rsautl->inkey, O_RDONLY);
@@ -53,7 +71,7 @@ int 				rsautl_command_run(t_rsautl *rsautl)
 	{
 		if (inkey_fd < 0)
 		{
-			ft_putendl_fd("ft_ssl: unable to load public key", STDERR_FILENO);
+			ft_dprintf(STDERR_FILENO, "ft_ssl: unable to load public key\n");
 			return (1);
 		}
 		if (!(data = get_data(inkey_fd, &rsautl->des, PEM_PUBLIC_HEADER, PEM_PUBLIC_FOOTER)))
@@ -64,7 +82,7 @@ int 				rsautl_command_run(t_rsautl *rsautl)
 	{
 		if (inkey_fd < 0)
 		{
-			ft_putendl_fd("ft_ssl: unable to load private key", STDERR_FILENO);
+			ft_dprintf(STDERR_FILENO, "ft_ssl: unable to load private key\n");
 			return (1);
 		}
 		if (!(data = get_data(inkey_fd, &rsautl->des, PEM_PRIVATE_HEADER, PEM_PRIVATE_FOOTER)))
@@ -72,6 +90,7 @@ int 				rsautl_command_run(t_rsautl *rsautl)
 		if (get_private_key_from_inkey(rsautl, data))
 			return (1);
 	}
+	ft_strdel(&data);
 	close(inkey_fd);
 	if (rsautl->out)
 		rsautl->fd[OUT] = open(rsautl->out, O_WRONLY | O_CREAT | O_TRUNC, 0644);
