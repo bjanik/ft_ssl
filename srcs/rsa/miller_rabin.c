@@ -177,8 +177,8 @@ int   initial_sieve_test(t_bn *n, int display)
     while (g_primes[++i])
     {
         bn_set_ui(den, g_primes[i]);
-        bn_mod_no_alloc(mod, n, den); // mod = n % den
-        if (bn_cmp_ui(mod, 0) == 0) // If mod == 0, den divides n so n is composite
+        bn_mod_no_alloc(mod, n, den);
+        if (bn_cmp_ui(mod, 0) == 0)
         {
           bn_clears(2, &mod, &den);
           return (1);
@@ -187,7 +187,7 @@ int   initial_sieve_test(t_bn *n, int display)
     }
     display ? ft_putchar_fd('.', STDERR_FILENO) : 0;
     bn_clears(2, &mod, &den);
-    return (0);  // n passed initial sieve test and might be prime
+    return (0);
 }
 
 int   miller_rabin(t_bn *n, int s, int display)
@@ -205,13 +205,13 @@ int   miller_rabin(t_bn *n, int s, int display)
         if (witness(a, n) == 1)
         {
             bn_clear(&a);
-            return (1); // n is composite 
+            return (1);
         }
         display ? ft_putchar_fd('+', STDERR_FILENO) : 0;
     }
     display ? ft_putchar_fd('\n', STDERR_FILENO) : 0;
     bn_clear(&a);
-    return (0); // n is prime (surely)
+    return (0);
 }
 
 int   witness(t_bn *a, t_bn *n)

@@ -59,7 +59,7 @@ int			set_subkeys(char **argv, t_des *des, int *index)
 
 	if (!argv[++(*index)])
 	{
-		ft_putendl_fd("ft_ssl: Key is undefined", STDERR_FILENO);
+		ft_dprintf(STDERR_FILENO, "ft_ssl: Key is undefined\n");
 		return (1);
 	}
 	des->opts |= DES_OPT_K;
@@ -76,10 +76,10 @@ int			set_subkeys(char **argv, t_des *des, int *index)
 
 static int	finalize_opts(t_des *des)
 {
-	if ((ft_strcmp(des->name, "des-ecb") && ft_strcmp(des->name, "des3-ecb"))
+	if (ft_strcmp(des->name, "des-ecb")
 			&& (des->opts & DES_OPT_K) && !(des->opts & DES_OPT_V))
 	{
-		ft_putendl_fd("ft_ssl: init vector undefined", STDERR_FILENO);
+		ft_dprintf(STDERR_FILENO, "ft_ssl: init vector undefined\n");
 		return (1);
 	}
 	if (des->opts & DES_OPT_A)

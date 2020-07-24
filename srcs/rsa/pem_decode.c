@@ -117,7 +117,7 @@ char            *get_pem_passphrase(const char *in, int decryption)
     if (prompt == NULL)
         return (NULL);
     pwd = ft_strdup(getpass(prompt));
-    if (decryption && pwd)
+    if (decryption || pwd == NULL)
         return (pwd);
     if (ft_strlen(pwd) < 4)
     {
@@ -140,7 +140,6 @@ static int          key_from_passphrase(t_des *des, const int decryption, const 
 {
     unsigned char   *hash;
     unsigned char   keys[4][8];
-    int             nb;
 
     if (pass == NULL)
     {
@@ -159,10 +158,9 @@ static int          key_from_passphrase(t_des *des, const int decryption, const 
         des->salt = (unsigned char *)malloc(8 * sizeof(unsigned char));
         cipher_to_string(des->init_vector, des->salt);
     }
-    nb = (ft_strchr(des->name, '3')) ? TRIPLE_DES : SINGLE_DES;
-    if (!(hash = pbkdf(des->password, des->salt, nb)))
+    if (!(hash = pbkdf(des->password, des->salt, SINGLE_DES)))
         return (1);
-    set_key(des, hash, keys, nb);
+    set_key(des, hash, keys, SINGLE_DES);
     ft_memdel((void**)&hash);
     des->init_vector = convert_input_to_block(des->salt);
     return (0);

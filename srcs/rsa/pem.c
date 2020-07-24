@@ -77,7 +77,7 @@ static uint32_t 	get_bn_len_encoding(t_bn *n)
 		len += 3;
 	else if (len <= 0xFFFFFF)
 		len += 4;
-	len++; // 0x02 byte value;
+	len++;
 	return (len);
 }
 
@@ -85,7 +85,7 @@ uint32_t	get_pem_data_len(t_rsa_data *rsa_data)
 {
 	uint32_t	data_len;
 
-	data_len = 3; // bytes sequences 0x2 0x1 0x0
+	data_len = 3;
 	data_len += get_bn_len_encoding(rsa_data->modulus);
 	data_len += get_bn_len_encoding(rsa_data->public_exp);
 	data_len += get_bn_len_encoding(rsa_data->private_exp);
@@ -102,7 +102,7 @@ uint32_t	get_pem_data_len(t_rsa_data *rsa_data)
 		data_len += 3;
 	else if (data_len <= 0xFFFFFF)
 		data_len += 4;
-	data_len++; // First byte 0x30
+	data_len++;
 	return (data_len);
 }
 

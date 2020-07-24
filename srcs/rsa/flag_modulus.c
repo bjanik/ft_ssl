@@ -3,6 +3,6 @@
 
 void	flag_modulus(t_bn *n, int fd)
 {
-	ft_putstr_fd("Modulus=", fd);
+	ft_dprintf(fd, "Modulus=");
 	display_bn(n);
 }

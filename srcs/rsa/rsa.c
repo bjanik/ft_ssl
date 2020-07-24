@@ -110,7 +110,6 @@ char			*get_data(const int fd, t_des **des, const char *header, const char *foot
 	return (data);
 }
 
-
 static void 		print_encryption_header(t_rsa *rsa, const int fd)
 {
 	char	*iv;

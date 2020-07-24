@@ -22,17 +22,20 @@ char	*get_password(int encryption)
 	{
 		pwd = ft_strdup(getpass("Enter DES decryption password:"));
 		if (!pwd)
-			ft_putendl_fd("ft_ssl: bad password read", STDERR_FILENO);
+			ft_dprintf(STDERR_FILENO, "ft_ssl: bad password read\n");
 	}
 	else
 	{
 		pwd = ft_strdup(getpass("Enter DES encryption password:"));
 		check_pwd = getpass("Verifying DES encryption password:");
 		if (!pwd || !check_pwd)
-			ft_putendl_fd("ft_ssl: bad password read", STDERR_FILENO);
+		{
+			ft_dprintf(STDERR_FILENO, "ft_ssl: bad password read");
+			ft_strdel(&pwd);
+		}
 		else if (ft_strcmp(pwd, check_pwd))
 		{
-			ft_putendl_fd("ft_ssl: Verify password failure", STDERR_FILENO);
+			ft_dprintf(STDERR_FILENO, "ft_ssl: Verify password failure\n");
 			ft_strdel(&pwd);
 		}
 	}

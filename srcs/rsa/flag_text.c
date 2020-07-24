@@ -11,8 +11,8 @@ static void    display_bn_flag_text(t_bn *n, int fd, const char *id)
         return ;
     pos = SIZE(n) - 1;
     printed = 0;
-    ft_putendl_fd(id, fd);
-    ft_putstr_fd("    ", fd);
+    ft_dprintf(fd, id);
+    ft_dprintf(fd, "    ");
     while (pos > -1)
     {
         limb_len = get_byte_number(n->num[pos]);
@@ -24,7 +24,7 @@ static void    display_bn_flag_text(t_bn *n, int fd, const char *id)
                 ft_putchar(':');
             printed++;
             if (printed % 15 == 0)
-                ft_putstr_fd("\n    ", fd);
+                ft_dprintf(fd, "\n    ");
             limb_len--;
         }
         pos--;
