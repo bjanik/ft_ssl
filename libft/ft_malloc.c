@@ -18,8 +18,8 @@ void	*ft_malloc(size_t size)
 
 	if (!(ptr = malloc(size)))
 	{
-		ft_putstr_fd("malloc failed", STDERR_FILENO);
-		exit(-1);
+		ft_dprintf(STDERR_FILENO, "malloc failed\n");
+		exit(EXIT_FAILURE);
 	}
 	return (ptr);
 }

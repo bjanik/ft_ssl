@@ -104,68 +104,6 @@ int      parse_decoded_data(t_rsa_data *rsa_data,
     return (0);
 }
 
-char            *get_pem_passphrase(const char *in, int decryption)
-{
-    char    *pwd = NULL;
-    char    *check_pwd = NULL;
-    char    *prompt;
-
-    if (decryption)
-        prompt = ft_strnjoin("Enter pass phrase for ", 2, in, ":");
-    else
-        prompt = ft_strdup("Enter PEM pass phrase:");
-    if (prompt == NULL)
-        return (NULL);
-    pwd = ft_strdup(getpass(prompt));
-    if (decryption || pwd == NULL)
-        return (pwd);
-    if (ft_strlen(pwd) < 4)
-    {
-        ft_dprintf(STDERR_FILENO, "ft_ssl: password too small, need at least 4 bytes\n");
-        ft_strdel(&pwd);
-        ft_strdel(&prompt);
-        return (NULL);
-    }
-    if (decryption == 0)
-        check_pwd = getpass("Verifying - Enter PEM pass phrase:");
-    if (pwd == NULL || check_pwd == NULL)
-        ft_dprintf(STDERR_FILENO, "ft_ssl: bad PEM password read\n");
-    else if (ft_strcmp(check_pwd, pwd) != 0)
-        ft_dprintf(STDERR_FILENO, "ft_ssl: Verify password failure\n");
-    ft_strdel(&check_pwd);
-    return (pwd);
-}
-
-static int          key_from_passphrase(t_des *des, const int decryption, const char *in, const char *pass)
-{
-    unsigned char   *hash;
-    unsigned char   keys[4][8];
-
-    if (pass == NULL)
-    {
-        if ((des->password = get_pem_passphrase(in, decryption)) == NULL)
-            return (1);
-    }
-    else
-        des->password = ft_strdup(pass);
-    if (des->init_vector == 0)
-    {
-        if (get_salt(des))
-            return (1);
-    }
-    else
-    {
-        des->salt = (unsigned char *)malloc(8 * sizeof(unsigned char));
-        cipher_to_string(des->init_vector, des->salt);
-    }
-    if (!(hash = pbkdf(des->password, des->salt, SINGLE_DES)))
-        return (1);
-    set_key(des, hash, keys, SINGLE_DES);
-    ft_memdel((void**)&hash);
-    des->init_vector = convert_input_to_block(des->salt);
-    return (0);
-}
-
 unsigned char       *private_key_decryption(t_des *des,
                                             unsigned char *data,
                                             uint32_t *data_len,
@@ -191,7 +129,7 @@ unsigned char       *private_key_decryption(t_des *des,
                   decrypted_data[*data_len - 1]))
         return (NULL);
     *data_len = *data_len - decrypted_data[*data_len - 1];
-    if ((decrypted_data_no_pad = (unsigned char*)malloc(*data_len)) == NULL)
+    if ((decrypted_data_no_pad = (unsigned char*)ft_malloc(*data_len)) == NULL)
         return (NULL);
     ft_memcpy(decrypted_data_no_pad, decrypted_data, *data_len);
     ft_memdel((void**)&decrypted_data);

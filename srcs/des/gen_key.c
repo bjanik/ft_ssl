@@ -77,8 +77,8 @@ int						get_hex_from_str(char *str_key, uint64_t *key)
 			val = full_key[len] - 87;
 		else
 		{
-			ft_putendl_fd("ft_ssl: Invalid key/iv: non-hex digit",
-							STDERR_FILENO);
+			ft_dprintf(STDERR_FILENO,
+					   "ft_ssl: Invalid key/iv: non-hex digit\n");
 			return (1);
 		}
 		*key = (*key << 4) | val;

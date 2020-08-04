@@ -1,53 +1,13 @@
 #include "bn.h"
 #include "ft_ssl.h"
 
-t_rsa				*rsa_init(void)
-{
-	t_rsa	*rsa;
-
-	if ((rsa = (t_rsa*)malloc(sizeof(t_rsa))) == NULL)
-		return (NULL);
-	rsa->inform = NULL;
-	rsa->outform = NULL;
-	rsa->in = NULL;
-	rsa->out = NULL;
-	rsa->fd[IN] = STDIN_FILENO;
-	rsa->fd[OUT] = STDOUT_FILENO;
-	rsa->passin = NULL;
-	rsa->passout = NULL;
-	rsa->opts = 0;
-	rsa->des = NULL;
-	return (rsa);
-}
-
-void				rsa_clear(t_rsa *rsa)
-{
-	if (rsa)
-	{
-		ft_strdel(&rsa->in);
-		ft_strdel(&rsa->out);
-		ft_strdel(&rsa->inform);
-		ft_strdel(&rsa->outform);
-		ft_strdel(&rsa->passin);
-		ft_strdel(&rsa->passout);
-		reset_des(rsa->des);
-		bn_clear(&rsa->rsa_data.modulus);
-		bn_clear(&rsa->rsa_data.private_exp);
-		bn_clear(&rsa->rsa_data.public_exp);
-		bn_clear(&rsa->rsa_data.prime1);
-		bn_clear(&rsa->rsa_data.prime2);
-		bn_clear(&rsa->rsa_data.exponent1);
-		bn_clear(&rsa->rsa_data.exponent2);
-		bn_clear(&rsa->rsa_data.coef);
-	}
-	ft_memdel((void**)&rsa);
-}
-
 static int 			init_rsa_data_decryption(t_des **des, char *line)
 {
 	char	**tab;
 	char	**algo_iv;
+	int 	ret;
 
+	ret = 0;
 	if ((tab = ft_strsplit(line, ':')) == NULL)
 		return (1);
 	if ((algo_iv = ft_strsplit(tab[1], ',')) == NULL)
@@ -59,20 +19,14 @@ static int 			init_rsa_data_decryption(t_des **des, char *line)
 		*des = init_des("des-ecb", g_commands[6].des_mode);
 	else
 	{
-		ft_free_string_tab(&tab);
-		ft_free_string_tab(&algo_iv);
 		ft_dprintf(STDERR_FILENO, "ft_ssl: encryption algorithm not known\n");
-		return (1);
+		ret = 1;
 	}
-	if (get_hex_from_str(algo_iv[1], &(*des)->init_vector))
-	{
-		ft_free_string_tab(&tab);
-		ft_free_string_tab(&algo_iv);
-		return (1);
-	}
+	if (ret == 0 && get_hex_from_str(algo_iv[1], &(*des)->init_vector))
+		ret = 1;
 	ft_free_string_tab(&tab);
 	ft_free_string_tab(&algo_iv);
-	return (0);
+	return (ret);
 }
 
 char			*get_data(const int fd, t_des **des, const char *header, const char *footer)
@@ -110,60 +64,22 @@ char			*get_data(const int fd, t_des **des, const char *header, const char *foot
 	return (data);
 }
 
-static void 		print_encryption_header(t_rsa *rsa, const int fd)
-{
-	char	*iv;
-
-	if ((rsa->opts & RSA_DES) && (rsa->opts & RSA_PUBOUT) == 0)
-	{
-		ft_dprintf(fd, "%s\n%s: DES-CBC,", PROC_TYPE, DEK_INFO);
-		iv = ft_itoa_base_llu(convert_input_to_block(rsa->des->salt), "0123456789ABCDEF");
-		ft_dprintf(fd, "%s\n\n", iv);
-		ft_strdel(&iv);
-	}
-}
-
-static void			print_rsa_key(t_rsa *rsa,
-								  char *data,
-								  const int fd,
-								  const int rsa_opts)
-{
-	int 			i;
-	int 			len;
-	int 			public;
-
-	len = ft_strlen(data);
-	i = 0;
-	public = 0;
-	ft_dprintf(STDERR_FILENO, "writing RSA key\n");
-	if (rsa->opts & RSA_PUBIN || rsa->opts & RSA_PUBOUT)
-		public = 1;
-	ft_dprintf(fd, "%s\n", public ? PEM_PUBLIC_HEADER : PEM_PRIVATE_HEADER);
-	print_encryption_header(rsa, fd);
-	while (len > 0)
-	{
-		if (len > 64)
-			write(fd, data + i, 64);
-		else
-			write(fd, data + i, len);
-		i += 64;
-		len -= 64;
-		write(fd, "\n", 1);
-	}
-	ft_dprintf(fd, "%s\n", public ? PEM_PUBLIC_FOOTER : PEM_PRIVATE_FOOTER);
-}
-
 static char 		*create_public_key(t_rsa *rsa)
 {
 	unsigned char	*public_data = NULL;
 	char			*public_data_encoded;
 	uint32_t		public_data_len, total_len;
 
-    public_data_len = get_public_data_len(rsa->rsa_data.modulus, rsa->rsa_data.public_exp);
-    total_len = public_data_len + get_byte_number(public_data_len) + (public_data_len >= 0x80) + 1;
+    public_data_len = get_public_data_len(rsa->rsa_data.modulus,
+    									  rsa->rsa_data.public_exp);
+    total_len = public_data_len + get_byte_number(public_data_len)
+    							+ (public_data_len >= 0x80) + 1;
     if ((public_data = (unsigned char*)malloc(total_len)) == NULL)
         return (NULL);
-    fill_pem_public_data(public_data, public_data_len, rsa->rsa_data.modulus, rsa->rsa_data.public_exp);
+    fill_pem_public_data(public_data,
+    					 public_data_len,
+    					 rsa->rsa_data.modulus,
+    					 rsa->rsa_data.public_exp);
     public_data_encoded = base64_encode_data(public_data, public_data_len);
     ft_memdel((void**)&public_data);
     return (public_data_encoded);

@@ -165,15 +165,12 @@ void    bn_mod_no_alloc(t_bn *r, t_bn *n, t_bn *d)
 
 int   initial_sieve_test(t_bn *n, int display)
 {
-    t_bn  *mod = bn_init_size(64);
-    t_bn  *den = bn_init_size(64);
+    t_bn  *mod;
+    t_bn  *den;
     int   i = -1;
 
-    if (mod == NULL || den == NULL)
-    {
-        bn_clears(2, &mod, &den);
-        return (1);
-    }
+    mod = bn_init_size(64);
+    den = bn_init_size(64);
     while (g_primes[++i])
     {
         bn_set_ui(den, g_primes[i]);
@@ -214,40 +211,47 @@ int   miller_rabin(t_bn *n, int s, int display)
     return (0);
 }
 
+static void init_bns(t_bn *bns[], t_bn *n)
+{
+    bns[0] = bn_clone(n);
+    bns[1] = bn_clone(bns[0]);
+    bns[2] = bn_init_size(SIZE(n) * 64);
+    bns[3] = bn_init_size(SIZE(n) * 64);
+    bns[4] = bn_init_size(SIZE(n) * 64);
+    bn_sub_ui(bns[0], n, 1);
+    bn_copy(bns[1], bns[0]);
+}
+
 int   witness(t_bn *a, t_bn *n)
 {
-    t_bn    *n_1;
-    t_bn    *u;
-    t_bn    *x, *x_sq, *xi;
-    int     t = 0, ret = 0;
+    t_bn    *bns[5];
+    int     t;
+    int     ret;
+    int     i;
 
-    n_1 = bn_clone(n);
-    u = bn_clone(n_1);
-    x = bn_init_size(SIZE(n) * 64);
-    x_sq = bn_init_size(SIZE(n) * 64);
-    xi = bn_init_size(SIZE(n) * 64);
-    bn_sub_ui(n_1, n, 1);
-    bn_copy(u, n_1);
+    init_bns(bns, n);
     t = 0;
-    while (IS_ODD(u->num[0]) == 0)
+    ret = 0;
+    while (IS_ODD(bns[1]->num[0]) == 0)
     {
-        bn_shift_right(u, 1);
+        bn_shift_right(bns[1], 1);
         t++;
     }
-    bn_mod_pow(x, a, u, n); // x = a^n % n
-    for (int i = 1; i <= t; i++)
+    bn_mod_pow(bns[2], a, bns[1], n);
+    i = 0;
+    while (++i <= t)
     {
-        bn_mul(x_sq, x, x); // x_sq = x * x
-        bn_mod(xi, x_sq, n); // xi = x_sq % n
-        if (!bn_cmp_ui(xi, 1) && bn_cmp_ui(x, 1) && bn_cmp(x, n_1))
+        bn_mul(bns[3], bns[2], bns[2]);
+        bn_mod(bns[4], bns[3], n);
+        if (!bn_cmp_ui(bns[4], 1) && bn_cmp_ui(bns[2], 1) && bn_cmp(bns[2], bns[0]))
         {
-            bn_clears(5, &n_1, &u, &x, &xi, &x_sq);
+            bn_clears(5, &bns[0], &bns[1], &bns[2], &bns[3], &bns[4]);
             return (1);
         }
-        bn_copy(x, xi); // x = xi;
+        bn_copy(bns[2], bns[4]); // x = xi;
     }
-    if (bn_cmp_ui(xi, 1)) // x != 1
+    if (bn_cmp_ui(bns[4], 1)) // xi != 1
         ret = 1;
-    bn_clears(5, &n_1, &u, &x, &xi, &x_sq);
+    bn_clears(5, &bns[0], &bns[1], &bns[2], &bns[3], &bns[4]);
     return (ret);
 }

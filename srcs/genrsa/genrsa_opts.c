@@ -1,10 +1,5 @@
 #include "ft_ssl.h"
 
-struct			s_genrsa_opts
-{
-	char		*opt;
-	int			(*opt_func)(char **argv, t_genrsa *genrsa, int *index);
-};
 
 static int 	set_genrsa_output(char **argv, t_genrsa *genrsa, int *index)
 {
@@ -19,7 +14,8 @@ static int 	finalize_genrsa_opts(t_genrsa *genrsa)
 {
 	if (genrsa->out)
 	{
-		if ((genrsa->fd[OUT] = open(genrsa->out, O_CREAT | O_WRONLY | O_TRUNC, 0644)) < 0)
+		if ((genrsa->fd[OUT] = open(genrsa->out, O_CREAT | O_WRONLY | O_TRUNC,
+									0644)) < 0)
 			return (1);	
 	}
 	return (0);
@@ -32,7 +28,8 @@ const struct s_genrsa_opts	g_genrsa_opts[] = {
 
 int 	genrsa_opts(char **argv, t_genrsa *genrsa)
 {
-	int i, j;
+	int i;
+	int j;
 
 	i = 1;
 	while (argv[++i])

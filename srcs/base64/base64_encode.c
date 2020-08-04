@@ -68,7 +68,8 @@ void	base64_encode(unsigned char in[], int ret, int fd)
 
 char 		*base64_encode_data(unsigned char *data, uint32_t data_len)
 {
-	uint32_t 		offset, data_encoded_len;
+	uint32_t 		offset;
+	uint32_t 		data_encoded_len;
 	char 			*data_encoded;
 
 	if ((data_encoded = (char*)ft_memalloc(data_len * 2)) == NULL)

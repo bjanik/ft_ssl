@@ -19,7 +19,8 @@ uint32_t 		get_public_data_len(t_bn *modulus, t_bn *public_exp)
 	public_exp_len = bn_len(public_exp);
 	len = public_exp_len + get_byte_number(public_exp_len) + 1;
 	len += (bn_get_bit_number(public_exp) % 8 == 0);
-	len += modulus_len + get_byte_number(modulus_len) + (modulus_len >= 0x80) + 1;
+	len += modulus_len + get_byte_number(modulus_len)
+					   + (modulus_len >= 0x80) + 1;
 	len += (bn_get_bit_number(modulus) % 8 == 0);
 	len += get_byte_number(len) + (len >= 0x80) + 1;
 	len++;
@@ -103,6 +104,8 @@ int 			retrieve_data_from_public_key(t_rsa_data *rsa_data, char *public_data)
     										 public_data_len);
     if (public_data_decoded == NULL)
         return (1);
-    ret = parse_decoded_public_data(rsa_data, public_data_decoded, public_data_decoded_len);
+    ret = parse_decoded_public_data(rsa_data,
+    								public_data_decoded,
+    								public_data_decoded_len);
     return (ret);
 }

@@ -133,9 +133,11 @@ static void	fill_pem_private_data(t_rsa_data *rsa, unsigned char *data, uint32_t
 
 int 		pem_output(char *data_encoded, int fd)
 {
-	uint32_t 		offset = 0;
-	size_t 			data_encoded_len = ft_strlen(data_encoded);
+	uint32_t 		offset;
+	size_t 			data_encoded_len;
 
+	offset = 0;
+	data_encoded_len = ft_strlen(data_encoded);
 	ft_putendl_fd(PEM_PRIVATE_HEADER, fd);
 	while (data_encoded_len > 64)
 	{

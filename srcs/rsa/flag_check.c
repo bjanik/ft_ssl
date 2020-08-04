@@ -36,35 +36,36 @@ static int 		check_primality(t_rsa_data rsa_data)
 	return (ret);
 }
 
+static void 	init_bns(t_bn *bns[], t_rsa_data rsa_data, const uint64_t size)
+{
+	bns[0]= bn_clone(rsa_data.prime1);
+	bns[1]= bn_clone(rsa_data.prime2);
+	bns[2]= bn_init_size(size + 1);
+	bns[3]= bn_init_size(size + 1);
+	bns[4]= bn_init_size(size + 1);
+	bn_sub_ui(bns[0], bns[0], 1);
+	bn_sub_ui(bns[1], bns[1], 1);
+	bn_mul(bns[2], bns[0], bns[1]);
+}
 
 static int 		check_exponents(t_rsa_data rsa_data, const uint64_t size)
 {
-	t_bn *prime1_1, *prime2_1, *phi, *private_exp, *s, *gcd;
+	t_bn	*bns[5];
 
-	prime1_1 = bn_clone(rsa_data.prime1);
-	prime2_1 = bn_clone(rsa_data.prime2);
-	phi = bn_init_size(size + 1);
-	gcd = bn_init_size(size + 1);
-	private_exp = bn_init_size(size + 1);
-	s = bn_init_size(size + 1);
-	if (!prime1_1 || !prime2_1 || !phi || !gcd || !private_exp || !s)
-	{
-		bn_clears(6, &prime1_1, &prime2_1, &phi, &gcd, &private_exp, &s);
-		return (1);
-	}
-	bn_sub_ui(prime1_1, prime1_1, 1);
-	bn_sub_ui(prime2_1, prime2_1, 1);
-	bn_mul(phi, prime1_1, prime2_1);
-	if (bn_modinv(rsa_data.public_exp, phi, private_exp) == 1)
+	init_bns(bns, rsa_data, size);
+	if (bn_modinv(rsa_data.public_exp, bns[2], bns[4]) == 1)
 	{
 		ft_dprintf(STDERR_FILENO, "GCD is not 1\n");
+		bn_clears(5, &bns[0], &bns[1], &bns[2], &bns[3], &bns[4]);
 		return (1);
 	}
-	if (bn_cmp(private_exp, rsa_data.private_exp) != 0)
+	if (bn_cmp(bns[4], rsa_data.private_exp) != 0)
 	{
 		ft_dprintf(STDERR_FILENO, "Values of private exponent differ\n");
+		bn_clears(5, &bns[0], &bns[1], &bns[2], &bns[3], &bns[4]);
 		return (1);
 	}
+	bn_clears(5, &bns[0], &bns[1], &bns[2], &bns[3], &bns[4]);
 	return (0);
 }
 

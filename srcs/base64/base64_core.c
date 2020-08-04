@@ -48,7 +48,8 @@ static int	output(t_base64 *base, unsigned char buf[], int len, int ret)
 	{
 		base64_encode(base->buffer, len, base->fd[OUT]);
 		if (len > BUF_SIZE)
-			ft_memcpy(buf, base->buffer + ret - len + BUF_SIZE, len - BUF_SIZE);
+			ft_memcpy(buf, base->buffer + ret - len + BUF_SIZE,
+					  len - BUF_SIZE);
 		len = (len > BUF_SIZE) ? len - BUF_SIZE : 0;
 	}
 	return (len);
@@ -69,7 +70,8 @@ int			base64_core(char **argv, t_base64 *base)
 		len = 0;
 		while ((ret = read(base->fd[IN], base->buffer, BUF_SIZE)) > 0)
 		{
-			!(len + ret <= BUF_SIZE) ? ft_memcpy(buf + len, base->buffer, ret) :
+			!(len + ret <= BUF_SIZE) ? 
+						ft_memcpy(buf + len, base->buffer, ret) :
 						ft_memcpy(buf + len, base->buffer, BUF_SIZE - len);
 			len = output(base, buf, len, ret);
 		}

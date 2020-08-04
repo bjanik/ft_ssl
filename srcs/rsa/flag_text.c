@@ -4,15 +4,15 @@
 static void    display_bn_flag_text(t_bn *n, int fd, const char *id)
 {
     int64_t     pos;
-    uint32_t    limb_len, printed;
+    uint32_t    limb_len;
+    uint32_t    printed;
     uint8_t     val;
 
     if (SIZE(n) == 0)
         return ;
     pos = SIZE(n) - 1;
     printed = 0;
-    ft_dprintf(fd, id);
-    ft_dprintf(fd, "    ");
+    ft_dprintf(fd, "%s\n    ", id);
     while (pos > -1)
     {
         limb_len = get_byte_number(n->num[pos]);
@@ -20,11 +20,9 @@ static void    display_bn_flag_text(t_bn *n, int fd, const char *id)
         {
             val = (n->num[pos] >> (limb_len - 1) * 8) & 0xFF;
             ft_printf("%02hhx", val);
-            if (pos != 0 || limb_len != 1)
-                ft_putchar(':');
+            (pos != 0 || limb_len != 1) ? ft_putchar(':') : 0;
             printed++;
-            if (printed % 15 == 0)
-                ft_dprintf(fd, "\n    ");
+            (printed % 15 == 0) ? ft_dprintf(fd, "\n    ") : 0;
             limb_len--;
         }
         pos--;
@@ -35,14 +33,17 @@ static void    display_bn_flag_text(t_bn *n, int fd, const char *id)
 void    flag_text(t_rsa *rsa)
 {
     display_bn_flag_text(rsa->rsa_data.modulus, rsa->fd[OUT], "modulus:");
-    ft_putendl_fd("publicExponent: 65537 (0x10001)", rsa->fd[OUT]);
+    ft_dprintf(rsa->fd[OUT], "publicExponent: 65537 (0x10001)\n");
     if ((rsa->opts & RSA_PUBIN) == 0)
     {
-        display_bn_flag_text(rsa->rsa_data.private_exp, rsa->fd[OUT], "privateExponent:");
+        display_bn_flag_text(rsa->rsa_data.private_exp, rsa->fd[OUT],
+                             "privateExponent:");
         display_bn_flag_text(rsa->rsa_data.prime1, rsa->fd[OUT], "prime1:");
-        display_bn_flag_text(rsa->rsa_data.prime2, rsa->fd[OUT], "prime2");
-        display_bn_flag_text(rsa->rsa_data.exponent1, rsa->fd[OUT], "exponent1:");
-        display_bn_flag_text(rsa->rsa_data.exponent2, rsa->fd[OUT], "exponent2:");
+        display_bn_flag_text(rsa->rsa_data.prime2, rsa->fd[OUT], "prime2:");
+        display_bn_flag_text(rsa->rsa_data.exponent1, rsa->fd[OUT],
+                             "exponent1:");
+        display_bn_flag_text(rsa->rsa_data.exponent2, rsa->fd[OUT],
+                             "exponent2:");
         display_bn_flag_text(rsa->rsa_data.coef, rsa->fd[OUT], "coefficient:");
     }
 }

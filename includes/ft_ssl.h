@@ -126,6 +126,7 @@ typedef struct			s_des_opts
 }						t_des_opts;
 
 
+
 typedef struct 			s_rsa_data
 {
 	t_bn				*modulus;
@@ -145,6 +146,12 @@ typedef struct 			s_genrsa
 	int					numbits;
 	t_rsa_data 			rsa_data;
 }						t_genrsa;
+
+typedef struct			s_genrsa_opts
+{
+	char				*opt;
+	int					(*opt_func)(char **argv, t_genrsa *genrsa, int *index);
+}						t_genrsa_opts;
 
 typedef struct 			s_rsa
 {
@@ -241,7 +248,6 @@ int						commands_usage(char *command);
 uint32_t				rotleft(uint32_t x, uint32_t n);
 uint32_t				rotright(uint32_t x, uint32_t n);
 uint64_t				shift_left(uint32_t key, uint8_t x);
-// unsigned char			*itoua_base_llu(uint64_t value, char *base);
 
 
 /*
@@ -411,6 +417,11 @@ unsigned char          	*private_key_encryption(t_des *des,
 												uint32_t *data_len,
 												const char *in,
 												const char *pass);
+int         	 		key_from_passphrase(t_des *des,
+											const int decryption,
+											const char *in,
+											const char *pass);
+
 void					flag_modulus(t_bn *n, int fd);
 void					flag_text(t_rsa *rsa);
 int						flag_check(t_rsa_data rsa_data);
@@ -420,6 +431,12 @@ void					fill_pem_public_data(unsigned char *public_data,
 								 			 t_bn *modulus,
 								 			 t_bn *public_exp);
 
+
+void 					print_encryption_header(t_rsa *rsa, const int fd);
+void					print_rsa_key(t_rsa *rsa,
+									  char *data,
+									  const int fd,
+									  const int rsa_opts);
 
 /*
 RSAUTL

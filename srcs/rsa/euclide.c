@@ -5,7 +5,7 @@
 #define IS_EVEN(x) (((x) & 1) == 0)
 #define SWAP(x, y) (x ^= y, y ^= x, x ^= y)
 
-void    bn_gcd(t_bn *gcd, t_bn *x, t_bn *y)
+void    gcd(t_bn *gcd, t_bn *x, t_bn *y)
 {
     bn_copy(gcd, y);
     while (bn_cmp_ui(x, 0) > 0)
@@ -16,44 +16,51 @@ void    bn_gcd(t_bn *gcd, t_bn *x, t_bn *y)
     }
 }
 
+static void init_bns(t_bn *bns[], t_bn *u, t_bn *v)
+{
+    bns[0] = bn_init_size(SIZE(v) * 64);
+    bns[1] = bn_clone(u);
+    bns[2] = bn_init_size(SIZE(v) * 64);
+    bns[3] = bn_clone(v);
+    bns[4] = bn_init_size(SIZE(v) * 64);
+    bns[5] = bn_init_size(SIZE(v) * 64);
+    bns[6] = bn_init_size(SIZE(v) * 64);
+    bn_set_ui(bns[0], 1);
+}
+
+static void process(t_bn *bns[])
+{
+    bn_div(bns[6], bns[5], bns[1], bns[3]);
+    bn_mul(bns[4], bns[6], bns[2]);
+    bn_add(bns[4], bns[4], bns[0]);
+    bn_copy(bns[0], bns[2]);
+    bn_copy(bns[2], bns[4]);
+    bn_copy(bns[1], bns[3]);
+    bn_copy(bns[3], bns[5]);
+}
+
 
 int        bn_modinv(t_bn *u, t_bn *v, t_bn *modinv)
 {
-    t_bn    *u1, *gcd, *v1, *v3, *t1, *t3, *q;
-    int     iter, ret;
+    t_bn    *bns[7];
+    int     iter;
+    int     ret;
 
     ret = 0;
-    u1 = bn_init_size(SIZE(v) * 64);
-    gcd = bn_clone(u);
-    v1 = bn_init_size(SIZE(v) * 64);
-    v3 = bn_clone(v);
-    t1 = bn_init_size(SIZE(v) * 64);
-    t3 = bn_init_size(SIZE(v) * 64);
-    q = bn_init_size(SIZE(v) * 64);
-    if (!u1 || !gcd || !v1 || !v3 || !t1 || !t3 || !q)
-    {
-        bn_clears(7, &u1, &gcd, &v1, &v3, &t1, &t3, &q);
-        return (1);
-    }
-    bn_set_ui(u1, 1);
     iter = 1;
-    while (bn_cmp_ui(v3, 0))
+    init_bns(bns, u, v);
+    while (bn_cmp_ui(bns[3], 0))
     {
-        bn_div(q, t3, gcd, v3);
-        bn_mul(t1, q, v1);
-        bn_add(t1, t1, u1);
-        bn_copy(u1, v1);
-        bn_copy(v1, t1);
-        bn_copy(gcd, v3);
-        bn_copy(v3, t3);
+        process(bns);
         iter = -iter;
     }
-    if (bn_cmp_ui(gcd, 1))
+    if (bn_cmp_ui(bns[1], 1))
         ret = 1;
     else if (iter < 0)
-        bn_sub(modinv, v, u1);
+        bn_sub(modinv, v, bns[0]);
     else
-        bn_copy(modinv, u1);
-    bn_clears(7, &u1, &gcd, &v1, &v3, &t1, &t3, &q);
+        bn_copy(modinv, bns[0]);
+    bn_clears(7, &bns[0], &bns[1], &bns[2], &bns[3],
+              &bns[4], &bns[5], &bns[6]);
     return (ret);
 }

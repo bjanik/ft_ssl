@@ -87,12 +87,13 @@ unsigned char    *base64_decode_data(uint32_t *decoded_data_len,
 
     if (data == NULL)
         return (NULL);
-    if ((decoded_data = (unsigned char *)malloc(data_len * sizeof(char)))== NULL)
+    if (!(decoded_data = (unsigned char *)malloc(data_len * sizeof(char))))
         return (NULL);
     offset = 0;
     while (offset < data_len)
     {
-        ret = decode((unsigned char*)data + offset, decoded_data + *decoded_data_len, 4);
+        ret = decode((unsigned char*)data + offset,
+        			 decoded_data + *decoded_data_len, 4);
         *decoded_data_len += ret;
         offset += 4;
     }

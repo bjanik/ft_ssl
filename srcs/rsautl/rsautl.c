@@ -1,55 +1,28 @@
 #include "bn.h"
 #include "ft_ssl.h"
 
-t_rsautl	*rsautl_init(void)
-{
-	t_rsautl 	*rsautl;
-
-	rsautl = (t_rsautl*)malloc(sizeof(t_rsautl));
-	if (rsautl == NULL)
-		return (NULL);
-	rsautl->in = NULL;
-	rsautl->out = NULL;
-	rsautl->inkey = NULL;
-	rsautl->fd[IN] = STDIN_FILENO;
-	rsautl->fd[OUT] = STDOUT_FILENO;
-	rsautl->opts = 0;
-	rsautl->des = NULL;
-	return (rsautl);
-}
-
-void	rsautl_clear(t_rsautl *rsautl)
-{
-	ft_strdel(&rsautl->in);
-	ft_strdel(&rsautl->out);
-	ft_strdel(&rsautl->inkey);
-	reset_des(rsautl->des);
-	bn_clear(&rsautl->rsa_data.modulus);
-	bn_clear(&rsautl->rsa_data.private_exp);
-	bn_clear(&rsautl->rsa_data.public_exp);
-	bn_clear(&rsautl->rsa_data.prime1);
-	bn_clear(&rsautl->rsa_data.prime2);
-	bn_clear(&rsautl->rsa_data.exponent1);
-	bn_clear(&rsautl->rsa_data.exponent2);
-	bn_clear(&rsautl->rsa_data.coef);
-	ft_memdel((void**)&rsautl);
-}
-
 static int 				get_private_key_from_inkey(t_rsautl *rsautl, char *data)
 {
 	unsigned char 	*raw_data;
-	uint32_t		raw_data_len = 0;
-	int 			ret = 0;
+	uint32_t		raw_data_len;
+	int 			ret;
 
-	raw_data = base64_decode_data(&raw_data_len, ft_strdup(data), ft_strlen(data));
+	raw_data_len = 0;
+	ret = 0;
+	raw_data = base64_decode_data(&raw_data_len, ft_strdup(data),
+								  ft_strlen(data));
 	if (raw_data == NULL)
 		return (1);
 	if (rsautl->des)
 	{
-		if ((raw_data = private_key_decryption(rsautl->des, raw_data, &raw_data_len, rsautl->in, NULL)) == NULL)
+		if ((raw_data = private_key_decryption(rsautl->des,
+											   raw_data,
+											   &raw_data_len,
+											   rsautl->in, NULL)) == NULL)
 			return (1);
 	}
-    ret = parse_decoded_data(&rsautl->rsa_data, raw_data, raw_data_len, rsautl->opts);
+    ret = parse_decoded_data(&rsautl->rsa_data, raw_data, raw_data_len,
+    					  	 rsautl->opts);
     ft_strdel((char**)&raw_data);
     return (ret);
 }
