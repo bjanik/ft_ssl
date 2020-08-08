@@ -4,29 +4,24 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-// #define ABS(x) ((x > 0) ? x : -x)
-// #define SIZE(n) (ABS(n->size))
-
-#define IS_ODD(x) ((x) & 1)
-
 uint64_t g_primes[] = {
-    2,      3,      5,      7,     11,     13,     17,     19,     23,     29,
-     31,     37,     41,     43,     47,     53,     59,     61,     67,     71,
-     73,     79,     83,     89,     97,    101,    103,    107,    109,    113,
-    127,    131,    137,    139,    149,    151,    157,    163,    167,    173,
-    179,    181,    191,    193,    197,    199,    211,    223,    227,    229,
-    233,    239,    241,    251,    257,    263,    269,    271,    277,    281,
-    283,    293,    307,    311,    313,    317,    331,    337,    347,    349,
-    353,    359,    367,    373,    379,    383,    389,    397,    401,    409,
-    419,    421,    431,    433,    439,    443,    449,    457,    461,    463,
-    467,    479,    487,    491,    499,    503,    509,    521,    523,    541,
-    547,    557,    563,    569,    571,    577,    587,    593,    599,    601,
-    607,    613,    617,    619,    631,    641,    643,    647,    653,    659,
-    661,    673,    677,    683,    691,    701,    709,    719,    727,    733,
-    739,    743,    751,    757,    761,    769,    773,    787,    797,    809,
-    811,    821,    823,    827,    829,    839,    853,    857,    859,    863,
-    877,    881,    883,    887,    907,    911,    919,    929,    937,    941,
-    947,    953,    967,    971,    977,    983,    991,    997,   1009,   1013,
+	2,      3,      5,      7,     11,     13,     17,     19,     23,     29,
+	 31,     37,     41,     43,     47,     53,     59,     61,     67,     71,
+	 73,     79,     83,     89,     97,    101,    103,    107,    109,    113,
+	127,    131,    137,    139,    149,    151,    157,    163,    167,    173,
+	179,    181,    191,    193,    197,    199,    211,    223,    227,    229,
+	233,    239,    241,    251,    257,    263,    269,    271,    277,    281,
+	283,    293,    307,    311,    313,    317,    331,    337,    347,    349,
+	353,    359,    367,    373,    379,    383,    389,    397,    401,    409,
+	419,    421,    431,    433,    439,    443,    449,    457,    461,    463,
+	467,    479,    487,    491,    499,    503,    509,    521,    523,    541,
+	547,    557,    563,    569,    571,    577,    587,    593,    599,    601,
+	607,    613,    617,    619,    631,    641,    643,    647,    653,    659,
+	661,    673,    677,    683,    691,    701,    709,    719,    727,    733,
+	739,    743,    751,    757,    761,    769,    773,    787,    797,    809,
+	811,    821,    823,    827,    829,    839,    853,    857,    859,    863,
+	877,    881,    883,    887,    907,    911,    919,    929,    937,    941,
+	947,    953,    967,    971,    977,    983,    991,    997,   1009,   1013,
    1019,   1021,   1031,   1033,   1039,   1049,   1051,   1061,   1063,   1069,
    1087,   1091,   1093,   1097,   1103,   1109,   1117,   1123,   1129,   1151,
    1153,   1163,   1171,   1181,   1187,   1193,   1201,   1213,   1217,   1223,
@@ -138,120 +133,129 @@ uint64_t g_primes[] = {
 
 void    bn_mod_no_alloc(t_bn *r, t_bn *n, t_bn *d)
 {
-    t_bn    *cr = NULL;
+	t_bn    *cr;
+	int64_t i;
 
-    if (bn_cmp(n, d) < 0)
-    {
-        if (r != n)
-            bn_copy(r, n);
-        return;
-    }
-    cr = bn_clone(d);
-    bn_set_zero(r);
-    for (int64_t i = SIZE(n) * 64 - 1; i >= 0; i--)
-    {
-        bn_shift_left(r, 1);
-        r->num[0] ^= bn_get_bit(n, i);
-        if (SIZE(r) == 0 && r->num[0] > 0)
-            INC_SIZE(r);
-        if (SIZE(r) > r->alloc)
-            bn_realloc(r);
-        bn_copy(cr, r);
-        if (bn_cmp(r, d) >= 0)
-            bn_sub(r, cr, d);
-    }
-    bn_clear(&cr);
+	if (bn_cmp(n, d) < 0)
+	{
+		if (r != n)
+			bn_copy(r, n);
+		return;
+	}
+	cr = bn_clone(d);
+	bn_set_zero(r);
+	i = SIZE(n) * 64;
+	while (--i >= 0)
+	{
+		bn_shift_left(r, 1);
+		r->num[0] ^= bn_get_bit(n, i);
+		if (SIZE(r) == 0 && r->num[0] > 0)
+			INC_SIZE(r);
+		if (SIZE(r) > r->alloc)
+			bn_realloc(r);
+		bn_copy(cr, r);
+		if (bn_cmp(r, d) >= 0)
+			bn_sub(r, cr, d);
+	}
+	bn_clear(&cr);
 }
 
 int   initial_sieve_test(t_bn *n, int display)
 {
-    t_bn  *mod;
-    t_bn  *den;
-    int   i = -1;
+	t_bn  *mod;
+	t_bn  *den;
+	int   i;
 
-    mod = bn_init_size(64);
-    den = bn_init_size(64);
-    while (g_primes[++i])
-    {
-        bn_set_ui(den, g_primes[i]);
-        bn_mod_no_alloc(mod, n, den);
-        if (bn_cmp_ui(mod, 0) == 0)
-        {
-          bn_clears(2, &mod, &den);
-          return (1);
-        }
-        bn_set_zero(mod);
-    }
-    display ? ft_putchar_fd('.', STDERR_FILENO) : 0;
-    bn_clears(2, &mod, &den);
-    return (0);
+	mod = bn_init_size(64);
+	den = bn_init_size(64);
+	i = -1;
+	while (g_primes[++i])
+	{
+		bn_set_ui(den, g_primes[i]);
+		// bn_mod(mod, n, den);
+		bn_mod_no_alloc(mod, n, den);
+		if (bn_cmp_ui(mod, 0) == 0)
+		{
+		  bn_clears(2, &mod, &den);
+		  return (1);
+		}
+		bn_set_zero(mod);
+	}
+	display ? ft_putchar_fd('.', STDERR_FILENO) : 0;
+	bn_clears(2, &mod, &den);
+	return (0);
 }
 
 int   miller_rabin(t_bn *n, int s, int display)
 {
-    t_bn  *a;
+	t_bn  *a;
 
-    if (initial_sieve_test(n, display) == 1)
-        return (1);
-    a = bn_init_size(n->size * 64);
-    for (int i = 1; i <= s; i++)
-    {
-        bn_set_random(a, SIZE(n) * 64);
-        while (bn_cmp(n, a) <= 0)
-            bn_shift_right(a, 1);
-        if (witness(a, n) == 1)
-        {
-            bn_clear(&a);
-            return (1);
-        }
-        display ? ft_putchar_fd('+', STDERR_FILENO) : 0;
-    }
-    display ? ft_putchar_fd('\n', STDERR_FILENO) : 0;
-    bn_clear(&a);
-    return (0);
+	if (initial_sieve_test(n, display) == 1)
+		return (1);
+	a = bn_init_size(n->size * 64);
+	for (int i = 1; i <= s; i++)
+	{
+		bn_set_random(a, SIZE(n) * 64);
+		while (bn_cmp(n, a) <= 0)
+			bn_shift_right(a, 1);
+		if (witness(a, n) == 1)
+		{
+			bn_clear(&a);
+			return (1);
+		}
+		display ? ft_putchar_fd('+', STDERR_FILENO) : 0;
+	}
+	display ? ft_putchar_fd('\n', STDERR_FILENO) : 0;
+	bn_clear(&a);
+	return (0);
 }
 
 static void init_bns(t_bn *bns[], t_bn *n)
 {
-    bns[0] = bn_clone(n);
-    bns[1] = bn_clone(bns[0]);
-    bns[2] = bn_init_size(SIZE(n) * 64);
-    bns[3] = bn_init_size(SIZE(n) * 64);
-    bns[4] = bn_init_size(SIZE(n) * 64);
-    bn_sub_ui(bns[0], n, 1);
-    bn_copy(bns[1], bns[0]);
+	bns[0] = bn_clone(n);
+	bns[1] = bn_clone(bns[0]);
+	bns[2] = bn_init_size(SIZE(n) * 64);
+	bns[3] = bn_init_size(SIZE(n) * 64);
+	bns[4] = bn_init_size(SIZE(n) * 64);
+	bn_sub_ui(bns[0], n, 1);
+	bn_copy(bns[1], bns[0]);
+}
+
+static int  witness_loop(t_bn *bns[], t_bn *n)
+{
+	bn_mul(bns[3], bns[2], bns[2]);
+	bn_mod(bns[4], bns[3], n);
+	if (!bn_cmp_ui(bns[4], 1) && bn_cmp_ui(bns[2], 1) && bn_cmp(bns[2], bns[0]))
+	{
+		bn_clears(5, &bns[0], &bns[1], &bns[2], &bns[3], &bns[4]);
+		return (1);
+	}
+	bn_copy(bns[2], bns[4]);
+	return (0);
 }
 
 int   witness(t_bn *a, t_bn *n)
 {
-    t_bn    *bns[5];
-    int     t;
-    int     ret;
-    int     i;
+	t_bn    *bns[5];
+	int     t;
+	int     ret;
 
-    init_bns(bns, n);
-    t = 0;
-    ret = 0;
-    while (IS_ODD(bns[1]->num[0]) == 0)
-    {
-        bn_shift_right(bns[1], 1);
-        t++;
-    }
-    bn_mod_pow(bns[2], a, bns[1], n);
-    i = 0;
-    while (++i <= t)
-    {
-        bn_mul(bns[3], bns[2], bns[2]);
-        bn_mod(bns[4], bns[3], n);
-        if (!bn_cmp_ui(bns[4], 1) && bn_cmp_ui(bns[2], 1) && bn_cmp(bns[2], bns[0]))
-        {
-            bn_clears(5, &bns[0], &bns[1], &bns[2], &bns[3], &bns[4]);
-            return (1);
-        }
-        bn_copy(bns[2], bns[4]); // x = xi;
-    }
-    if (bn_cmp_ui(bns[4], 1)) // xi != 1
-        ret = 1;
-    bn_clears(5, &bns[0], &bns[1], &bns[2], &bns[3], &bns[4]);
-    return (ret);
+	init_bns(bns, n);
+	t = 0;
+	ret = 0;
+	while (IS_ODD(bns[1]->num[0]) == 0)
+	{
+		bn_shift_right(bns[1], 1);
+		t++;
+	}
+	bn_mod_pow(bns[2], a, bns[1], n);
+	while (t--)
+	{
+		if (witness_loop(bns, n))
+			return (1);
+	}
+	if (bn_cmp_ui(bns[4], 1))
+		ret = 1;
+	bn_clears(5, &bns[0], &bns[1], &bns[2], &bns[3], &bns[4]);
+	return (ret);
 }

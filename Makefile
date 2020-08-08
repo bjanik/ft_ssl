@@ -21,16 +21,19 @@ SRC_NAME = base64/base64_core.c \
 		bn/bn_add.c \
 		bn/bn_clear.c \
 		bn/bn_clone.c \
+		bn/bn_copy.c \
 		bn/bn_cmp.c \
 		bn/bn_div.c \
 		bn/bn_init.c \
 		bn/bn_mod.c \
 		bn/bn_mod_pow.c \
+		bn/bn_modinv.c \
 		bn/bn_mul.c \
 		bn/bn_realloc.c \
 		bn/bn_set.c \
 		bn/bn_shift.c \
 		bn/bn_sub.c \
+		bn/bn_utils.c \
 		core/ft_ssl.c \
 		core/interactive_mode.c \
 		core/main.c \
@@ -72,11 +75,11 @@ SRC_NAME = base64/base64_core.c \
 		pbkdf/get_password.c \
 		pbkdf/get_salt.c \
 		pbkdf/pbkdf.c \
-		rsa/euclide.c \
 		rsa/flag_check.c \
 		rsa/flag_hexdump.c \
 		rsa/flag_modulus.c \
 		rsa/flag_text.c \
+		rsa/get_data.c \
 		rsa/lib_bn.c \
 		rsa/miller_rabin.c \
 		rsa/passphrase.c \
@@ -86,14 +89,19 @@ SRC_NAME = base64/base64_core.c \
 		rsa/print_keys.c \
 		rsa/rsa.c \
 		rsa/rsa_clear.c \
+		rsa/rsa_file.c \
 		rsa/rsa_init.c \
 		rsa/rsa_opts.c \
+		rsa/rsa_opts2.c \
+		rsa/rsa_opts3.c \
+		rsa/rsa_opts_password.c \
 		rsautl/rsautl.c \
 		rsautl/rsautl_clear.c \
 		rsautl/rsautl_decryption.c \
 		rsautl/rsautl_encryption.c \
 		rsautl/rsautl_init.c\
 		rsautl/rsautl_opts.c\
+		rsautl/rsautl_opts2.c\
 		sha1/sha1.c \
 		sha1/sha1_transform.c \
 		sha256/sha256.c \

@@ -13,97 +13,21 @@
 #define IS_ODD(x) ((x) & 1)
 #define IS_EVEN(x) (((x) & 1) == 0)
 
-uint32_t bn_get_bit_number(t_bn *n)
-{
-	unsigned int 	bits = 64;
-	uint64_t		mask = 0x8000000000000000;
-	int64_t			size;
-
-	if (SIZE(n) == 0)
-		return (0);
-	while ((n->num[SIZE(n) - 1] & mask) == 0)
-	{
-		bits--;
-		mask >>= 1;
-	}
-	size = SIZE(n);
-	while (--size)
-		bits += 64;
-	return (bits);
-
-}
-
-uint32_t get_byte_number(uint64_t limb)
-{
-	if (limb <= 0xFF)
-		return (1);
-	if (limb <= 0xFFFF)
-		return (2);
-	if (limb <= 0xFFFFFF)
-		return (3);
-	if (limb <= 0xFFFFFFFF)
-		return (4);
-	if (limb <= 0xFFFFFFFFFF)
-		return (5);
-	if (limb <= 0xFFFFFFFFFFFF)
-		return (6);
-	if (limb <= 0xFFFFFFFFFFFFFF)
-		return (7);
-	return (8);
-}
-
-uint32_t bn_len(t_bn *n)
-{
-    unsigned int    bytes;
-
-    if (SIZE(n) == 0)
-    	return (0);
-    bytes = (SIZE(n) - 1) * 8;
-    return (bytes + get_byte_number(n->num[SIZE(n) - 1]));
-}
-
-
-uint64_t 	bn_get_bit(t_bn *n, uint64_t pos)
-{
-	uint64_t 	limb;
-
-	limb = pos / 64;
-	return (n->num[limb] >> (pos % 64)) & 1;
-}
-
-
-int		get_strongest_bit_pos(t_bn *n)
-{
-	int 		pos = 64;
-	uint64_t	mask;
-
-	mask = (uint64_t)1 << 63;
-
-	if (SIZE(n) == 0)
-		pos = 0;
-	else
-	{
-		while ((n->num[n->size - 1] & mask) == 0)
-		{
-			mask >>= 1;
-			pos--;
-		}
-	}
-	return (pos);
-}
-
 void	display_bn(t_bn *n)
 {
+	int64_t i;
+
+	i = SIZE(n);
 	if (SIZE(n) == 0)
 		printf("0");
 	else
 	{	
-		for (int64_t i = SIZE(n) - 1; i > -1; i--)
+		while (--i > -1)
 		{
 			if (i == SIZE(n) - 1)
-				printf("%llX", n->num[i]);
+				ft_printf("%llX", n->num[i]);
 			else
-				printf("%016llX", n->num[i]);
+				ft_printf("%016llX", n->num[i]);
 		}
 	}
 	printf("\n");
@@ -111,40 +35,9 @@ void	display_bn(t_bn *n)
 
 void	display_stats(t_bn *n)
 {
-	printf("Alloc = %llu\n",n->alloc);
-	printf("Size = %llu\n", n->size);
+	ft_printf("Alloc = %llu\n",n->alloc);
+	ft_printf("Size = %llu\n", n->size);
 	display_bn(n);
-}
-
-void	display_bn_ascii(t_bn n)
-{
-	unsigned char	*s;
-	uint64_t		block;
-
-	for (int64_t i = n.size - 1; i >= 0; i--)
-	{
-		block = n.num[i];
-		s = (unsigned char *)block;
-		printf("%s\n", s);
-	}
-
-}
-
-int		bn_copy(t_bn *a, t_bn *b) // Copy value of b into a. Reallocate a if necessary
-{
-	int64_t i;
-
-	if (a->alloc < SIZE(b))
-	{
-		if (bn_realloc_size_zero(a, SIZE(b)))
-			return (1);
-	}
-	for (i = 0 ; i < SIZE(b); i++)
-		a->num[i] = b->num[i];
-	while (i < a->alloc)
-		a->num[i++] = 0;
-	a->size = b->size;
-	return (0);
 }
 
 void 	power_of_two(t_bn *n, unsigned int pow)

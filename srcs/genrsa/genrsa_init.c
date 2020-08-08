@@ -4,7 +4,7 @@ t_genrsa	*genrsa_init(void)
 {
 	t_genrsa 	*genrsa;
 
-	if ((genrsa = malloc(sizeof(t_genrsa))) == NULL)
+	if ((genrsa = ft_malloc(sizeof(t_genrsa))) == NULL)
 		return (NULL);
 	genrsa->out = NULL;
 	genrsa->fd[IN] = STDIN_FILENO;

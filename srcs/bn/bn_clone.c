@@ -20,7 +20,7 @@ t_bn 	*bn_clone(t_bn *a)
 	i = -1;
 	while (++i < SIZE(n))
 		n->num[i] = a->num[i];
-	while (i < n->alloc)
-		n->num[i++] = 0;
+	// while (i < n->alloc)
+	// 	n->num[i++] = 0;
 	return (n);
 }

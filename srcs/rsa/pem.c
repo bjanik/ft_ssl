@@ -28,20 +28,24 @@ void	set_len_to_data(uint32_t n, unsigned char *data, uint32_t *len)
 void 			write_bn_to_data(t_bn *n, unsigned char *data)
 {
 	uint32_t 	bytes;
-	int			i, j;
+	int			i;
+	int			j;
 
 	bytes = get_byte_number(n->num[SIZE(n) - 1]);
-	for (i = SIZE(n) - 1 ; i >= 0; i--)
+	i = SIZE(n);
+	while (--i >= 0)
 	{
-		for (j = bytes - 1; j >= 0; j--, data++)
-			*data = (n->num[i] >> (j * 8)) & 0xFF;
+		j = bytes;
+		while (--j >= 0)
+			*data++ = (n->num[i] >> (j * 8)) & 0xFF;
 		bytes = 8;
 	}
 }
 
 void		set_bn_to_data(t_bn *n, unsigned char *data, uint32_t *len)
 {
-	uint32_t	bytes_in_len, len_bn;
+	uint32_t	bytes_in_len;
+	uint32_t	len_bn;
 
 	data[(*len)++] = 0x02;
 	len_bn = bn_len(n);
@@ -108,9 +112,10 @@ uint32_t	get_pem_data_len(t_rsa_data *rsa_data)
 
 static void	fill_pem_private_data(t_rsa_data *rsa, unsigned char *data, uint32_t data_len)
 {
-	uint32_t 	len = 0;
+	uint32_t 	len;
 	uint32_t 	bytes;
 
+	len = 0;
 	data[len++] = 0x30;
 	data_len--;
 	if (data_len-- >= 0x80)
@@ -156,10 +161,10 @@ int			pem(t_rsa_data *rsa, int fd)
 {
 	uint32_t 		data_len;
 	unsigned char 	*data;
-	char 			*data_encoded = NULL;
+	char 			*data_encoded;
 	
 	data_len = get_pem_data_len(rsa);
-	if ((data = (unsigned char*)malloc(data_len + 3)) == NULL)
+	if ((data = (unsigned char*)ft_malloc(data_len + 3)) == NULL)
 		return (1);
 	fill_pem_private_data(rsa, data, data_len);
 	if ((data_encoded = base64_encode_data(data, data_len)) == NULL)

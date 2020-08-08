@@ -1,21 +1,6 @@
 #include "ft_ssl.h"
 #include "bn.h"
 
-#define IS_ODD(x) ((x) & 1)
-#define IS_EVEN(x) (((x) & 1) == 0)
-#define SWAP(x, y) (x ^= y, y ^= x, x ^= y)
-
-void    gcd(t_bn *gcd, t_bn *x, t_bn *y)
-{
-    bn_copy(gcd, y);
-    while (bn_cmp_ui(x, 0) > 0)
-    {
-        bn_copy(gcd, x);
-        bn_mod(x, y, x);
-        bn_copy(y, gcd);
-    }
-}
-
 static void init_bns(t_bn *bns[], t_bn *u, t_bn *v)
 {
     bns[0] = bn_init_size(SIZE(v) * 64);
@@ -38,7 +23,6 @@ static void process(t_bn *bns[])
     bn_copy(bns[1], bns[3]);
     bn_copy(bns[3], bns[5]);
 }
-
 
 int        bn_modinv(t_bn *u, t_bn *v, t_bn *modinv)
 {

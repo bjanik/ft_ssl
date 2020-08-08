@@ -33,15 +33,13 @@ t_ssl_command		g_commands[] = {
 	{NULL, 0, NULL, 0, NULL, NULL, NULL, {NULL, NULL}, NULL, NULL, NULL},
 };
 
+
 static t_msg		*malloc_msg(void)
 {
 	t_msg	*msg;
 
-	if (!(msg = (t_msg*)malloc(sizeof(t_msg))))
-	{
-		perror("Malloc: ");
-		exit(EXIT_FAILURE);
-	}
+	if (!(msg = (t_msg*)ft_malloc(sizeof(t_msg))))
+		return (NULL);
 	msg->str = NULL;
 	msg->msg_len = 0;
 	msg->input_file = NULL;

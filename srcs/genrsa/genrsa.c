@@ -47,7 +47,7 @@ static int 		get_iteration_number(uint64_t bits)
 	else if (bits >= 300)
 		return  (18);
 	else
-		return  (27);	
+		return  (27);
 }
 
 static int 		generate_prime(t_bn *n, uint64_t bits)
@@ -77,8 +77,9 @@ int 		genrsa_command_run(t_rsa_data *rsa, t_genrsa *genrsa)
 
 	if (init_rsa_data(&genrsa->rsa_data, genrsa->numbits))
 		return (1);
-
-	ft_dprintf(STDERR_FILENO, "Generating RSA private key, %d bit long modulus\n", genrsa->numbits);
+	ft_dprintf(STDERR_FILENO,
+			   "Generating RSA private key, %d bit long modulus\n",
+			   genrsa->numbits);
 	bn_set_ui(rsa->public_exp, 0x10001);
 	if (generate_prime(rsa->prime1, genrsa->numbits) ||
 		generate_prime(rsa->prime2, genrsa->numbits))

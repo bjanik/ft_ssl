@@ -1,6 +1,5 @@
 #include "ft_ssl.h"
 
-
 static int 	set_genrsa_output(char **argv, t_genrsa *genrsa, int *index)
 {
 	(*index)++;

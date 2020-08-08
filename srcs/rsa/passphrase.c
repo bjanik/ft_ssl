@@ -1,16 +1,17 @@
 #include "ft_ssl.h"
 
-char            *get_pem_passphrase(const char *in, int decryption)
+char            *get_pem_passphrase(const char *in, int decrypt)
 {
     char    *pwd[2];
     char    *prompt;
 
-    prompt = (decryption) ? ft_strnjoin("Enter pass phrase for ", 2, in, ":") :
+    prompt = (decrypt) ? ft_strnjoin("Enter pass phrase for ", 2, in, ":") :
    		                    ft_strdup("Enter PEM pass phrase:");
     if (prompt == NULL)
         return (NULL);
     pwd[0] = ft_strdup(getpass(prompt));
-    if (decryption || pwd[0] == NULL)
+    free(prompt);
+    if (decrypt || pwd[0] == NULL)
         return (pwd[0]);
     if (ft_strlen(pwd[0]) < 4)
     {
@@ -19,8 +20,7 @@ char            *get_pem_passphrase(const char *in, int decryption)
         ft_strdel(&prompt);
         return (NULL);
     }
-    if (decryption == 0)
-        pwd[1] = getpass("Verifying - Enter PEM pass phrase:");
+    pwd[1] = (!decrypt) ? getpass("Verifying - Enter PEM pass phrase:") : 0;
     if (pwd[0] == NULL || pwd[1] == NULL)
         ft_dprintf(STDERR_FILENO, "ft_ssl: bad PEM password read\n");
     else if (ft_strcmp(pwd[0], pwd[1]) != 0)

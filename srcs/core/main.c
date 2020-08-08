@@ -57,7 +57,7 @@ static int		hash_algo(char **argv, t_ssl_command *command)
 	return (i);
 }
 
-static int		data_encryption_standard(char **argv, t_ssl_command *cmd)
+static int		des_command(char **argv, t_ssl_command *cmd)
 {
 	int	ret;
 
@@ -79,44 +79,51 @@ static int		data_encryption_standard(char **argv, t_ssl_command *cmd)
 	return (ret);
 }
 
-static int 		genrsa_command(char **argv, t_ssl_command *cmd)
+static int 		genrsa_command(char **argv)
 {
-	if (genrsa_opts(argv, cmd->genrsa))
+	t_genrsa 	*genrsa;
+
+	genrsa = genrsa_init();
+	if (genrsa_opts(argv, genrsa))
 		return (1);
-	if (genrsa_command_run(&cmd->genrsa->rsa_data, cmd->genrsa))
+	if (genrsa_command_run(&genrsa->rsa_data, genrsa))
 		return (1);
-	pem(&cmd->genrsa->rsa_data, cmd->genrsa->fd[OUT]);
-	genrsa_clear(cmd->genrsa);
+	pem(&genrsa->rsa_data, genrsa->fd[OUT]);
+	genrsa_clear(genrsa);
 	return (0);
 }
 
-static int 		rsa_command(char **argv, t_ssl_command *cmd)
+static int 		rsa_command(char **argv)
 {
-	int ret;
+	t_rsa	*rsa;
+	int 	ret;
 
 	ret = 0;
-	if (rsa_opts(argv, cmd->rsa))
+	rsa = rsa_init();
+	if (rsa_opts(argv, rsa))
 		ret = 1;
-	else if (rsa_command_run(cmd->rsa))
+	else if (rsa_command_run(rsa))
 		ret = 1;
-	if (cmd->rsa->in)
-		close(cmd->rsa->fd[IN]);
-	if (cmd->rsa->out)
-		close(cmd->rsa->fd[OUT]);
-	rsa_clear(cmd->rsa);
+	if (rsa->in)
+		close(rsa->fd[IN]);
+	if (rsa->out)
+		close(rsa->fd[OUT]);
+	rsa_clear(rsa);
 	return (ret);
 }
 
-static int 		rsautl_command(char **argv, t_ssl_command *cmd)
+static int 		rsautl_command(char **argv)
 {
-	int ret;
+	t_rsautl	*rsautl;
+	int 		ret;
 
 	ret = 0;
-	if (rsautl_opts(argv, cmd->rsautl))
+	rsautl = rsautl_init();
+	if (rsautl_opts(argv, rsautl))
 		ret = 1;
-	if (rsautl_command_run(cmd->rsautl))
+	else if (rsautl_command_run(rsautl))
 		ret = 1;
-	rsautl_clear(cmd->rsautl);
+	rsautl_clear(rsautl);
 	return (ret);
 }
 
@@ -131,15 +138,15 @@ int				ft_ssl_routine(char **argv)
 	if (command->hash_func)
 		return (hash_algo(argv, command));
 	if (command->des)
-		return (data_encryption_standard(argv, command));
+		return (des_command(argv, command));
 	if (command->base64)
-		return (base64_core(argv, command->base64));
+		return (base64_command(argv));
 	if (command->genrsa)
-		return (genrsa_command(argv, command));
+		return (genrsa_command(argv));
 	if (command->rsa)
-		return (rsa_command(argv, command));
+		return (rsa_command(argv));
 	if (command->rsautl)
-		return (rsautl_command(argv, command));
+		return (rsautl_command(argv));
 	return (0);
 }
 

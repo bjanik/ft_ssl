@@ -101,36 +101,3 @@ int				des_encrypt_message(t_des *des)
 	des->opts & DES_OPT_A ? ft_putchar_fd('\n', des->fd[OUT]) : 0;
 	return (0);
 }
-
-// unsigned char 		*des_encrypt_data(t_des *des,
-// 									  unsigned char *data,
-// 									  uint32_t *data_len)
-// {
-// 	unsigned char 	*data_encrypted, *data_with_padding;
-// 	uint64_t		plain, cipher;
-// 	int 			offset, data_encrypted_len, padding_len;
-
-// 	offset = 0;
-// 	padding_len = 8 - *data_len % 8;
-// 	data_encrypted_len = *data_len + padding_len;
-// 	if ((data_with_padding = (unsigned char *)malloc(data_encrypted_len)) == NULL)
-// 		return (NULL);
-// 	ft_memcpy(data_with_padding, data, *data_len);
-// 	ft_memset(data_with_padding + *data_len, padding_len, padding_len);
-// 	data_encrypted = (unsigned char *)malloc(data_encrypted_len);
-// 	if (data_encrypted == NULL)
-// 	{
-// 		ft_memdel((void**)&data_with_padding);
-// 		return (NULL);
-// 	}
-// 	while (offset < data_encrypted_len)
-// 	{
-// 		plain = convert_input_to_block(data_with_padding + offset);
-// 		cipher = des->des_mode[0](plain, des);
-// 		cipher_to_string(cipher, data_encrypted + offset);
-// 		offset += DES_BLOCK_SIZE;
-// 	}
-// 	ft_memdel((void**)&data_with_padding);
-// 	*data_len = data_encrypted_len;
-// 	return (data_encrypted);
-// }

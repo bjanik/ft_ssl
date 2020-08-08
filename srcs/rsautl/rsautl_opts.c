@@ -1,78 +1,10 @@
 #include "ft_ssl.h"
-#include "fcntl.h"
-#include "unistd.h"
-
 
 struct			s_rsautl_opts
 {
 	char		*opt;
 	int			(*opt_f)(char **argv, t_rsautl *rsautl, int *index);
 };
-
-static int 	set_rsautl_in(char **argv, t_rsautl *rsautl, int *index)
-{
-	(*index)++;
-	if ((rsautl->in = ft_strdup(argv[*index])) == NULL)
-	{
-		ft_dprintf(STDERR_FILENO, "ft_ssl: Missing input file\n");
-		return (1);
-	}
-	return (0);
-}
-
-static int 	set_rsautl_out(char **argv, t_rsautl *rsautl, int *index)
-{
-	(*index)++;
-	if ((rsautl->out = ft_strdup(argv[*index])) == NULL)
-	{
-		ft_dprintf(STDERR_FILENO, "ft_ssl: Missing output file\n");
-		return (1);
-	}
-	return (0);
-}
-
-static int 	set_inkey_file(char **argv, t_rsautl *rsautl, int *index)
-{
-	(*index)++;
-	if ((rsautl->inkey = ft_strdup(argv[*index])) == NULL)
-	{
-		ft_dprintf(STDERR_FILENO, "ft_ssl: Missing inkey file\n");
-		return (1);
-	}
-	return (0);
-}
-
-static int 	set_hexdump(char **argv, t_rsautl *rsautl, int *index)
-{
-	(void)argv;
-	(void)index;
-	rsautl->opts |= RSAUTL_HEXDUMP;
-	return (0);
-}
-
-static int 	set_encrypt(char **argv, t_rsautl *rsautl, int *index)
-{
-	(void)argv;
-	(void)index;
-	rsautl->opts |= RSAUTL_ENCRYPT;
-	return (0);
-}
-
-static int 	set_decrypt(char **argv, t_rsautl *rsautl, int *index)
-{
-	(void)argv;
-	(void)index;
-	rsautl->opts |= RSAUTL_DECRYPT;
-	return (0);
-}
-
-static int 	set_rsault_pubin(char **argv, t_rsautl *rsautl, int *index)
-{
-	(void)argv;
-	(void)index;
-	rsautl->opts |= RSAUTL_PUBIN;
-	return (0);
-}
 
 const struct s_rsautl_opts  g_rsautl_opts[] = {
 	{"-in", set_rsautl_in},
@@ -84,6 +16,29 @@ const struct s_rsautl_opts  g_rsautl_opts[] = {
 	{"-decrypt", set_decrypt},
 	{NULL, NULL}
 };
+
+int 	set_rsautl_in(char **argv, t_rsautl *rsautl, int *index)
+{
+	(*index)++;
+	if ((rsautl->in = ft_strdup(argv[*index])) == NULL)
+	{
+		ft_dprintf(STDERR_FILENO, "ft_ssl: Missing input file\n");
+		return (1);
+	}
+	return (0);
+}
+
+int 	set_rsautl_out(char **argv, t_rsautl *rsautl, int *index)
+{
+	(*index)++;
+	if ((rsautl->out = ft_strdup(argv[*index])) == NULL)
+	{
+		ft_dprintf(STDERR_FILENO, "ft_ssl: Missing output file\n");
+		return (1);
+	}
+	return (0);
+}
+
 
 int 	rsautl_opts(char **argv, t_rsautl *rsautl)
 {

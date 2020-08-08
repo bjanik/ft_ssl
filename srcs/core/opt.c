@@ -15,7 +15,8 @@
 int			illegal_opt(char c, char *cmd_name)
 {
 	ft_dprintf(STDERR_FILENO, "ft_ssl: illegal option -- %c", c);
-	ft_dprintf(STDERR_FILENO, "\nusage: ft_ssl %s %s", cmd_name, HASH_CMD_USAGE);
+	ft_dprintf(STDERR_FILENO, "\nusage: ft_ssl %s %s", cmd_name,
+			   HASH_CMD_USAGE);
 	return (1);
 }
 
@@ -29,8 +30,10 @@ static int	hash_string(t_msg *msg, char **argv, int *ind, int i)
 		s = argv[(*ind)++ + 1];
 	else
 	{
-		ft_dprintf(STDERR_FILENO, "%s:  option requires an argument -- s\n", argv[1]);
-		ft_dprintf(STDERR_FILENO, "usage: ft_ssl %s %s", argv[1], HASH_CMD_USAGE);
+		ft_dprintf(STDERR_FILENO, "%s:  option requires an argument -- s\n",
+				   argv[1]);
+		ft_dprintf(STDERR_FILENO, "usage: ft_ssl %s %s", argv[1],
+				   HASH_CMD_USAGE);
 		return (1);
 	}
 	init_msg(msg, (unsigned char*)s, NULL);

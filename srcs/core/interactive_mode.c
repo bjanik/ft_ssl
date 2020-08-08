@@ -30,12 +30,12 @@ int			interactive_mode(char **argv)
 {
 	t_lexer	lexer;
 	char	*input;
-	char	**av = NULL;
+	char	**av;
 
 	init_lexer(&lexer);
 	while (42)
 	{
-		write(STDOUT_FILENO, "ft_ssl> ", 8);
+		write(STDOUT_FILENO, "Ft_SSL> ", 8);
 		if (get_next_line(STDIN_FILENO, &input) < 0)
 			ft_error_msg("ft_ssl: Reading user input failed");
 		if (!input)
@@ -48,7 +48,6 @@ int			interactive_mode(char **argv)
 		ft_ssl_routine(av);
 		ft_strdel(&input);
 		reset_lexer(&lexer);
-		// ft_display_tab(av);
 		ft_free_string_tab(&av);
 	}
 	ft_strdel(&lexer.current_token);

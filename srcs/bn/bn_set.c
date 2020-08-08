@@ -3,10 +3,12 @@
 
 int 	bn_set_random(t_bn *n, int64_t size)
 {
-	int 		to_read = 0;
-	int 		fd = open("/dev/random", O_RDONLY);
+	int 		to_read;
+	int 		fd;
 	uint32_t 	bits;
 
+	to_read = 0;
+	fd = open("/dev/random", O_RDONLY);
 	if (fd < 0)
 		return (1);
 	if (size % 8)

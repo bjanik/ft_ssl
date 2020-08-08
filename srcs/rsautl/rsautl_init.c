@@ -4,7 +4,7 @@ t_rsautl	*rsautl_init(void)
 {
 	t_rsautl 	*rsautl;
 
-	rsautl = (t_rsautl*)malloc(sizeof(t_rsautl));
+	rsautl = (t_rsautl*)ft_malloc(sizeof(t_rsautl));
 	if (rsautl == NULL)
 		return (NULL);
 	rsautl->in = NULL;

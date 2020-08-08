@@ -77,7 +77,7 @@ int 			initial_sieve_test(t_bn *n, int display);
 
 void			display_stats(t_bn *n);
 
-void			ext_euclid(int64_t *u, int64_t *v, int64_t *u1, int64_t *u2, int64_t *u3);
+// void			ext_euclid(int64_t *u, int64_t *v, int64_t *u1, int64_t *u2, int64_t *u3);
 
 
 

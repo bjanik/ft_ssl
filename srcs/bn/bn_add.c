@@ -1,26 +1,11 @@
 #include "bn.h"
 
-
-static void add_loop()
+static void	add_loops(t_bn *res, t_bn *max, t_bn *min)
 {
-
-}
-
-int			bn_add(t_bn *res, t_bn *op1, t_bn *op2)
-{
+	uint64_t 	tmp;
 	int64_t 	carry;
 	int64_t 	i;
-	t_bn 		*max;
-	t_bn 		*min;
-	uint64_t	tmp;
 
-	max = op1;
-	min = op2;
-	if (SIZE(op1) < SIZE(op2))
-	{
-		max = op2;
-		min = op1;
-	}
 	i = -1;
 	carry = 0;
 	while (++i < SIZE(min))
@@ -29,24 +14,33 @@ int			bn_add(t_bn *res, t_bn *op1, t_bn *op2)
 		if (carry || min->num[i])
 			carry = (tmp <= max->num[i]) ? 1 : 0;
 		res->num[i] = tmp;
-		if (i >= SIZE(res))
-			INC_SIZE(res);
+		(i >= SIZE(res)) ? INC_SIZE(res) : 0;
 	}
 	while (i < SIZE(max))
 	{
 		tmp = max->num[i] + carry;
 		carry = (tmp < max->num[i]) ? 1 : 0;
 		res->num[i] = tmp;
-		if (i >= SIZE(res))
-			INC_SIZE(res);
+		(i >= SIZE(res)) ? INC_SIZE(res) : 0;
 		i++;
 	}
-	if (carry)
+	res->num[i] = carry;
+	(i == SIZE(res) && carry) ? INC_SIZE(res) : 0;
+}
+
+int				bn_add(t_bn *res, t_bn *op1, t_bn *op2)
+{
+	t_bn 		*max;
+	t_bn 		*min;
+
+	max = op1;
+	min = op2;
+	if (SIZE(op1) < SIZE(op2))
 	{
-		res->num[i] = 1;
-		if (i == SIZE(res))
-			INC_SIZE(res);
+		max = op2;
+		min = op1;
 	}
+	add_loops(res, max, min);
 	return (0);
 }
 

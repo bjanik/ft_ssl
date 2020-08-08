@@ -32,13 +32,15 @@ uint32_t 		get_public_data_len(t_bn *modulus, t_bn *public_exp)
 }
 
 void			fill_pem_public_data(unsigned char *public_data,
-								 uint32_t public_data_len,
-								 t_bn *modulus,
-								 t_bn *public_exp)
+									 uint32_t public_data_len,
+									 t_bn *modulus,
+									 t_bn *public_exp)
 {
-	uint32_t 		len = 0;
-	uint32_t 		remain_len = public_data_len;
+	uint32_t 		len;
+	uint32_t 		remain_len;
 
+	len = 0;
+	remain_len = public_data_len;
 	public_data[len++] = 0x30;
 	remain_len--;
 	if (remain_len-- >= 0x80)
@@ -63,11 +65,14 @@ void			fill_pem_public_data(unsigned char *public_data,
 	set_bn_to_data(public_exp, public_data, &len);
 }
 
-static int parse_decoded_public_data(t_rsa_data *rsa_data, unsigned char *data, uint32_t data_len)
+static int parse_decoded_public_data(t_rsa_data *rsa_data,
+									 unsigned char *data)
 {
-	uint32_t		len = 0;
-	unsigned char	*ptr = data;
+	uint32_t		len;
+	unsigned char	*ptr;
 
+	ptr = data;
+	len = 0;
 	if (*ptr++ != 0x30)
 		return (1);
 	len = get_number_len(&ptr);
@@ -89,9 +94,11 @@ static int parse_decoded_public_data(t_rsa_data *rsa_data, unsigned char *data, 
     return (0);
 }
 
-int 			retrieve_data_from_public_key(t_rsa_data *rsa_data, char *public_data)
+int 			retrieve_data_from_public_key(t_rsa_data *rsa_data,
+											  char *public_data)
 {
-	uint32_t 		public_data_decoded_len, public_data_len;
+	uint32_t 		public_data_decoded_len;
+	uint32_t 		public_data_len;
 	unsigned char	*public_data_decoded;
 	int 			ret;
 
@@ -105,7 +112,6 @@ int 			retrieve_data_from_public_key(t_rsa_data *rsa_data, char *public_data)
     if (public_data_decoded == NULL)
         return (1);
     ret = parse_decoded_public_data(rsa_data,
-    								public_data_decoded,
-    								public_data_decoded_len);
+									public_data_decoded);
     return (ret);
 }

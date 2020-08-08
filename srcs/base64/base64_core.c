@@ -55,14 +55,12 @@ static int	output(t_base64 *base, unsigned char buf[], int len, int ret)
 	return (len);
 }
 
-int			base64_core(char **argv, t_base64 *base)
+static int 	base64_command_run(t_base64 *base)
 {
 	int				ret;
 	int				len;
 	unsigned char	buf[BASE64_BUF_SIZE + 1];
 
-	if (base64_opts(argv, base))
-		return (1);
 	if (base->opts & B_OPT_D)
 		decode_data(base);
 	else
@@ -80,5 +78,17 @@ int			base64_core(char **argv, t_base64 *base)
 		ft_putchar_fd('\n', base->fd[OUT]);
 	}
 	ft_memdel((void**)&base);
+	return (0);
+}
+
+int			base64_command(char **argv)
+{
+	t_base64		*base64;
+
+	base64 = init_base64();
+	if (base64_opts(argv, base64))
+		return (1);
+	if (base64_command_run(base64))
+		return (1);
 	return (0);
 }

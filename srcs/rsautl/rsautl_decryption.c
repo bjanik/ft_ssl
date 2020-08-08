@@ -1,6 +1,25 @@
 #include "bn.h"
 #include "ft_ssl.h"
 
+static void handle_errors(int ret,
+						 uint32_t mlen,
+						 uint32_t modlen,
+						 unsigned char **message)
+{
+	if (ret < 0)
+	{
+		ft_dprintf(STDERR_FILENO,
+				   "ft_ssl: error while reading encrypted message\n");
+		ft_memdel((void**)message);
+	}
+	else if (mlen != modlen)
+	{
+		ft_dprintf(STDERR_FILENO,
+				   "ft_ssl: message to decrypt not equal to modulus len\n");
+		ft_memdel((void**)message);
+	}
+}
+
 static unsigned char *get_encrypted_message(const int fd, uint32_t mod_len)
 {
 	unsigned char	buf[8];
@@ -22,16 +41,7 @@ static unsigned char *get_encrypted_message(const int fd, uint32_t mod_len)
 		ft_memcpy(message + mlen, buf, ret);
 		mlen += ret;
 	}
-	if (ret < 0)
-	{
-		ft_dprintf(STDERR_FILENO, "ft_ssl: error while reading encrypted message\n");
-		ft_memdel((void**)&message);
-	}
-	else if (mlen != mod_len)
-	{
-		ft_dprintf(STDERR_FILENO, "ft_ssl: message to decrypt not equal to modulus len\n");
-		ft_memdel((void**)&message);
-	}
+	handle_errors(ret, mlen, mod_len, &message);
 	return (message);
 }
 
@@ -53,42 +63,51 @@ static int 			check_decryption(unsigned char *decrypted_msg)
 	return (ptr - decrypted_msg);
 }
 
-int 				rsa_message_decryption(t_rsa_data *rsa_data, const int fd[])
+static int init_plain_and_cipher(t_bn *bn[],
+								 unsigned char *msg[],
+								 uint32_t mod_len)
 {
-	unsigned char	*msg, *ptr, *decrypted_msg;
-	t_bn 			*cipher, *plain;
+	msg[1] = msg[0];
+	if ((bn[0] = get_bn(&msg[1], mod_len)) == NULL)
+	{
+		free(msg[0]);
+		return (1);
+	}
+	if ((bn[1] = bn_init_size(mod_len * 8)) == NULL)
+	{
+		free(msg[0]);
+		bn_clear(&bn[0]);
+		return (1);
+	}
+	return (0);
+}
+
+int 				rsa_message_decryption(t_rsa_data *rsa_data,
+										   const int fd[])
+{
+	unsigned char	*msg[2];
+	unsigned char	*decrypted_msg;
+	t_bn 			*bn[2];
 	uint32_t		mod_len;
 	int 			ret;
 
 	mod_len = bn_len(rsa_data->modulus);
-	if ((msg = get_encrypted_message(fd[IN], mod_len)) == NULL)
+	if ((msg[0] = get_encrypted_message(fd[IN], mod_len)) == NULL)
 		return (1);
-	ptr = msg;
-	if ((cipher = get_bn(&ptr, mod_len)) == NULL)
-	{
-		free(msg);
+	if (init_plain_and_cipher(bn, msg, mod_len))
 		return (1);
-	}
-	if ((plain = bn_init_size(mod_len * 8)) == NULL)
-	{
-		free(msg);
-		bn_clear(&cipher);
-		return (1);
-	}
-	bn_mod_pow(plain, cipher, rsa_data->private_exp, rsa_data->modulus);
+	bn_mod_pow(bn[1], bn[0], rsa_data->private_exp, rsa_data->modulus);
 	decrypted_msg = (unsigned char*)malloc(mod_len + 1);
 	if (decrypted_msg == NULL)
 		return (1);
 	decrypted_msg[0] = 0;
-	write_bn_to_data(plain, decrypted_msg + 1);
+	write_bn_to_data(bn[1], decrypted_msg + 1);
 	ret = check_decryption(decrypted_msg);
-	if (ret == -1)
-		ft_putendl_fd("ft_ssl: decryption error", STDERR_FILENO);
-	else
-		write(fd[OUT], decrypted_msg + ret, mod_len - ret);
+	(ret == -1) ? ft_putendl_fd("ft_ssl: decryption error", STDERR_FILENO) :
+				  write(fd[OUT], decrypted_msg + ret, mod_len - ret);
 	ret = 0;
-	free(msg);
+	free(msg[0]);
 	free(decrypted_msg);
-	bn_clears(2, &cipher, &plain);
+	bn_clears(2, &bn[0], &bn[1]);
 	return (ret);
 }

@@ -81,9 +81,10 @@ int      parse_decoded_data(t_rsa_data *rsa_data,
                             uint32_t decoded_data_len,
                             int opts)
 {
-    unsigned char *ptr = decoded_data;
-    uint32_t      cur_len = 0;
+    unsigned char *ptr;
+    uint32_t      cur_len;
 
+    ptr = decoded_data;
     if (*ptr++ != 0x30)
         return (1);
     cur_len = get_number_len(&ptr);
@@ -107,13 +108,12 @@ int      parse_decoded_data(t_rsa_data *rsa_data,
 unsigned char       *private_key_decryption(t_des *des,
                                             unsigned char *data,
                                             uint32_t *data_len,
-                                            const char *in,
-                                            const char *pass)
+                                            char *args[])
 {
     unsigned char   *decrypted_data;
     unsigned char   *decrypted_data_no_pad;
 
-    if (key_from_passphrase(des, 1, in, pass))
+    if (key_from_passphrase(des, 1, args[0], args[1]))
         return (NULL);
     swap_keys(des->keys[0]);
     swap_keys(des->keys[1]);
@@ -140,11 +140,11 @@ unsigned char       *private_key_decryption(t_des *des,
 unsigned char           *private_key_encryption(t_des *des,
                                                 unsigned char *data,
                                                 uint32_t *data_len,
-                                                const char *in, const char *pass)
+                                                char *args[])
 {
     unsigned char   *des_encrypted_data;
     
-    if (key_from_passphrase(des, 0, in, pass))
+    if (key_from_passphrase(des, 0, args[0], args[1]))
         return (NULL);
     des_encrypted_data = des_encrypt_data(des, data, data_len);
     ft_memdel((void**)&data);
