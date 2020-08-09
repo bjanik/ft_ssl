@@ -187,16 +187,10 @@ typedef struct			s_msg
 typedef struct			s_ssl_command
 {
 	char				*name;
-	void				(*hash_func)(t_msg *msg, uint32_t opts);
-	const char			*available_opts;
-	uint32_t			opts;
-	t_msg				*msg;
-	t_base64			*base64;
-	t_des				*des;
+	int 				(*hash_func)(int opt, unsigned char *message,
+									 char *input_file);
 	uint64_t			(*des_mode[2])(uint64_t plain, struct s_des *des);
-	t_rsa 				*rsa;
-	t_genrsa 			*genrsa;
-	t_rsautl			*rsautl;
+	int 				(*func)(char **argv, struct s_ssl_command *cmd);
 }						t_ssl_command;
 
 typedef struct			s_ctx
@@ -212,34 +206,46 @@ typedef struct			s_ctx
 	char				cmd_name[MAX_CMD_NAME_LEN + 1];
 }						t_ctx;
 
-t_ssl_command			*get_ssl_command(const char *command);
+t_ssl_command			*get_ssl_command(char **argv);
 int						interactive_mode(char **argv);
 int						ft_ssl_routine(char **argv);
+int						digest_command(char **argv, t_ssl_command *cmd);
+int						des_command(char **argv, t_ssl_command *cmd);
+int 					genrsa_command(char **argv, t_ssl_command *cmd);
+int 					rsa_command(char **argv, t_ssl_command *cmd);
+int 					rsautl_command(char **argv, t_ssl_command *cmd);
+
+
+
+
+
+
 
 int						update(t_ctx *ctx, t_msg *msg, uint32_t opts);
 void					pad_message(t_ctx *ctx);
 void					output_digest(t_msg *msg, t_ctx ctx, uint32_t opts);
-void					md5(t_msg *msg, uint32_t opts);
+int	 					md5(int opts, unsigned char *message, char *input_file);
 void					md5_init(t_ctx *ctx);
 unsigned char			*md5_core(t_ctx	*ctx, t_msg *msg, uint32_t opts);
 void					md5_transform(t_ctx *ctx);
 void					sha256_init(t_ctx *ctx);
-void					sha256(t_msg *msg, uint32_t opts);
+int 					sha256(int opts, unsigned char *message, char *input_file);
 unsigned char			*sha256_core(t_ctx *ctx, t_msg *msg, uint32_t opts);
 void					sha256_transform(t_ctx *ctx);
-void					sha1(t_msg *msg, uint32_t opts);
+int 					sha1(int opts, unsigned char *message, char *input_file);
 void					sha1_transform(t_ctx *ctx);
 int						init_msg(t_msg *msg,
-								unsigned char *message,
-								char *input_file);
+								 unsigned char *message,
+								 char *input_file);
 void					reset_msg(t_msg *msg);
 void					print_hash(unsigned char digest[],
 								uint8_t digest_len,
 								uint8_t up);
 int						parse_opt(t_ssl_command *command,
-									char **argv,
-									int *index);
-int						set_options(t_ssl_command *command, char **argv, int *index);
+								  int *opts,
+								  char **argv,
+								  int *index);
+int						set_options(t_ssl_command *command, int *opts, char **argv, int *index);
 int						usage(void);
 int						commands_usage(char *command);
 uint32_t				rotleft(uint32_t x, uint32_t n);
@@ -254,7 +260,7 @@ uint64_t				shift_left(uint32_t key, uint8_t x);
 void					init_processing(t_base64 *base);
 t_base64				*init_base64(void);
 int 					base64_usage(char *opt);
-int						base64_command(char **argv);
+int						base64_command(char **argv, t_ssl_command *command);
 void					base64_encode(unsigned char in[], int ret, int fd);
 int						base64_decode(unsigned char in[],
 									int ret,
@@ -397,6 +403,8 @@ uint32_t 				get_number_len(unsigned char **ptr);
 
 void					set_len_to_data(uint32_t n, unsigned char *data, uint32_t *len);
 void					set_bn_to_data(t_bn *n, unsigned char *data, uint32_t *len);
+uint32_t 				get_public_data_len(t_bn *modulus, t_bn *public_exp);
+
 void 					write_bn_to_data(t_bn *n, unsigned char *data);
 
 t_rsa					*rsa_init(void);
@@ -435,8 +443,7 @@ int 					retrieve_data_from_public_key(t_rsa_data *rsa_data,
 void 					print_encryption_header(t_rsa *rsa, const int fd);
 void					print_rsa_key(t_rsa *rsa,
 									  char *data,
-									  const int fd,
-									  const int rsa_opts);
+									  const int fd);
 
 /*
 RSAUTL

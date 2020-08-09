@@ -64,7 +64,8 @@ int 				rsa_private_key_routine(t_rsa *rsa, char **data)
 	raw_data = base64_decode_data(&raw_data_len, ft_strdup(*data), ft_strlen(*data));
 	if (raw_data == NULL)
 		return (1);
-	private_routine(rsa, args, &raw_data, &raw_data_len);
+	if (private_routine(rsa, args, &raw_data, &raw_data_len))
+		return (1);
 	ft_strdel(data);
 	*data = base64_encode_data(raw_data, raw_data_len);
 	ft_memdel((void**)&raw_data);
@@ -119,7 +120,7 @@ int 				rsa_command_run(t_rsa *rsa)
 	ret = rsa_handle_key(rsa, &data);
 	rsa_output_file(rsa);
 	if ((rsa->opts & RSA_NOOUT) == 0)
-	 	print_rsa_key(rsa, data, rsa->fd[OUT], rsa->opts);
+	 	print_rsa_key(rsa, data, rsa->fd[OUT]);
 	ft_strdel(&data);
 	return (ret);
 }

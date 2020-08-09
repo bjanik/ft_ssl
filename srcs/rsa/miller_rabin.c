@@ -225,7 +225,9 @@ static int  witness_loop(t_bn *bns[], t_bn *n)
 {
 	bn_mul(bns[3], bns[2], bns[2]);
 	bn_mod(bns[4], bns[3], n);
-	if (!bn_cmp_ui(bns[4], 1) && bn_cmp_ui(bns[2], 1) && bn_cmp(bns[2], bns[0]))
+	if (!bn_cmp_ui(bns[4], 1) &&
+		 bn_cmp_ui(bns[2], 1) &&
+		 bn_cmp(bns[2], bns[0]))
 	{
 		bn_clears(5, &bns[0], &bns[1], &bns[2], &bns[3], &bns[4]);
 		return (1);

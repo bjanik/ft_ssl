@@ -20,65 +20,57 @@ int			illegal_opt(char c, char *cmd_name)
 	return (1);
 }
 
-static int	hash_string(t_msg *msg, char **argv, int *ind, int i)
+static unsigned char	*hash_string(char **argv, int *ind, int i)
 {
-	char	*s;
+	unsigned char	*s;
 
 	if (argv[*ind][i + 1])
-		s = &argv[*ind][i + 1];
+		s = (unsigned char*)&argv[*ind][i + 1];
 	else if (argv[*ind + 1])
-		s = argv[(*ind)++ + 1];
+		s = (unsigned char*)argv[(*ind)++ + 1];
 	else
 	{
 		ft_dprintf(STDERR_FILENO, "%s:  option requires an argument -- s\n",
 				   argv[1]);
 		ft_dprintf(STDERR_FILENO, "usage: ft_ssl %s %s", argv[1],
 				   HASH_CMD_USAGE);
-		return (1);
+		return (NULL);
 	}
-	init_msg(msg, (unsigned char*)s, NULL);
-	return (0);
+	return (s);
 }
 
-int			parse_opt(t_ssl_command *command, char **argv, int *index)
+int			parse_opt(t_ssl_command *command, int *opts, char **av, int *index)
 {
 	int		i;
+	unsigned char 	*s;
 
 	i = 0;
-	while (argv[*index][++i])
+	while (av[*index][++i])
 	{
-		if (argv[*index][i] == 'p')
+		if (av[*index][i] == 'p')
 		{
-			command->opts |= OPT_P;
-			init_msg(command->msg, NULL, NULL);
-			command->hash_func(command->msg, command->opts);
-			reset_msg(command->msg);
+			*opts |= OPT_P;
+			command->hash_func(*opts, NULL, NULL);
 		}
-		else if (argv[*index][i] == 'r')
-			command->opts |= OPT_R;
-		else if (argv[*index][i] == 'q')
-			command->opts |= OPT_Q;
-		else if (argv[*index][i] == 's')
+		else if (av[*index][i] == 's')
 		{
-			command->opts |= OPT_S;
-			return (hash_string(command->msg, argv, index, i));
+			*opts |= OPT_S;
+			s = hash_string(av, index, i);
+			command->hash_func(*opts, s, NULL);
 		}
-		else
-			return (illegal_opt(argv[*index][i], argv[1]));
+		else if (av[*index][i] != 'r' && av[*index][i] != 'q')
+			return (illegal_opt(av[*index][i], av[1]));
+		(av[*index][i] == 'r') ? *opts |= OPT_R : 0;
+		(av[*index][i] == 'q') ? *opts |= OPT_Q : 0;
 	}
 	return (0);
 }
 
-int			set_options(t_ssl_command *command, char **argv, int *index)
+int			set_options(t_ssl_command *command, int *opts, char **argv, int *index)
 {
 	int	ret;
 
-	if ((ret = parse_opt(command, argv, index)))
+	if ((ret = parse_opt(command, opts, argv, index)))
 		return (ret);
-	if (command->msg->str || command->msg->fd > -1)
-	{
-		command->hash_func(command->msg, command->opts);
-		reset_msg(command->msg);
-	}
 	return (0);
 }

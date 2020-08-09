@@ -28,7 +28,7 @@ int	commands_usage(char *command)
 	ft_dprintf(STDERR_FILENO, "Message digest commands:\n");
 	while (g_commands[++i].name)
 		(g_commands[i].hash_func) ?
-			ft_dprintf(STDERR_FILENO, "%s", g_commands[i].name) : 0;
+			ft_dprintf(STDERR_FILENO, "%s\n", g_commands[i].name) : 0;
 	ft_dprintf(STDERR_FILENO, "\nCipher commands:");
 	i = -1;
 	while (g_commands[++i].name)

@@ -15,9 +15,8 @@ void 		print_encryption_header(t_rsa *rsa, const int fd)
 }
 
 void			print_rsa_key(t_rsa *rsa,
-								  char *data,
-								  const int fd,
-								  const int rsa_opts)
+							  char *data,
+							  const int fd)
 {
 	int 			i;
 	int 			len;

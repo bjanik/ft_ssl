@@ -51,28 +51,32 @@ unsigned char	*md5_core(t_ctx *ctx, t_msg *msg, uint32_t opts)
 {
 	unsigned char	*digest;
 
+	digest = NULL;
 	if (update(ctx, msg, opts) == 0)
 	{
 		md5_final(ctx);
-		digest = (unsigned char*)malloc(MD5_DIGEST_LEN *sizeof(unsigned char));
+		digest = (unsigned char*)malloc(MD5_DIGEST_LEN * 
+										sizeof(unsigned char));
 		if (!digest)
 			return (NULL);
 		ft_memcpy(digest, ctx->digest, MD5_DIGEST_LEN);
-		return (digest);
-		// return ((unsigned char*)ft_strdup((char*)ctx->digest));
 	}
-	return (NULL);
+	return (digest);
 }
 
-void			md5(t_msg *msg, uint32_t opts)
+int			md5(int opts, unsigned char *message, char *input_file)
 {
 	t_ctx			ctx;
+	t_msg			msg;
 	unsigned char	*digest;
 
+	if (init_msg(&msg, message, input_file))
+		return (1);
 	md5_init(&ctx);
-	if ((digest = md5_core(&ctx, msg, opts)))
+	if ((digest = md5_core(&ctx, &msg, opts)))
 	{
-		output_digest(msg, ctx, opts);
+		output_digest(&msg, ctx, opts);
 		ft_strdel((char**)&digest);
 	}
+	return (0);
 }

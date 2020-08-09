@@ -81,10 +81,11 @@ static int 	base64_command_run(t_base64 *base)
 	return (0);
 }
 
-int			base64_command(char **argv)
+int			base64_command(char **argv, t_ssl_command *cmd)
 {
 	t_base64		*base64;
 
+	(void)cmd;
 	base64 = init_base64();
 	if (base64_opts(argv, base64))
 		return (1);

@@ -49,14 +49,18 @@ static void	sha1_final(t_ctx *ctx)
 	}
 }
 
-void		sha1(t_msg *msg, uint32_t opts)
+int		sha1(int opts, unsigned char *message, char *input_file)
 {
 	t_ctx	ctx;
+	t_msg 	msg;
 
+	if (init_msg(&msg, message, input_file))
+		return (1);
 	sha1_init(&ctx);
-	if (update(&ctx, msg, opts) == 0)
+	if (update(&ctx, &msg, opts) == 0)
 	{
 		sha1_final(&ctx);
-		output_digest(msg, ctx, opts);
+		output_digest(&msg, ctx, opts);
 	}
+	return (1);
 }

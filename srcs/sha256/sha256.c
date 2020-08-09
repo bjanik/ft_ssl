@@ -71,15 +71,19 @@ unsigned char	*sha256_core(t_ctx *ctx, t_msg *msg, uint32_t opts)
 	return (NULL);
 }
 
-void			sha256(t_msg *msg, uint32_t opts)
+int			sha256(int opts, unsigned char *message, char *input_file)
 {
 	t_ctx			ctx;
+	t_msg 			msg;
 	unsigned char	*digest;
 
+	if (init_msg(&msg, message, input_file))
+		return (1);
 	sha256_init(&ctx);
-	if ((digest = sha256_core(&ctx, msg, opts)))
+	if ((digest = sha256_core(&ctx, &msg, opts)))
 	{
-		output_digest(msg, ctx, opts);
+		output_digest(&msg, ctx, opts);
 		ft_strdel((char**)&digest);
 	}
+	return (0);
 }
