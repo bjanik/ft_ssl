@@ -1,7 +1,19 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   genrsa.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: bjanik <marvin@42.fr>                      +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2020/08/10 12:02:18 by bjanik            #+#    #+#             */
+/*   Updated: 2020/08/10 12:02:20 by bjanik           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "bn.h"
 #include "ft_ssl.h"
 
-static int 	init_rsa_data(t_rsa_data *rsa, uint64_t numbits)
+static int		init_rsa_data(t_rsa_data *rsa, uint64_t numbits)
 {
 	rsa->modulus = bn_init_size(numbits);
 	rsa->prime1 = bn_init_size(numbits / 2 + numbits % 2);
@@ -15,71 +27,74 @@ static int 	init_rsa_data(t_rsa_data *rsa, uint64_t numbits)
 		!rsa->private_exp || !rsa->exponent1 || !rsa->exponent2 || !rsa->coef)
 	{
 		bn_clears(8, &rsa->modulus, &rsa->prime1, &rsa->prime2,
-					 &rsa->public_exp, &rsa->private_exp, &rsa->exponent1,
-					 &rsa->exponent2, &rsa->coef);
+					&rsa->public_exp, &rsa->private_exp, &rsa->exponent1,
+					&rsa->exponent2, &rsa->coef);
 		return (1);
 	}
 	return (0);
 }
 
-static int 		get_iteration_number(uint64_t bits)
+static int		get_iteration_number(uint64_t bits)
 {
 	if (bits >= 2600)
 		return (2);
 	else if (bits >= 1700)
-		return  (3);
+		return (3);
 	else if (bits >= 1300)
-		return  (4);
+		return (4);
 	else if (bits >= 1100)
-		return  (5);
+		return (5);
 	else if (bits >= 900)
-		return  (6);
+		return (6);
 	else if (bits >= 800)
-		return  (7);
+		return (7);
 	else if (bits >= 700)
-		return  (8);
+		return (8);
 	else if (bits >= 600)
-		return  (9);
+		return (9);
 	else if (bits >= 500)
-		return  (10);
+		return (10);
 	else if (bits >= 400)
-		return  (11);
+		return (11);
 	else if (bits >= 300)
-		return  (18);
+		return (18);
 	else
-		return  (27);
+		return (27);
 }
 
-static int 		generate_prime(t_bn *n, uint64_t bits)
+static int		generate_prime(t_bn *n, uint64_t bits)
 {
-	int iterations;
+	int	iterations;
 
 	iterations = get_iteration_number(bits);
-	do {
+	if (bn_set_random(n, bits / 2 + bits % 2))
+		return (1);
+	while (miller_rabin(n, iterations, DISPLAY) == 1)
+	{
 		if (bn_set_random(n, bits / 2 + bits % 2))
 			return (1);
-	} while (miller_rabin(n, iterations, DISPLAY) == 1);
+	}
 	return (0);
 }
 
-static void init_bns(t_bn *bns[], t_rsa_data *rsa, int numbits)
+static void		init_bns(t_bn *bns[], t_rsa_data *rsa, int numbits)
 {
 	bns[0] = bn_clone(rsa->prime1);
-	bns[1] = bn_clone(rsa->prime2);;
+	bns[1] = bn_clone(rsa->prime2);
 	bns[2] = bn_init_size(numbits);
 	bns[3] = bn_init_size(numbits);
 	bns[4] = bn_clone(rsa->prime1);
 }
 
-int 		genrsa_command_run(t_rsa_data *rsa, t_genrsa *genrsa)
+int				genrsa_command_run(t_rsa_data *rsa, t_genrsa *genrsa)
 {
-	t_bn 	*bns[5];
+	t_bn		*bns[5];
 
 	if (init_rsa_data(&genrsa->rsa_data, genrsa->numbits))
 		return (1);
 	ft_dprintf(STDERR_FILENO,
-			   "Generating RSA private key, %d bit long modulus\n",
-			   genrsa->numbits);
+				"Generating RSA private key, %d bit long modulus\n",
+				genrsa->numbits);
 	bn_set_ui(rsa->public_exp, 0x10001);
 	if (generate_prime(rsa->prime1, genrsa->numbits) ||
 		generate_prime(rsa->prime2, genrsa->numbits))

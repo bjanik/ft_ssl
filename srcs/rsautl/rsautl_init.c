@@ -1,8 +1,20 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   rsautl_init.c                                      :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: bjanik <marvin@42.fr>                      +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2020/08/10 14:02:16 by bjanik            #+#    #+#             */
+/*   Updated: 2020/08/10 14:02:18 by bjanik           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "ft_ssl.h"
 
 t_rsautl	*rsautl_init(void)
 {
-	t_rsautl 	*rsautl;
+	t_rsautl	*rsautl;
 
 	rsautl = (t_rsautl*)ft_malloc(sizeof(t_rsautl));
 	if (rsautl == NULL)

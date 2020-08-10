@@ -1,11 +1,23 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   bn_set.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: bjanik <marvin@42.fr>                      +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2020/08/10 13:27:54 by bjanik            #+#    #+#             */
+/*   Updated: 2020/08/10 13:27:56 by bjanik           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "ft_ssl.h"
 #include "bn.h"
 
-int 	bn_set_random(t_bn *n, int64_t size)
+int		bn_set_random(t_bn *n, int64_t size)
 {
-	int 		to_read;
-	int 		fd;
-	uint32_t 	bits;
+	int			to_read;
+	int			fd;
+	uint32_t	bits;
 
 	to_read = 0;
 	fd = open("/dev/random", O_RDONLY);
@@ -30,7 +42,7 @@ int 	bn_set_random(t_bn *n, int64_t size)
 
 void	bn_set_zero(t_bn *n)
 {
-	int64_t i;
+	int64_t	i;
 
 	i = -1;
 	if (n)

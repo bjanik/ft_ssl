@@ -12,11 +12,11 @@
 
 #include "ft_ssl.h"
 
-void	encode(unsigned char in[], char out[], int diff)
+void			encode(unsigned char in[], char out[], int diff)
 {
-	uint8_t	data[4];
-	uint8_t	data_bis[3];
-	uint8_t i;
+	uint8_t		data[4];
+	uint8_t		data_bis[3];
+	uint8_t		i;
 
 	if (diff < 3)
 	{
@@ -40,11 +40,11 @@ void	encode(unsigned char in[], char out[], int diff)
 	}
 }
 
-void	base64_encode(unsigned char in[], int ret, int fd)
+void			base64_encode(unsigned char in[], int ret, int fd)
 {
-	int				offset;
-	int				out_len;
-	char			out[BUF_SIZE + 1];
+	int			offset;
+	int			out_len;
+	char		out[BUF_SIZE + 1];
 
 	offset = 0;
 	out_len = 0;
@@ -66,11 +66,11 @@ void	base64_encode(unsigned char in[], int ret, int fd)
 	write(fd, out, out_len);
 }
 
-char 		*base64_encode_data(unsigned char *data, uint32_t data_len)
+char			*base64_encode_data(unsigned char *data, uint32_t data_len)
 {
-	uint32_t 		offset;
-	uint32_t 		data_encoded_len;
-	char 			*data_encoded;
+	uint32_t	offset;
+	uint32_t	data_encoded_len;
+	char		*data_encoded;
 
 	if ((data_encoded = (char*)ft_memalloc(data_len * 2)) == NULL)
 		return (NULL);
@@ -78,7 +78,8 @@ char 		*base64_encode_data(unsigned char *data, uint32_t data_len)
 	data_encoded_len = 0;
 	while (offset < data_len)
 	{
-		encode(data + offset, data_encoded + data_encoded_len, data_len - offset);
+		encode(data + offset, data_encoded + data_encoded_len,
+				data_len - offset);
 		offset += 3;
 		data_encoded_len += 4;
 	}

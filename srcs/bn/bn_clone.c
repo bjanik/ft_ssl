@@ -1,10 +1,22 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   bn_clone.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: bjanik <marvin@42.fr>                      +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2020/08/10 13:25:48 by bjanik            #+#    #+#             */
+/*   Updated: 2020/08/10 13:25:56 by bjanik           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "libft.h"
 #include "bn.h"
 
-t_bn 	*bn_clone(t_bn *a)
+t_bn	*bn_clone(t_bn *a)
 {
-	t_bn 		*n;
-	int64_t 	i;
+	t_bn	*n;
+	int64_t	i;
 
 	n = (t_bn*)ft_malloc(sizeof(t_bn));
 	if (n == NULL)
@@ -18,9 +30,7 @@ t_bn 	*bn_clone(t_bn *a)
 	n->size = a->size;
 	n->alloc = a->alloc;
 	i = -1;
-	while (++i < SIZE(n))
+	while (++i < n->size)
 		n->num[i] = a->num[i];
-	// while (i < n->alloc)
-	// 	n->num[i++] = 0;
 	return (n);
 }

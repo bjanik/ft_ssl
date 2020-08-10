@@ -12,11 +12,11 @@
 
 #include "ft_ssl.h"
 
-int			illegal_opt(char c, char *cmd_name)
+int						illegal_opt(char c, char *cmd_name)
 {
 	ft_dprintf(STDERR_FILENO, "ft_ssl: illegal option -- %c", c);
 	ft_dprintf(STDERR_FILENO, "\nusage: ft_ssl %s %s", cmd_name,
-			   HASH_CMD_USAGE);
+			HASH_CMD_USAGE);
 	return (1);
 }
 
@@ -31,18 +31,19 @@ static unsigned char	*hash_string(char **argv, int *ind, int i)
 	else
 	{
 		ft_dprintf(STDERR_FILENO, "%s:  option requires an argument -- s\n",
-				   argv[1]);
+					argv[1]);
 		ft_dprintf(STDERR_FILENO, "usage: ft_ssl %s %s", argv[1],
-				   HASH_CMD_USAGE);
+					HASH_CMD_USAGE);
 		return (NULL);
 	}
 	return (s);
 }
 
-int			parse_opt(t_ssl_command *command, int *opts, char **av, int *index)
+int						parse_opt(t_ssl_command *command, int *opts, char **av,
+									int *index)
 {
-	int		i;
-	unsigned char 	*s;
+	int				i;
+	unsigned char	*s;
 
 	i = 0;
 	while (av[*index][++i])
@@ -66,7 +67,10 @@ int			parse_opt(t_ssl_command *command, int *opts, char **av, int *index)
 	return (0);
 }
 
-int			set_options(t_ssl_command *command, int *opts, char **argv, int *index)
+int						set_options(t_ssl_command *command,
+									int *opts,
+									char **argv,
+									int *index)
 {
 	int	ret;
 

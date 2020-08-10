@@ -49,10 +49,10 @@ static void	sha1_final(t_ctx *ctx)
 	}
 }
 
-int		sha1(int opts, unsigned char *message, char *input_file)
+int			sha1(int opts, unsigned char *message, char *input_file)
 {
 	t_ctx	ctx;
-	t_msg 	msg;
+	t_msg	msg;
 
 	if (init_msg(&msg, message, input_file))
 		return (1);

@@ -12,8 +12,11 @@
 
 #include "ft_ssl.h"
 
-int		set_input_file(char **argv, t_des *des, int *index)
+int		set_input_file(char **argv, void *ptr, int *index)
 {
+	t_des	*des;
+
+	des = ptr;
 	if (argv[++(*index)])
 	{
 		if ((des->fd[IN] = open(argv[*index], O_RDONLY, 0644)) < 0)
@@ -32,8 +35,11 @@ int		set_input_file(char **argv, t_des *des, int *index)
 	return (0);
 }
 
-int		set_output_file(char **argv, t_des *des, int *index)
+int		set_output_file(char **argv, void *ptr, int *index)
 {
+	t_des	*des;
+
+	des = ptr;
 	if (argv[++(*index)])
 	{
 		if ((des->fd[OUT] =
@@ -53,10 +59,12 @@ int		set_output_file(char **argv, t_des *des, int *index)
 	return (0);
 }
 
-int		set_init_vector(char **argv, t_des *des, int *index)
+int		set_init_vector(char **argv, void *ptr, int *index)
 {
-	int	len;
+	t_des	*des;
+	int		len;
 
+	des = ptr;
 	if (!argv[++(*index)])
 	{
 		ft_putendl_fd("ft_ssl: init vector must be defined", STDERR_FILENO);
@@ -72,18 +80,24 @@ int		set_init_vector(char **argv, t_des *des, int *index)
 	return (0);
 }
 
-int		set_nopad(char **argv, t_des *des, int *index)
+int		set_nopad(char **argv, void *ptr, int *index)
 {
+	t_des	*des;
+
 	(void)argv;
 	(void)index;
+	des = ptr;
 	des->opts |= DES_NOPAD;
 	return (0);
 }
 
-int		set_decrypt_mode(char **argv, t_des *des, int *index)
+int		set_decrypt_mode(char **argv, void *ptr, int *index)
 {
+	t_des	*des;
+
 	(void)argv;
 	(void)index;
+	des = ptr;
 	des->opts |= DES_OPT_D;
 	return (0);
 }

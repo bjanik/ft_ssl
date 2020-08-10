@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   bn_div.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: bjanik <marvin@42.fr>                      +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2020/08/10 13:26:28 by bjanik            #+#    #+#             */
+/*   Updated: 2020/08/10 13:26:31 by bjanik           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "bn.h"
 
 static int	check_if_zero(t_bn *q, t_bn *r, t_bn *n, t_bn *d)
@@ -17,7 +29,7 @@ void		bn_div(t_bn *q, t_bn *r, t_bn *n, t_bn *d)
 	int64_t	i;
 
 	if (check_if_zero(q, r, n, d) == 0)
-		return;
+		return ;
 	cr = bn_clone(r);
 	bn_set_zero(r);
 	bn_set_zero(q);

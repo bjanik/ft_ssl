@@ -12,7 +12,7 @@
 
 #include "ft_ssl.h"
 
-const t_des_opts	g_des_opts[] =
+const t_opts	g_des_opts[] =
 {
 	{"-i", set_input_file},
 	{"-o", set_output_file},
@@ -51,12 +51,14 @@ static int	create_subkeys(t_des *des, char *tmp)
 	return (0);
 }
 
-int			set_subkeys(char **argv, t_des *des, int *index)
+int			set_subkeys(char **argv, void *ptr, int *index)
 {
-	uint8_t		i;
-	uint8_t		len;
-	char		*tmp;
+	t_des	*des;
+	uint8_t	i;
+	uint8_t	len;
+	char	*tmp;
 
+	des = ptr;
 	if (!argv[++(*index)])
 	{
 		ft_dprintf(STDERR_FILENO, "ft_ssl: Key is undefined\n");

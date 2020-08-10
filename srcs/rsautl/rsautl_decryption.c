@@ -1,34 +1,44 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   rsautl_decryption.c                                :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: bjanik <marvin@42.fr>                      +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2020/08/10 14:02:05 by bjanik            #+#    #+#             */
+/*   Updated: 2020/08/10 14:02:06 by bjanik           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "bn.h"
 #include "ft_ssl.h"
 
-static void handle_errors(int ret,
-						 uint32_t mlen,
-						 uint32_t modlen,
-						 unsigned char **message)
+static void				handle_errors(int ret,
+										uint32_t mlen,
+										uint32_t modlen,
+										unsigned char **message)
 {
 	if (ret < 0)
 	{
-		ft_dprintf(STDERR_FILENO,
-				   "ft_ssl: error while reading encrypted message\n");
+		ft_dprintf(2, "ft_ssl: error while reading encrypted message\n");
 		ft_memdel((void**)message);
 	}
 	else if (mlen != modlen)
 	{
-		ft_dprintf(STDERR_FILENO,
-				   "ft_ssl: message to decrypt not equal to modulus len\n");
+		ft_dprintf(2, "ft_ssl: message to decrypt not equal to modulus len\n");
 		ft_memdel((void**)message);
 	}
 }
 
-static unsigned char *get_encrypted_message(const int fd, uint32_t mod_len)
+static unsigned char	*get_encrypted_message(const int fd, uint32_t mod_len)
 {
 	unsigned char	buf[8];
-	unsigned char 	*message;
-	uint32_t 		mlen;
-	int 			ret;
+	unsigned char	*message;
+	uint32_t		mlen;
+	int				ret;
 
 	mlen = 0;
-	if ((message = (unsigned char *)malloc(mod_len)) == NULL)
+	if ((message = (unsigned char *)ft_malloc(mod_len)) == NULL)
 		return (NULL);
 	while ((ret = read(fd, buf, 8)) > 0)
 	{
@@ -45,10 +55,10 @@ static unsigned char *get_encrypted_message(const int fd, uint32_t mod_len)
 	return (message);
 }
 
-static int 			check_decryption(unsigned char *decrypted_msg)
+static int				check_decryption(unsigned char *decrypted_msg)
 {
-	unsigned char 	*ptr;
-	int 			i;
+	unsigned char	*ptr;
+	int				i;
 
 	i = 0;
 	ptr = decrypted_msg;
@@ -63,9 +73,9 @@ static int 			check_decryption(unsigned char *decrypted_msg)
 	return (ptr - decrypted_msg);
 }
 
-static int init_plain_and_cipher(t_bn *bn[],
-								 unsigned char *msg[],
-								 uint32_t mod_len)
+static int				init_plain_and_cipher(t_bn *bn[],
+												unsigned char *msg[],
+												uint32_t mod_len)
 {
 	msg[1] = msg[0];
 	if ((bn[0] = get_bn(&msg[1], mod_len)) == NULL)
@@ -82,14 +92,14 @@ static int init_plain_and_cipher(t_bn *bn[],
 	return (0);
 }
 
-int 				rsa_message_decryption(t_rsa_data *rsa_data,
-										   const int fd[])
+int						rsa_message_decryption(t_rsa_data *rsa_data,
+												const int fd[])
 {
 	unsigned char	*msg[2];
 	unsigned char	*decrypted_msg;
-	t_bn 			*bn[2];
+	t_bn			*bn[2];
 	uint32_t		mod_len;
-	int 			ret;
+	int				ret;
 
 	mod_len = bn_len(rsa_data->modulus);
 	if ((msg[0] = get_encrypted_message(fd[IN], mod_len)) == NULL)
@@ -104,7 +114,7 @@ int 				rsa_message_decryption(t_rsa_data *rsa_data,
 	write_bn_to_data(bn[1], decrypted_msg + 1);
 	ret = check_decryption(decrypted_msg);
 	(ret == -1) ? ft_putendl_fd("ft_ssl: decryption error", STDERR_FILENO) :
-				  write(fd[OUT], decrypted_msg + ret, mod_len - ret);
+					write(fd[OUT], decrypted_msg + ret, mod_len - ret);
 	ret = 0;
 	free(msg[0]);
 	free(decrypted_msg);

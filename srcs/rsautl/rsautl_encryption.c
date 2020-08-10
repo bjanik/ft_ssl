@@ -1,11 +1,23 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   rsautl_encryption.c                                :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: bjanik <marvin@42.fr>                      +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2020/08/10 14:02:10 by bjanik            #+#    #+#             */
+/*   Updated: 2020/08/10 14:02:11 by bjanik           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "bn.h"
 #include "ft_ssl.h"
 
-static int 			fill_message_random_bytes(unsigned char *message,
-											  int nb,
-											  int *offset)
+static int				fill_message_random_bytes(unsigned char *message,
+													int nb,
+													int *offset)
 {
-	int 			fd;
+	int	fd;
 
 	if ((fd = open("/dev/random", O_RDONLY)) < 1)
 		return (1);
@@ -23,13 +35,13 @@ static int 			fill_message_random_bytes(unsigned char *message,
 	return (0);
 }
 
-static unsigned char *get_raw_message(const int fd,
-									  uint32_t mod_len,
-									  uint32_t *mlen)
+static unsigned char	*get_raw_message(const int fd,
+											uint32_t mod_len,
+											uint32_t *mlen)
 {
 	unsigned char	buf[8];
-	unsigned char 	*raw_message;
-	int 			ret;
+	unsigned char	*raw_message;
+	int				ret;
 
 	*mlen = 0;
 	if ((raw_message = (unsigned char *)malloc(mod_len)) == NULL)
@@ -53,11 +65,11 @@ static unsigned char *get_raw_message(const int fd,
 	return (raw_message);
 }
 
-static unsigned char *get_encoded_message(const int fd, uint32_t mod_len)
+static unsigned char	*get_encoded_message(const int fd, uint32_t mod_len)
 {
-	unsigned char 	*message[2];
-	int 			offset;
-	uint32_t 		mlen;
+	unsigned char	*message[2];
+	int				offset;
+	uint32_t		mlen;
 
 	offset = 0;
 	mlen = 0;
@@ -82,9 +94,9 @@ static unsigned char *get_encoded_message(const int fd, uint32_t mod_len)
 	return (message[0]);
 }
 
-int 	rsa_message_encryption(t_rsa_data *rsa_data,
-							   const int fd[],
-							   const int opts)
+int						rsa_message_encryption(t_rsa_data *rsa_data,
+												const int fd[],
+												const int opts)
 {
 	uint32_t		mod_len;
 	unsigned char	*plain;
@@ -100,10 +112,10 @@ int 	rsa_message_encryption(t_rsa_data *rsa_data,
 	if ((rsa_cipher = bn_init_size(mod_len * 8)) == NULL)
 		return (1);
 	bn_mod_pow(rsa_cipher, rsa_message, rsa_data->public_exp,
-			   rsa_data->modulus);
+				rsa_data->modulus);
 	ft_memset(plain, 0x0, mod_len);
 	write_bn_to_data(rsa_cipher, plain + mod_len - bn_len(rsa_cipher));
-	((opts & RSAUTL_HEXDUMP)) ?	flag_hexdump(fd[OUT], plain, mod_len) :
+	((opts & RSAUTL_HEXDUMP)) ? flag_hexdump(fd[OUT], plain, mod_len) :
 								write(fd[OUT], plain, mod_len);
 	ft_strdel((char**)&plain);
 	bn_clear(&rsa_cipher);

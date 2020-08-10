@@ -46,16 +46,6 @@ unsigned char	*pbkdf(char *password, unsigned char *salt, int des)
 	}
 	msg.str = ps;
 	hash = gen_hash(&ctx, &msg, des);
-	// if (des == SINGLE_DES)
-	// {
-	// 	md5_init(&ctx);
-	// 	hash = md5_core(&ctx, &msg, 0);
-	// }
-	// else
-	// {
-	// 	sha256_init(&ctx);
-	// 	hash = sha256_core(&ctx, &msg, 0);
-	// }
 	ft_strdel((char**)&ps);
 	msg.str = NULL;
 	return (hash);

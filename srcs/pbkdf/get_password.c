@@ -14,30 +14,29 @@
 
 char	*get_password(int encryption)
 {
-	char	*pwd;
-	char	*check_pwd;
+	char	*pwd[2];
 
-	check_pwd = NULL;
+	pwd[1] = NULL;
 	if (encryption)
 	{
-		pwd = ft_strdup(getpass("Enter DES decryption password:"));
-		if (!pwd)
+		pwd[0] = ft_strdup(getpass("Enter DES decryption password:"));
+		if (!pwd[0])
 			ft_dprintf(STDERR_FILENO, "ft_ssl: bad password read\n");
 	}
 	else
 	{
-		pwd = ft_strdup(getpass("Enter DES encryption password:"));
-		check_pwd = getpass("Verifying DES encryption password:");
-		if (!pwd || !check_pwd)
+		pwd[0] = ft_strdup(getpass("Enter DES encryption password:"));
+		pwd[1] = getpass("Verifying DES encryption password:");
+		if (!pwd[0] || !pwd[1])
 		{
 			ft_dprintf(STDERR_FILENO, "ft_ssl: bad password read");
-			ft_strdel(&pwd);
+			ft_strdel(&pwd[0]);
 		}
-		else if (ft_strcmp(pwd, check_pwd))
+		else if (ft_strcmp(pwd[0], pwd[1]))
 		{
 			ft_dprintf(STDERR_FILENO, "ft_ssl: Verify password failure\n");
-			ft_strdel(&pwd);
+			ft_strdel(&pwd[0]);
 		}
 	}
-	return (pwd);
+	return (pwd[0]);
 }

@@ -1,11 +1,23 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   bn_init.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: bjanik <marvin@42.fr>                      +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2020/08/10 13:27:04 by bjanik            #+#    #+#             */
+/*   Updated: 2020/08/10 13:27:05 by bjanik           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "bn.h"
 #include "libft.h"
 
-t_bn 	*bn_init_size(uint64_t size)
+t_bn	*bn_init_size(uint64_t size)
 {
-	t_bn 	*n;
-	int64_t i;
-	
+	t_bn	*n;
+	int64_t	i;
+
 	n = (t_bn *)ft_malloc(sizeof(t_bn));
 	if (n == NULL)
 		return (NULL);

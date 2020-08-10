@@ -1,46 +1,18 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   rsa_opts.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: bjanik <marvin@42.fr>                      +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2020/08/10 12:29:28 by bjanik            #+#    #+#             */
+/*   Updated: 2020/08/10 12:29:29 by bjanik           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "ft_ssl.h"
-// #include "fcntl.h"
-// #include "unistd.h"
 
-struct			s_rsa_opts
-{
-	char		*opt;
-	int			(*opt_f)(char **argv, t_rsa *rsa, int *index);
-};
-
-int 	set_check(char **argv, t_rsa *rsa, int *index)
-{
-	(void)argv;
-	(void)index;
-	rsa->opts |= RSA_CHECK;
-	return (0);
-}
-
-int 	set_text(char **argv, t_rsa *rsa, int *index)
-{
-	(void)argv;
-	(void)index;
-	rsa->opts |= RSA_TEXT;
-	return (0);
-}
-
-int 	set_noout(char **argv, t_rsa *rsa, int *index)
-{
-	(void)argv;
-	(void)index;
-	rsa->opts |= RSA_NOOUT;
-	return (0);
-}
-
-int 	set_modulus(char **argv, t_rsa *rsa, int *index)
-{
-	(void)argv;
-	(void)index;
-	rsa->opts |= RSA_MODULUS;
-	return (0);
-}
-
-const struct s_rsa_opts  g_rsa_opts[] = {
+const struct s_opts g_rsa_opts[] = {
 	{"-inform", set_inform},
 	{"-outform", set_outform},
 	{"-in", set_in_file},
@@ -57,10 +29,54 @@ const struct s_rsa_opts  g_rsa_opts[] = {
 	{NULL, NULL}
 };
 
-int 	rsa_opts(char **argv, t_rsa *rsa)
+int		set_check(char **argv, void *ptr, int *index)
 {
-	int i;
-	int j;
+	t_rsa	*rsa;
+
+	(void)argv;
+	(void)index;
+	rsa = ptr;
+	rsa->opts |= RSA_CHECK;
+	return (0);
+}
+
+int		set_text(char **argv, void *ptr, int *index)
+{
+	t_rsa	*rsa;
+
+	(void)argv;
+	(void)index;
+	rsa = ptr;
+	rsa->opts |= RSA_TEXT;
+	return (0);
+}
+
+int		set_noout(char **argv, void *ptr, int *index)
+{
+	t_rsa	*rsa;
+
+	(void)argv;
+	(void)index;
+	rsa = ptr;
+	rsa->opts |= RSA_NOOUT;
+	return (0);
+}
+
+int		set_modulus(char **argv, void *ptr, int *index)
+{
+	t_rsa	*rsa;
+
+	(void)argv;
+	(void)index;
+	rsa = ptr;
+	rsa->opts |= RSA_MODULUS;
+	return (0);
+}
+
+int		rsa_opts(char **argv, t_rsa *rsa)
+{
+	int	i;
+	int	j;
 
 	i = 1;
 	while (argv[++i])
@@ -72,7 +88,7 @@ int 	rsa_opts(char **argv, t_rsa *rsa)
 			{
 				if (g_rsa_opts[j].opt_f(argv, rsa, &i))
 					return (1);
-				break ;	
+				break ;
 			}
 		}
 		if (g_rsa_opts[j].opt == NULL)

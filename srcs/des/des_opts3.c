@@ -12,16 +12,22 @@
 
 #include "ft_ssl.h"
 
-int		set_encrypt_mode(char **argv, t_des *des, int *index)
+int		set_encrypt_mode(char **argv, void *ptr, int *index)
 {
+	t_des	*des;
+
 	(void)argv;
 	(void)index;
+	des = ptr;
 	des->opts &= ~DES_OPT_D;
 	return (0);
 }
 
-int		set_password(char **argv, t_des *des, int *index)
+int		set_password(char **argv, void *ptr, int *index)
 {
+	t_des	*des;
+
+	des = ptr;
 	if (!argv[++(*index)])
 	{
 		ft_putendl_fd("ft_ssl: Password must be defined", STDERR_FILENO);
@@ -32,28 +38,36 @@ int		set_password(char **argv, t_des *des, int *index)
 	return (0);
 }
 
-int		set_cap_p(char **argv, t_des *des, int *index)
+int		set_cap_p(char **argv, void *ptr, int *index)
 {
+	t_des	*des;
+
 	(void)argv;
 	(void)index;
+	des = ptr;
 	des->opts |= DES_OPT_CAP_P;
 	return (0);
 }
 
-int		set_base64(char **argv, t_des *des, int *index)
+int		set_base64(char **argv, void *ptr, int *index)
 {
+	t_des	*des;
+
 	(void)argv;
 	(void)index;
+	des = ptr;
 	des->opts |= DES_OPT_A;
 	if (!(des->base64 = ft_memalloc(sizeof(t_base64))))
 		ft_error_msg("Malloc failed");
 	return (0);
 }
 
-int		set_salt(char **argv, t_des *des, int *index)
+int		set_salt(char **argv, void *ptr, int *index)
 {
+	t_des		*des;
 	uint64_t	salt;
 
+	des = ptr;
 	if (!argv[++(*index)])
 	{
 		ft_putendl_fd("ft_ssl: missing argument salt for -s", STDERR_FILENO);

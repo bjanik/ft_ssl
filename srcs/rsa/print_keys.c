@@ -1,6 +1,18 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   print_keys.c                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: bjanik <marvin@42.fr>                      +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2020/08/10 12:31:12 by bjanik            #+#    #+#             */
+/*   Updated: 2020/08/10 12:31:13 by bjanik           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "ft_ssl.h"
 
-void 		print_encryption_header(t_rsa *rsa, const int fd)
+void	print_encryption_header(t_rsa *rsa, const int fd)
 {
 	char	*iv;
 
@@ -8,19 +20,19 @@ void 		print_encryption_header(t_rsa *rsa, const int fd)
 	{
 		ft_dprintf(fd, "%s\n%s: DES-CBC,", PROC_TYPE, DEK_INFO);
 		iv = ft_itoa_base_llu(convert_input_to_block(rsa->des->salt),
-							  "0123456789ABCDEF");
+								"0123456789ABCDEF");
 		ft_dprintf(fd, "%s\n\n", iv);
 		ft_strdel(&iv);
 	}
 }
 
-void			print_rsa_key(t_rsa *rsa,
-							  char *data,
-							  const int fd)
+void	print_rsa_key(t_rsa *rsa,
+						char *data,
+						const int fd)
 {
-	int 			i;
-	int 			len;
-	int 			public;
+	int	i;
+	int	len;
+	int	public;
 
 	len = ft_strlen(data);
 	i = 0;

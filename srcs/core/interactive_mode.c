@@ -12,6 +12,7 @@
 
 #include "ft_ssl.h"
 
+
 static void	add_prog_name(t_lexer *lexer, char *s)
 {
 	t_list	*lst;
@@ -24,6 +25,13 @@ static void	add_prog_name(t_lexer *lexer, char *s)
 		lexer->tokens[0] = lst;
 		lexer->count++;
 	}
+}
+
+static void	clear_data(t_lexer *lexer, char **input, char ***av)
+{
+	ft_strdel(input);
+	reset_lexer(lexer);
+	ft_free_string_tab(av);
 }
 
 int			interactive_mode(char **argv)
@@ -45,11 +53,12 @@ int			interactive_mode(char **argv)
 		add_prog_name(&lexer, argv[0]);
 		if (!(av = lst_to_tab(lexer.tokens[0], lexer.count + 1)))
 			ft_error_msg("Malloc failed");
+		if (!ft_strcmp("exit", av[1]) || !ft_strcmp("quit", av[1]))
+			break;
 		ft_ssl_routine(av);
-		ft_strdel(&input);
-		reset_lexer(&lexer);
-		ft_free_string_tab(&av);
+		clear_data(&lexer, &input, &av);
 	}
+	clear_data(&lexer, &input, &av);
 	ft_strdel(&lexer.current_token);
 	return (0);
 }

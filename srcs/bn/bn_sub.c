@@ -1,19 +1,30 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   bn_sub.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: bjanik <marvin@42.fr>                      +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2020/08/10 13:28:10 by bjanik            #+#    #+#             */
+/*   Updated: 2020/08/10 13:28:18 by bjanik           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include <limits.h>
 #include "bn.h"
 
-static void final_sub(t_bn *res)
+static void	final_sub(t_bn *res)
 {
 	int64_t		i;
 
-	i = res->alloc - 1;
-	while (i >= 0)
+	i = res->alloc;
+	while (--i >= 0)
 	{
 		if (res->num[i] != 0)
 		{
 			res->size = i + 1;
-			break;
+			break ;
 		}
-		i--;
 	}
 }
 
@@ -43,7 +54,7 @@ void		bn_sub(t_bn *res, t_bn *a, t_bn *b)
 	final_sub(res);
 }
 
-void	bn_sub_ui(t_bn *res, t_bn *a, uint64_t ui)
+void		bn_sub_ui(t_bn *res, t_bn *a, uint64_t ui)
 {
 	t_bn		*ca;
 	uint64_t	j;
@@ -66,4 +77,4 @@ void	bn_sub_ui(t_bn *res, t_bn *a, uint64_t ui)
 	bn_copy(res, ca);
 	res->num[0] = ca->num[0] - ui;
 	bn_clear(&ca);
-}	
+}

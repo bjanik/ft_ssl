@@ -12,7 +12,7 @@
 
 #include "ft_ssl.h"
 
-static int	translate(unsigned char in[], size_t len)
+static int			translate(unsigned char in[], size_t len)
 {
 	size_t	i;
 
@@ -38,7 +38,7 @@ static int	translate(unsigned char in[], size_t len)
 	return (3);
 }
 
-int			decode(unsigned char in[], unsigned char out[], size_t len)
+int					decode(unsigned char in[], unsigned char out[], size_t len)
 {
 	int	ret;
 
@@ -49,7 +49,8 @@ int			decode(unsigned char in[], unsigned char out[], size_t len)
 	return (ret);
 }
 
-int			base64_decode(unsigned char in[], int ret, int fd, uint8_t des)
+int					base64_decode(unsigned char in[], int ret, int fd,
+									uint8_t des)
 {
 	int				offset;
 	int				out_len;
@@ -78,26 +79,25 @@ int			base64_decode(unsigned char in[], int ret, int fd, uint8_t des)
 	return (len);
 }
 
-unsigned char    *base64_decode_data(uint32_t *decoded_data_len, 
-                                     char *data, uint32_t data_len)
+unsigned char		*base64_decode_data(uint32_t *decoded_data_len,
+									char *data, uint32_t data_len)
 {
-    uint32_t        offset;
-    unsigned char   *decoded_data;
-    int 			ret;
+	uint32_t		offset;
+	unsigned char	*decoded_data;
+	int				ret;
 
-    if (data == NULL)
-        return (NULL);
-    if (!(decoded_data = (unsigned char *)malloc(data_len * sizeof(char))))
-        return (NULL);
-    offset = 0;
-    while (offset < data_len)
-    {
-        ret = decode((unsigned char*)data + offset,
-        			 decoded_data + *decoded_data_len, 4);
-        *decoded_data_len += ret;
-        offset += 4;
-    }
-    ft_strdel(&data);
-    return (decoded_data);
+	if (data == NULL)
+		return (NULL);
+	if (!(decoded_data = (unsigned char *)malloc(data_len * sizeof(char))))
+		return (NULL);
+	offset = 0;
+	while (offset < data_len)
+	{
+		ret = decode((unsigned char*)data + offset,
+						decoded_data + *decoded_data_len, 4);
+		*decoded_data_len += ret;
+		offset += 4;
+	}
+	ft_strdel(&data);
+	return (decoded_data);
 }
-

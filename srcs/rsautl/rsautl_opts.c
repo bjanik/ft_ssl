@@ -1,12 +1,18 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   rsautl_opts.c                                      :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: bjanik <marvin@42.fr>                      +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2020/08/10 14:02:24 by bjanik            #+#    #+#             */
+/*   Updated: 2020/08/10 14:02:26 by bjanik           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "ft_ssl.h"
 
-struct			s_rsautl_opts
-{
-	char		*opt;
-	int			(*opt_f)(char **argv, t_rsautl *rsautl, int *index);
-};
-
-const struct s_rsautl_opts  g_rsautl_opts[] = {
+const struct s_opts g_rsautl_opts[] = {
 	{"-in", set_rsautl_in},
 	{"-out", set_rsautl_out},
 	{"-inkey", set_inkey_file},
@@ -17,8 +23,11 @@ const struct s_rsautl_opts  g_rsautl_opts[] = {
 	{NULL, NULL}
 };
 
-int 	set_rsautl_in(char **argv, t_rsautl *rsautl, int *index)
+int	set_rsautl_in(char **argv, void *ptr, int *index)
 {
+	t_rsautl	*rsautl;
+
+	rsautl = ptr;
 	(*index)++;
 	if ((rsautl->in = ft_strdup(argv[*index])) == NULL)
 	{
@@ -28,8 +37,11 @@ int 	set_rsautl_in(char **argv, t_rsautl *rsautl, int *index)
 	return (0);
 }
 
-int 	set_rsautl_out(char **argv, t_rsautl *rsautl, int *index)
+int	set_rsautl_out(char **argv, void *ptr, int *index)
 {
+	t_rsautl	*rsautl;
+
+	rsautl = ptr;
 	(*index)++;
 	if ((rsautl->out = ft_strdup(argv[*index])) == NULL)
 	{
@@ -39,10 +51,10 @@ int 	set_rsautl_out(char **argv, t_rsautl *rsautl, int *index)
 	return (0);
 }
 
-
-int 	rsautl_opts(char **argv, t_rsautl *rsautl)
+int	rsautl_opts(char **argv, t_rsautl *rsautl)
 {
-	int i, j;
+	int	i;
+	int	j;
 
 	i = 1;
 	while (argv[++i])
@@ -54,7 +66,7 @@ int 	rsautl_opts(char **argv, t_rsautl *rsautl)
 			{
 				if (g_rsautl_opts[j].opt_f(argv, rsautl, &i))
 					return (1);
-				break ;	
+				break ;
 			}
 		}
 		if (g_rsautl_opts[j].opt == NULL)

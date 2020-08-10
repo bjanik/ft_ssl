@@ -24,7 +24,7 @@ int	get_salt(t_des *des)
 	{
 		ft_dprintf(STDERR_FILENO, "ft_ssl: /dev/random opening failed\n");
 		return (1);
-	}	
+	}
 	if (read(fd, des->salt, 8) < 0)
 	{
 		close(fd);

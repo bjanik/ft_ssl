@@ -34,6 +34,7 @@ SRC_NAME = base64/base64_core.c \
 		bn/bn_shift.c \
 		bn/bn_sub.c \
 		bn/bn_utils.c \
+		core/commands.c \
 		core/ft_ssl.c \
 		core/interactive_mode.c \
 		core/main.c \
@@ -86,6 +87,7 @@ SRC_NAME = base64/base64_core.c \
 		rsa/pem.c \
 		rsa/pem_decode.c \
 		rsa/pem_public_key.c \
+		rsa/pem_utils.c \
 		rsa/print_keys.c \
 		rsa/rsa.c \
 		rsa/rsa_clear.c \
@@ -125,7 +127,7 @@ $(OBJ_PATH) :
 	@mkdir -p $(dir $(OBJ))
 
 $(OBJ_PATH)%.o: $(SRC_PATH)%.c 
-	$(CC) $(FLAGS) -c $< -o $@ -I$(INC_PATH) -I$(LIBFT_INC)
+	$(CC) $(FLAGS) -MMD -c $< -o $@ -I$(INC_PATH) -I$(LIBFT_INC)
 
 clean :
 	/bin/rm -rf $(OBJ_PATH)
@@ -136,5 +138,7 @@ fclean : clean
 	/bin/rm -f $(NAME)
 
 re : fclean all
+
+-include $(OBJ:.o=.d)
 
 .PHONY: all, clean, fclean, re

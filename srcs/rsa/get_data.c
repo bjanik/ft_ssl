@@ -1,10 +1,22 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   get_data.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: bjanik <marvin@42.fr>                      +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2020/08/10 12:31:31 by bjanik            #+#    #+#             */
+/*   Updated: 2020/08/10 12:31:35 by bjanik           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "ft_ssl.h"
 
-static int 			init_rsa_data_decryption(t_des **des, char *line)
+static int	init_rsa_data_decryption(t_des **des, char *line)
 {
 	char	**tab;
 	char	**algo_iv;
-	int 	ret;
+	int		ret;
 
 	ret = 0;
 	if ((tab = ft_strsplit(line, ':')) == NULL)
@@ -28,7 +40,7 @@ static int 			init_rsa_data_decryption(t_des **des, char *line)
 	return (ret);
 }
 
-static char 	*get_data_final(int ret, char *data)
+static char	*get_data_final(int ret, char *data)
 {
 	if (ret < 0)
 	{
@@ -40,7 +52,7 @@ static char 	*get_data_final(int ret, char *data)
 }
 
 
-char			*get_data(const int fd, 
+char		*get_data(const int fd, 
 						  t_des **des,
 						  const char *header,
 						  const char *footer)

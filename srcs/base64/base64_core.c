@@ -12,7 +12,7 @@
 
 #include "ft_ssl.h"
 
-static void	decode_data(t_base64 *base)
+static void			decode_data(t_base64 *base)
 {
 	int				ret;
 	unsigned char	c;
@@ -41,7 +41,8 @@ static void	decode_data(t_base64 *base)
 	}
 }
 
-static int	output(t_base64 *base, unsigned char buf[], int len, int ret)
+static int			output(t_base64 *base, unsigned char buf[], int len,
+							int ret)
 {
 	len += ret;
 	if (len >= BUF_SIZE)
@@ -49,13 +50,13 @@ static int	output(t_base64 *base, unsigned char buf[], int len, int ret)
 		base64_encode(base->buffer, len, base->fd[OUT]);
 		if (len > BUF_SIZE)
 			ft_memcpy(buf, base->buffer + ret - len + BUF_SIZE,
-					  len - BUF_SIZE);
+						len - BUF_SIZE);
 		len = (len > BUF_SIZE) ? len - BUF_SIZE : 0;
 	}
 	return (len);
 }
 
-static int 	base64_command_run(t_base64 *base)
+static int			base64_command_run(t_base64 *base)
 {
 	int				ret;
 	int				len;
@@ -68,7 +69,7 @@ static int 	base64_command_run(t_base64 *base)
 		len = 0;
 		while ((ret = read(base->fd[IN], base->buffer, BUF_SIZE)) > 0)
 		{
-			!(len + ret <= BUF_SIZE) ? 
+			!(len + ret <= BUF_SIZE) ?
 						ft_memcpy(buf + len, base->buffer, ret) :
 						ft_memcpy(buf + len, base->buffer, BUF_SIZE - len);
 			len = output(base, buf, len, ret);
@@ -81,7 +82,7 @@ static int 	base64_command_run(t_base64 *base)
 	return (0);
 }
 
-int			base64_command(char **argv, t_ssl_command *cmd)
+int					base64_command(char **argv, t_ssl_command *cmd)
 {
 	t_base64		*base64;
 

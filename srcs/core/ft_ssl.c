@@ -33,7 +33,6 @@ t_ssl_command		g_commands[] = {
 	{NULL, NULL, {NULL, NULL}, NULL},
 };
 
-
 t_ssl_command		*get_ssl_command(char **argv)
 {
 	int		i;

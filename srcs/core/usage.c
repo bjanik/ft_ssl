@@ -29,10 +29,10 @@ int	commands_usage(char *command)
 	while (g_commands[++i].name)
 		(g_commands[i].hash_func) ?
 			ft_dprintf(STDERR_FILENO, "%s\n", g_commands[i].name) : 0;
-	ft_dprintf(STDERR_FILENO, "\nCipher commands:");
+	ft_dprintf(STDERR_FILENO, "\nCipher commands:\n");
 	i = -1;
 	while (g_commands[++i].name)
-		(!g_commands[i].hash_func) ?
+		(g_commands[i].des_mode[0]) ?
 			ft_dprintf(STDERR_FILENO, "%s\n", g_commands[i].name) : 0;
 	return (1);
 }
@@ -55,7 +55,7 @@ int	des_usage(const char *name, char *opt)
 	return (1);
 }
 
-int base64_usage(char *opt)
+int	base64_usage(char *opt)
 {
 	ft_dprintf(STDERR_FILENO, "ft_ssl: base64: invalid option: %s\n", opt);
 	ft_dprintf(STDERR_FILENO, "Options are:\n");

@@ -1,27 +1,38 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   flag_check.c                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: bjanik <marvin@42.fr>                      +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2020/08/10 12:20:05 by bjanik            #+#    #+#             */
+/*   Updated: 2020/08/10 12:20:06 by bjanik           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "bn.h"
 #include "ft_ssl.h"
 
 static int		check_modulus(t_rsa_data rsa_data, const uint64_t size)
 {
-	t_bn 	*n;
-	int 	ret;
+	t_bn	*n;
+	int		ret;
 
 	n = bn_init_size(size);
 	if (n == NULL)
 		return (1);
 	bn_mul(n, rsa_data.prime1, rsa_data.prime2);
 	ret = bn_cmp(n, rsa_data.modulus);
-	if (ret) 
+	if (ret)
 		ft_dprintf(STDERR_FILENO,
-				   "Error: modulus not equal to prime1 * prime2\n");
+					"Error: modulus not equal to prime1 * prime2\n");
 	bn_clear(&n);
 	return (ret);
 }
 
-
-static int 		check_primality(t_rsa_data rsa_data)
+static int		check_primality(t_rsa_data rsa_data)
 {
-	int 	ret;
+	int		ret;
 
 	ret = 0;
 	if (miller_rabin(rsa_data.prime1, 5, NO_DISPLAY) == 1)
@@ -37,19 +48,19 @@ static int 		check_primality(t_rsa_data rsa_data)
 	return (ret);
 }
 
-static void 	init_bns(t_bn *bns[], t_rsa_data rsa_data, const uint64_t size)
+static void		init_bns(t_bn *bns[], t_rsa_data rsa_data, const uint64_t size)
 {
-	bns[0]= bn_clone(rsa_data.prime1);
-	bns[1]= bn_clone(rsa_data.prime2);
-	bns[2]= bn_init_size(size + 1);
-	bns[3]= bn_init_size(size + 1);
-	bns[4]= bn_init_size(size + 1);
+	bns[0] = bn_clone(rsa_data.prime1);
+	bns[1] = bn_clone(rsa_data.prime2);
+	bns[2] = bn_init_size(size + 1);
+	bns[3] = bn_init_size(size + 1);
+	bns[4] = bn_init_size(size + 1);
 	bn_sub_ui(bns[0], bns[0], 1);
 	bn_sub_ui(bns[1], bns[1], 1);
 	bn_mul(bns[2], bns[0], bns[1]);
 }
 
-static int 		check_exponents(t_rsa_data rsa_data, const uint64_t size)
+static int		check_exponents(t_rsa_data rsa_data, const uint64_t size)
 {
 	t_bn	*bns[5];
 
@@ -72,9 +83,10 @@ static int 		check_exponents(t_rsa_data rsa_data, const uint64_t size)
 
 int				flag_check(t_rsa_data rsa_data)
 {
-	int 		ret = 0;
-	uint64_t 	size;
+	int			ret;
+	uint64_t	size;
 
+	ret = 0;
 	size = SIZE(rsa_data.prime1) + SIZE(rsa_data.prime2);
 	if (check_primality(rsa_data))
 		ret = 1;

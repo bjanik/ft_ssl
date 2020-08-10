@@ -205,12 +205,15 @@ int					des_decrypt_message(t_des *des)
 	return (des_decrypt_message_reg(des));
 }
 
-unsigned char 		*des_decrypt_data(t_des *des, unsigned char *data, uint32_t data_len)
+unsigned char		*des_decrypt_data(t_des *des, unsigned char *data,
+										uint32_t data_len)
 {
-	unsigned char 	*data_decrypted;
-	uint64_t 		cipher, plain;
-	uint32_t 		offset = 0;
+	unsigned char	*data_decrypted;
+	uint64_t		cipher;
+	uint64_t		plain;
+	uint32_t		offset;
 
+	offset = 0;
 	data_decrypted = (unsigned char*)malloc(data_len * sizeof(unsigned char));
 	if (data_decrypted == NULL)
 		return (NULL);

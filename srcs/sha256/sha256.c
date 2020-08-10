@@ -57,7 +57,7 @@ void			sha256_final(t_ctx *ctx)
 
 unsigned char	*sha256_core(t_ctx *ctx, t_msg *msg, uint32_t opts)
 {
-	unsigned char 	*digest;
+	unsigned char	*digest;
 
 	if (update(ctx, msg, opts) == 0)
 	{
@@ -71,10 +71,10 @@ unsigned char	*sha256_core(t_ctx *ctx, t_msg *msg, uint32_t opts)
 	return (NULL);
 }
 
-int			sha256(int opts, unsigned char *message, char *input_file)
+int				sha256(int opts, unsigned char *message, char *input_file)
 {
 	t_ctx			ctx;
-	t_msg 			msg;
+	t_msg			msg;
 	unsigned char	*digest;
 
 	if (init_msg(&msg, message, input_file))
