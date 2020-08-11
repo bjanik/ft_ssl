@@ -12,6 +12,18 @@
 
 #include "ft_ssl.h"
 
+static int	genrsa_usage(char *opt)
+{
+	int fd;
+
+	fd = STDERR_FILENO;
+	ft_dprintf(fd, "ft_ssl: genrsa: invalid option %s\n", opt);
+	ft_dprintf(fd, "Options are:\n");
+	ft_dprintf(fd, "-o [file] output the private key to file\n");
+	ft_dprintf(fd, "-des      encrypt the generated key with des-cbc\n");
+	return (1);
+}
+
 static int	set_genrsa_output(char **argv, void *ptr, int *index)
 {
 	t_genrsa *genrsa;
@@ -62,6 +74,8 @@ int			genrsa_opts(char **argv, t_genrsa *genrsa)
 				break ;
 			}
 		}
+		if (g_genrsa_opts[j].opt == NULL)
+			return (genrsa_usage(argv[i]));
 	}
 	return (finalize_genrsa_opts(genrsa));
 }

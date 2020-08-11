@@ -40,48 +40,91 @@ static int	init_rsa_data_decryption(t_des **des, char *line)
 	return (ret);
 }
 
-static char	*get_data_final(int ret, char *data)
+static int	check_read_error(int ret, char *line)
 {
-	if (ret < 0)
+	int val;
+
+	val = 0;
+	if (!line)
 	{
-		ft_dprintf(STDERR_FILENO, "ft_ssl: read error\n");
-		ft_strdel(&data);
-		return (NULL);
+		ft_dprintf(STDERR_FILENO, "ft_ssl: Missing key footer\n");
+		val = 1;
 	}
-	return (data);
+	ft_strdel(&line);
+	if (val == 1)
+		return (1);
+	if (val && ret < 0)
+	{
+		ft_dprintf(STDERR_FILENO, "ft_ssl: Error reading key file\n");
+		return (ret);
+	}
+	return (0);
 }
 
-
-char		*get_data(const int fd, 
-						  t_des **des,
-						  const char *header,
-						  const char *footer)
+static int	skip_until_header(const int fd, const char *header)
 {
-	char		*line;
-	char		*data;
-	int 		val[3];
+	int		ret;
+	char	*line;
+	char	*str;
 
-	line = NULL;
-	data = ft_strnew(64);
-	ft_memset((void*)val, 0, sizeof(val));
-	while ((val[0] = get_next_line(fd, &line)) > 0)
+	str = (!ft_strcmp(header, PEM_PRIVATE_HEADER)) ? "private" : "public";
+	if ((ret = get_next_line(fd, &line)) < 0)
+		return (-1);
+	while (ft_strcmp(line, header))
 	{
-		if (ft_strcmp(line, header) == 0)
+		free(line);
+		ret = get_next_line(fd, &line);
+		if (ret == 0)
+			ft_dprintf(2, "ft_ssl: Unable to load %s key\n", str);
+		else if (ret < 0)
+			ft_dprintf(2, "ft_ssl: Error reading key file\n");
+		if (ret < 1)
 		{
-			val[2] = 1;
-			continue;
+			free(line);
+			return (1);
 		}
+	}
+	free(line);
+	return (0);
+}
+
+static int	store_lines_in_data(char **data,
+								const int fd,
+								const char *footer,
+								t_des **des)
+{
+	int		ret;
+	char	*line;
+	int		proc_type;
+
+	while ((ret = get_next_line(fd, &line)) > 0)
+	{
 		if (ft_strcmp(line, footer) == 0)
 			break ;
 		else if (ft_strcmp(line, PROC_TYPE) == 0)
-			val[1] = 1;
-		else if (val[1] == 1 && ft_strncmp(line, DEK_INFO, 8) == 0)
+			proc_type = 1;
+		else if (proc_type == 1 && ft_strncmp(line, DEK_INFO, 8) == 0)
 			init_rsa_data_decryption(des, line);
-		else if (data && val[2] == 1)
-			if ((data = ft_strjoin_free(data, line, 1)) == NULL)
-				break;
+		else if (*data == NULL)
+			*data = ft_strdup(line);
+		else if (*data)
+			*data = ft_strjoin_free(*data, line, 1);
 		ft_strdel(&line);
 	}
-	ft_strdel(&line);
-	return (get_data_final(val[0], data));
+	return (check_read_error(ret, line));
+}
+
+char		*get_data(const int fd,
+						t_des **des,
+						const char *header,
+						const char *footer)
+{
+	char		*data;
+
+	data = NULL;
+	if (skip_until_header(fd, header))
+		return (NULL);
+	if (store_lines_in_data(&data, fd, footer, des))
+		ft_strdel(&data);
+	return (data);
 }

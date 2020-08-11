@@ -108,6 +108,7 @@ static int			rsa_handle_key(t_rsa *rsa, char **data)
 	}
 	else if (rsa->opts & RSA_PUBOUT)
 	{
+		ft_strdel(data);
 		if ((*data = create_public_key(rsa)) == NULL)
 			return (1);
 	}
@@ -132,10 +133,13 @@ int					rsa_command_run(t_rsa *rsa)
 			return (1);
 		}
 	}
-	ret = rsa_handle_key(rsa, &data);
+	if ((ret = rsa_handle_key(rsa, &data)))
+	{
+		ft_strdel(&data);
+		return (1);
+	}
 	rsa_output_file(rsa);
-	if ((rsa->opts & RSA_NOOUT) == 0)
-		print_rsa_key(rsa, data, rsa->fd[OUT]);
+	(!(rsa->opts & RSA_NOOUT)) ? print_rsa_key(rsa, data, rsa->fd[OUT]) : 0;
 	ft_strdel(&data);
 	return (ret);
 }

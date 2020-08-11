@@ -50,6 +50,7 @@ SRC_NAME = base64/base64_core.c \
 		des/des_cbc.c \
 		des/des_core.c \
 		des/des_decrypt.c \
+		des/des_decrypt2.c \
 		des/des_ecb.c \
 		des/des_encrypt.c \
 		des/des_init.c \
@@ -89,6 +90,7 @@ SRC_NAME = base64/base64_core.c \
 		rsa/pem_public_key.c \
 		rsa/pem_utils.c \
 		rsa/print_keys.c \
+		rsa/private_key_encryption_decryption.c \
 		rsa/rsa.c \
 		rsa/rsa_clear.c \
 		rsa/rsa_file.c \

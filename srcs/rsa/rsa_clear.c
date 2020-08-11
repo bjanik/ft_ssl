@@ -31,6 +31,10 @@ void				rsa_clear(t_rsa *rsa)
 		bn_clear(&rsa->rsa_data.exponent1);
 		bn_clear(&rsa->rsa_data.exponent2);
 		bn_clear(&rsa->rsa_data.coef);
+		if (rsa->in)
+			close(rsa->fd[IN]);
+		if (rsa->out)
+			close(rsa->fd[OUT]);
 	}
 	ft_memdel((void**)&rsa);
 }

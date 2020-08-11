@@ -12,6 +12,27 @@
 
 #include "ft_ssl.h"
 
+int	rsa_usage(char *opt)
+{
+	int fd;
+
+	fd = STDERR_FILENO;
+	ft_dprintf(fd, "ft_ssl: rsa: invalid option %s\n", opt);
+	ft_dprintf(fd, "Options are:\n");
+	ft_dprintf(fd, "-in [file]  input file\n");
+	ft_dprintf(fd, "-out [file] output file\n");
+	ft_dprintf(fd, "-modulus    print the RSA key modulus\n");
+	ft_dprintf(fd, "-check      check consistency of RSA private key\n");
+	ft_dprintf(fd, "-noout 		do not print encoded version of the key\n");
+	ft_dprintf(fd, "-text 		print in plain textin addtion to encoded\n");
+	ft_dprintf(fd, "-pubin.     expect a public key as input\n");
+	ft_dprintf(fd, "-pubout     output a public key\n");
+	ft_dprintf(fd, "-passin     input file passphrase source\n");
+	ft_dprintf(fd, "-passout    output file passphrase source\n");
+	ft_dprintf(fd, "-des        encrypt the generated key with des-cbc\n");
+	return (1);
+}
+
 int	set_pubin(char **argv, void *ptr, int *index)
 {
 	t_rsa	*rsa;

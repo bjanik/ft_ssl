@@ -12,7 +12,7 @@
 
 #include "ft_ssl.h"
 
-char			*get_pem_passphrase(const char *in, int decrypt)
+char		*get_pem_passphrase(const char *in, int decrypt)
 {
 	char		*pwd[2];
 	char		*prompt;
@@ -37,11 +37,24 @@ char			*get_pem_passphrase(const char *in, int decrypt)
 		ft_dprintf(STDERR_FILENO, "ft_ssl: bad PEM password read\n");
 	else if (ft_strcmp(pwd[0], pwd[1]) != 0)
 		ft_dprintf(STDERR_FILENO, "ft_ssl: Verify password failure\n");
-	ft_strdel(&pwd[1]);
 	return (pwd[0]);
 }
 
-int				key_from_passphrase(t_des *des,
+static int	set_passwd(t_des *des,
+							const int decryption,
+							const char *in,
+							const char *pass)
+{
+	if (pass == NULL)
+		des->password = get_pem_passphrase(in, decryption);
+	else
+		des->password = ft_strdup(pass);
+	if (des->password == NULL)
+		return (1);
+	return (0);
+}
+
+int			key_from_passphrase(t_des *des,
 									const int decryption,
 									const char *in,
 									const char *pass)
@@ -49,15 +62,13 @@ int				key_from_passphrase(t_des *des,
 	unsigned char	*hash;
 	unsigned char	keys[4][8];
 
-	if (pass == NULL)
+	if (set_passwd(des, decryption, in, pass))
+		return (1);
+	if (des->init_vector == 0)
 	{
-		if ((des->password = get_pem_passphrase(in, decryption)) == NULL)
+		if (get_salt(des))
 			return (1);
 	}
-	else
-		des->password = ft_strdup(pass);
-	if (des->init_vector == 0 && get_salt(des))
-		return (1);
 	else
 	{
 		des->salt = (unsigned char *)ft_malloc(8 * sizeof(unsigned char));

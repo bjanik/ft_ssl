@@ -30,7 +30,10 @@ static int			translate(unsigned char in[], size_t len)
 		else if (in[i] == '/')
 			in[i] = 63;
 		else if (in[i] != '=' || (in[i] == '=' && i < 2))
-			ft_error_msg("Invalid character in input stream");
+		{
+			ft_dprintf(STDERR_FILENO, "Invalid character in input stream\n");
+			return (-1);
+		}
 		else if (in[i] == '=')
 			return (i - 1);
 		i++;
@@ -43,6 +46,8 @@ int					decode(unsigned char in[], unsigned char out[], size_t len)
 	int	ret;
 
 	ret = translate(in, len);
+	if (ret == -1)
+		return (-1);
 	out[0] = (in[0] << 2) | ((in[1] & 0x30) >> 4);
 	out[1] = ((in[1] & 0x0F) << 4) | ((in[2] & 0x3C) >> 2);
 	out[2] = ((in[2] & 0x03) << 6) | in[3];
@@ -95,6 +100,11 @@ unsigned char		*base64_decode_data(uint32_t *decoded_data_len,
 	{
 		ret = decode((unsigned char*)data + offset,
 						decoded_data + *decoded_data_len, 4);
+		if (ret == -1)
+		{
+			ft_strdel((char**)&decoded_data);
+			break ;
+		}
 		*decoded_data_len += ret;
 		offset += 4;
 	}

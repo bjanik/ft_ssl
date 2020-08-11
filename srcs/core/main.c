@@ -13,7 +13,7 @@
 #include "bn.h"
 #include "ft_ssl.h"
 
-int		hash_files(char **argv, int opts, t_ssl_command *command)
+int	hash_files(char **argv, int opts, t_ssl_command *command)
 {
 	int	i;
 	int	ret;
@@ -25,7 +25,7 @@ int		hash_files(char **argv, int opts, t_ssl_command *command)
 	return (ret);
 }
 
-int				ft_ssl_routine(char **argv)
+int	ft_ssl_routine(char **argv)
 {
 	t_ssl_command	*command;
 
@@ -38,7 +38,7 @@ int				ft_ssl_routine(char **argv)
 	return (command->func(argv, command));
 }
 
-int				main(int argc, char **argv)
+int	main(int argc, char **argv)
 {
 	int			ret;
 
@@ -46,6 +46,5 @@ int				main(int argc, char **argv)
 		ret = interactive_mode(argv);
 	else
 		ret = ft_ssl_routine(argv);
-	while (1);
 	return (ret);
 }

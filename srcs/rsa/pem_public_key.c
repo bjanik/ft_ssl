@@ -126,5 +126,6 @@ int			retrieve_data_from_public_key(t_rsa_data *rsa_data,
 		return (1);
 	ret = parse_decoded_public_data(rsa_data,
 									public_data_decoded);
+	ft_memdel((void**)&public_data_decoded);
 	return (ret);
 }

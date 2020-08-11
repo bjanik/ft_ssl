@@ -92,10 +92,7 @@ int		rsa_opts(char **argv, t_rsa *rsa)
 			}
 		}
 		if (g_rsa_opts[j].opt == NULL)
-		{
-			ft_dprintf(STDERR_FILENO, "Unknown option: %s\n", argv[i]);
-			return (1);
-		}
+			return (rsa_usage(argv[i]));
 	}
 	return (0);
 }

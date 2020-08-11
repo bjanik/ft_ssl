@@ -141,6 +141,7 @@ typedef struct 			s_genrsa
 	char				*out;
 	int 				fd[2];
 	int					numbits;
+	t_des 				*des;
 	t_rsa_data 			rsa_data;
 }						t_genrsa;
 
@@ -302,8 +303,6 @@ uint64_t				final_permutation(uint32_t left, uint32_t right);
 unsigned char 			*des_encrypt_data(t_des *des, unsigned char *data, uint32_t *data_len);
 unsigned char 			*des_decrypt_data(t_des *des, unsigned char *data, uint32_t data_len);
 
-
-
 unsigned char			*pbkdf(char *password, unsigned char *salt, int des);
 
 int						generate_keys_vector(t_des *des);
@@ -325,6 +324,7 @@ uint32_t				s_box_substitutions(uint64_t x_block);
 
 int						des_encrypt_message(t_des *des);
 int						des_decrypt_message(t_des *des);
+int						des_decrypt_message_base64(t_des *des);
 void					des_get_cipher(t_des *des,
 										int offset,
 										unsigned char buf[]);
@@ -345,6 +345,8 @@ uint64_t				des3_cbc_d(uint64_t plain, t_des *des);
 uint64_t				des3_pcbc_e(uint64_t plain, t_des *des);
 uint64_t				des3_pcbc_d(uint64_t plain, t_des *des);
 char					**lst_to_tab(t_list *tokens, int count);
+int						check_errors(unsigned char buf[], int len, int ret);
+
 
 /*
  RSA flags functions
@@ -404,6 +406,7 @@ int 					rsa_input_file(t_rsa *rsa);
 
 
 int 					rsa_opts(char **argv, t_rsa *rsa);
+int 					rsa_usage(char *opt);
 int 					rsa_command_run(t_rsa *rsa);
 unsigned char       	*private_key_decryption(t_des *des,
 												unsigned char *data,

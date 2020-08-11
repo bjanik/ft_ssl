@@ -12,22 +12,25 @@
 
 #include "ft_ssl.h"
 
-int			genrsa_command(char **argv, t_ssl_command *cmd)
+int	genrsa_command(char **argv, t_ssl_command *cmd)
 {
 	t_genrsa	*genrsa;
+	int			ret;
 
 	(void)cmd;
+	ret = 0;
 	genrsa = genrsa_init();
 	if (genrsa_opts(argv, genrsa))
-		return (1);
-	if (genrsa_command_run(&genrsa->rsa_data, genrsa))
-		return (1);
-	pem(&genrsa->rsa_data, genrsa->fd[OUT]);
+		ret = 1;
+	else if (genrsa_command_run(&genrsa->rsa_data, genrsa))
+		ret = 1;
+	if (ret == 0)
+		pem(&genrsa->rsa_data, genrsa->fd[OUT]);
 	genrsa_clear(genrsa);
 	return (0);
 }
 
-int			rsa_command(char **argv, t_ssl_command *cmd)
+int	rsa_command(char **argv, t_ssl_command *cmd)
 {
 	t_rsa	*rsa;
 	int		ret;
@@ -39,15 +42,11 @@ int			rsa_command(char **argv, t_ssl_command *cmd)
 		ret = 1;
 	else if (rsa_command_run(rsa))
 		ret = 1;
-	if (rsa->in)
-		close(rsa->fd[IN]);
-	if (rsa->out)
-		close(rsa->fd[OUT]);
 	rsa_clear(rsa);
 	return (ret);
 }
 
-int				rsautl_command(char **argv, t_ssl_command *cmd)
+int	rsautl_command(char **argv, t_ssl_command *cmd)
 {
 	t_rsautl	*rsautl;
 	int			ret;
@@ -63,7 +62,7 @@ int				rsautl_command(char **argv, t_ssl_command *cmd)
 	return (ret);
 }
 
-int		digest_command(char **argv, t_ssl_command *cmd)
+int	digest_command(char **argv, t_ssl_command *cmd)
 {
 	int	i;
 	int opts;
@@ -82,7 +81,7 @@ int		digest_command(char **argv, t_ssl_command *cmd)
 	return (i);
 }
 
-int		des_command(char **argv, t_ssl_command *cmd)
+int	des_command(char **argv, t_ssl_command *cmd)
 {
 	t_des	*des;
 	int		ret;

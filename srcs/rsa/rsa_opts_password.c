@@ -54,10 +54,10 @@ static int	rsa_pass_stdin(char **passwd)
 {
 	if ((*passwd = ft_strnew(64)) == NULL)
 		return (1);
-	if (read(STDIN_FILENO, passwd, 64) < 0)
+	if (read(STDIN_FILENO, *passwd, 64) < 0)
 		return (1);
 	if (ft_strlen(*passwd) > 0)
-		*passwd[ft_strlen(*passwd) - 1] = '\0';
+		(*passwd)[ft_strlen(*passwd) - 1] = '\0';
 	return (0);
 }
 

@@ -31,7 +31,7 @@ uint32_t	get_number_len(unsigned char **ptr)
 	return (len);
 }
 
-t_bn	*get_bn(unsigned char **data, uint32_t len)
+t_bn		*get_bn(unsigned char **data, uint32_t len)
 {
 	t_bn		*n;
 	uint8_t		bytes_in_limb;
@@ -99,50 +99,4 @@ int			parse_decoded_data(t_rsa_data *rsa_data,
 		rsa_data->coef = retrieve_number_from_data(&ptr);
 	}
 	return (0);
-}
-
-unsigned char		*private_key_decryption(t_des *des,
-											unsigned char *data,
-											uint32_t *data_len,
-											char *args[])
-{
-	unsigned char	*decrypted_data;
-	unsigned char	*decrypted_data_no_pad;
-
-	if (key_from_passphrase(des, 1, args[0], args[1]))
-		return (NULL);
-	swap_keys(des->keys[0]);
-	swap_keys(des->keys[1]);
-	swap_keys(des->keys[2]);
-	decrypted_data = des_decrypt_data(des, data, *data_len);
-	if (decrypted_data[*data_len - 1] > 8)
-	{
-		ft_dprintf(STDERR_FILENO, "ft_ssl: Bad decrypt\n");
-		return (NULL);
-	}
-	if (ft_memcmp(decrypted_data + *data_len - decrypted_data[*data_len - 1],
-					g_padding_patterns[decrypted_data[*data_len - 1] - 1],
-					decrypted_data[*data_len - 1]))
-		return (NULL);
-	*data_len = *data_len - decrypted_data[*data_len - 1];
-	if ((decrypted_data_no_pad = (unsigned char*)ft_malloc(*data_len)) == NULL)
-		return (NULL);
-	ft_memcpy(decrypted_data_no_pad, decrypted_data, *data_len);
-	ft_memdel((void**)&decrypted_data);
-	ft_memdel((void**)&data);
-	return (decrypted_data_no_pad);
-}
-
-unsigned char			*private_key_encryption(t_des *des,
-												unsigned char *data,
-												uint32_t *data_len,
-												char *args[])
-{
-	unsigned char	*des_encrypted_data;
-
-	if (key_from_passphrase(des, 0, args[0], args[1]))
-		return (NULL);
-	des_encrypted_data = des_encrypt_data(des, data, data_len);
-	ft_memdel((void**)&data);
-	return (des_encrypted_data);
 }

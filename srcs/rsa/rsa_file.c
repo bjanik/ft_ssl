@@ -12,17 +12,24 @@
 
 #include "ft_ssl.h"
 
-int				rsa_input_file(t_rsa *rsa)
+int	rsa_input_file(t_rsa *rsa)
 {
+	char	*s;
+
 	if (rsa->in)
 	{
 		if ((rsa->fd[IN] = open(rsa->in, O_RDONLY, 0644)) < 0)
+		{
+			s = (rsa->opts & RSA_PUBIN) ? "public" : "private";
+			ft_dprintf(STDERR_FILENO, "ft_ssl: Error opening %s key %s\n", s,
+						rsa->in);
 			return (1);
+		}
 	}
 	return (0);
 }
 
-int				rsa_output_file(t_rsa *rsa)
+int	rsa_output_file(t_rsa *rsa)
 {
 	if (rsa->out)
 	{

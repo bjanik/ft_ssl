@@ -21,6 +21,8 @@ t_genrsa	*genrsa_init(void)
 	genrsa->out = NULL;
 	genrsa->fd[IN] = STDIN_FILENO;
 	genrsa->fd[OUT] = STDOUT_FILENO;
+	genrsa->des = NULL;
 	genrsa->numbits = 64;
+	ft_memset((void*)&genrsa->rsa_data, 0x0, sizeof(t_rsa_data));
 	return (genrsa);
 }

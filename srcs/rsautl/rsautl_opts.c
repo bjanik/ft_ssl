@@ -23,7 +23,24 @@ const struct s_opts g_rsautl_opts[] = {
 	{NULL, NULL}
 };
 
-int	set_rsautl_in(char **argv, void *ptr, int *index)
+static int	rsautl_usage(char *opt)
+{
+	int fd;
+
+	fd = STDERR_FILENO;
+	ft_dprintf(fd, "ft_ssl: rsautl: invalid option %s\n", opt);
+	ft_dprintf(fd, "Options are:\n");
+	ft_dprintf(fd, "-in [file] input file\n");
+	ft_dprintf(fd, "-out       output file\n");
+	ft_dprintf(fd, "-inkey     input key file\n");
+	ft_dprintf(fd, "-pubin     input is RSA public key\n");
+	ft_dprintf(fd, "-encrypt   encrypt with public key\n");
+	ft_dprintf(fd, "-decrypt   decrypt with private key\n");
+	ft_dprintf(fd, "-hexdump   hexdump output\n");
+	return (1);
+}
+
+int			set_rsautl_in(char **argv, void *ptr, int *index)
 {
 	t_rsautl	*rsautl;
 
@@ -37,7 +54,7 @@ int	set_rsautl_in(char **argv, void *ptr, int *index)
 	return (0);
 }
 
-int	set_rsautl_out(char **argv, void *ptr, int *index)
+int			set_rsautl_out(char **argv, void *ptr, int *index)
 {
 	t_rsautl	*rsautl;
 
@@ -51,7 +68,7 @@ int	set_rsautl_out(char **argv, void *ptr, int *index)
 	return (0);
 }
 
-int	rsautl_opts(char **argv, t_rsautl *rsautl)
+int			rsautl_opts(char **argv, t_rsautl *rsautl)
 {
 	int	i;
 	int	j;
@@ -70,10 +87,7 @@ int	rsautl_opts(char **argv, t_rsautl *rsautl)
 			}
 		}
 		if (g_rsautl_opts[j].opt == NULL)
-		{
-			ft_dprintf(STDERR_FILENO, "Unknown option: %s\n", argv[i]);
-			return (1);
-		}
+			return (rsautl_usage(argv[i]));
 	}
 	return (0);
 }

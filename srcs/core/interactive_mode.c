@@ -12,7 +12,6 @@
 
 #include "ft_ssl.h"
 
-
 static void	add_prog_name(t_lexer *lexer, char *s)
 {
 	t_list	*lst;
@@ -53,8 +52,8 @@ int			interactive_mode(char **argv)
 		add_prog_name(&lexer, argv[0]);
 		if (!(av = lst_to_tab(lexer.tokens[0], lexer.count + 1)))
 			ft_error_msg("Malloc failed");
-		if (!ft_strcmp("exit", av[1]) || !ft_strcmp("quit", av[1]))
-			break;
+		if (av[1] && (!ft_strcmp("exit", av[1]) || !ft_strcmp("quit", av[1])))
+			break ;
 		ft_ssl_routine(av);
 		clear_data(&lexer, &input, &av);
 	}
