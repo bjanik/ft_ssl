@@ -39,6 +39,7 @@ int			interactive_mode(char **argv)
 	char	*input;
 	char	**av;
 
+	av = NULL;
 	init_lexer(&lexer);
 	while (42)
 	{
@@ -50,8 +51,7 @@ int			interactive_mode(char **argv)
 		if (lexer_input(&lexer, input))
 			continue ;
 		add_prog_name(&lexer, argv[0]);
-		if (!(av = lst_to_tab(lexer.tokens[0], lexer.count + 1)))
-			ft_error_msg("Malloc failed");
+		av = lst_to_tab(lexer.tokens[0], lexer.count + 1);
 		if (av[1] && (!ft_strcmp("exit", av[1]) || !ft_strcmp("quit", av[1])))
 			break ;
 		ft_ssl_routine(av);

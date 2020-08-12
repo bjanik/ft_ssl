@@ -38,7 +38,8 @@ void		bn_mul(t_bn *res, t_bn *m, t_bn *q)
 	t_bn		*ca;
 	int64_t		i;
 
-	a = bn_init_size(MAX(m->size, q->size) * 64 + 1);
+	a = (q->size >= m->size) ? bn_init_size(q->size * 64 + 1) :
+								bn_init_size(m->size * 64 + 1);
 	cq = bn_clone(q);
 	cm = bn_clone(m);
 	ca = bn_clone(a);

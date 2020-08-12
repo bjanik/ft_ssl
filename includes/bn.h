@@ -14,16 +14,6 @@
 # define BN_H
 # include <stdint.h>
 
-# define ABS(x) ((x > 0) ? x : -x)
-# define SIZE(n) (ABS(n->size))
-# define BIGGEST_BN(x, y) ((x->size >= y->size) ? x : y)
-# define INC_SIZE(x) (((x)->size < 0) ? (x)->size-- : (x)->size++)
-# define DEC_SIZE(x) (((x)->size < 0) ? (x)->size++ : (x)->size--)
-# define MIN(x, y) ((x < y) ? x : y)
-# define MAX(x, y) ((x > y) ? x : y)
-# define IS_ODD(x) ((x) & 1)
-# define IS_EVEN(x) (((x) & 1) == 0)
-
 # define NO_DISPLAY 0
 # define DISPLAY 1
 
@@ -59,6 +49,8 @@ int				bn_cmp(t_bn *a, t_bn *b);
 int				bn_cmp_ui(t_bn *a, uint64_t ui);
 void			bn_div(t_bn *q, t_bn *rem, t_bn *num, t_bn *den);
 void			bn_mod(t_bn *r, t_bn *n, t_bn *d);
+void			bn_mod_no_alloc(t_bn *r, t_bn *n, t_bn *d);
+
 void			bn_mod_pow(t_bn *res, t_bn *b, t_bn *exp, t_bn *mod);
 void			bn_gcd(t_bn *gcd, t_bn *a, t_bn *b);
 int				bn_modinv(t_bn *u, t_bn *v, t_bn *modinv);

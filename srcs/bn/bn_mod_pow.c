@@ -25,7 +25,7 @@ void	bn_mod_pow(t_bn *res, t_bn *b, t_bn *exp, t_bn *mod)
 	bn_mod(cb, cb, cmod);
 	while (bn_cmp_ui(cexp, 0))
 	{
-		if (IS_ODD(cexp->num[0]))
+		if (cexp->num[0] & 1)
 		{
 			bn_mul(res, res, cb);
 			bn_mod(res, res, cmod);

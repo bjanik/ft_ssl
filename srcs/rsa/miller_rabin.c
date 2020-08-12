@@ -140,35 +140,6 @@ uint64_t g_primes[] = {
 	0,
 };
 
-void		bn_mod_no_alloc(t_bn *r, t_bn *n, t_bn *d)
-{
-	t_bn	*cr;
-	int64_t	i;
-
-	if (bn_cmp(n, d) < 0)
-	{
-		if (r != n)
-			bn_copy(r, n);
-		return ;
-	}
-	cr = bn_clone(d);
-	bn_set_zero(r);
-	i = SIZE(n) * 64;
-	while (--i >= 0)
-	{
-		bn_shift_left(r, 1);
-		r->num[0] ^= bn_get_bit(n, i);
-		if (SIZE(r) == 0 && r->num[0] > 0)
-			INC_SIZE(r);
-		if (SIZE(r) > r->alloc)
-			bn_realloc(r);
-		bn_copy(cr, r);
-		if (bn_cmp(r, d) >= 0)
-			bn_sub(r, cr, d);
-	}
-	bn_clear(&cr);
-}
-
 int			initial_sieve_test(t_bn *n, int display)
 {
 	t_bn	*mod;
@@ -205,7 +176,7 @@ int			miller_rabin(t_bn *n, int s, int display)
 	i = 0;
 	while (++i <= s)
 	{
-		bn_set_random(a, SIZE(n) * 64);
+		bn_set_random(a, n->size * 64);
 		while (bn_cmp(n, a) <= 0)
 			bn_shift_right(a, 1);
 		if (witness(a, n) == 1)
@@ -224,9 +195,9 @@ static void	init_bns(t_bn *bns[], t_bn *n)
 {
 	bns[0] = bn_clone(n);
 	bns[1] = bn_clone(bns[0]);
-	bns[2] = bn_init_size(SIZE(n) * 64);
-	bns[3] = bn_init_size(SIZE(n) * 64);
-	bns[4] = bn_init_size(SIZE(n) * 64);
+	bns[2] = bn_init_size(n->size * 64);
+	bns[3] = bn_init_size(n->size * 64);
+	bns[4] = bn_init_size(n->size * 64);
 	bn_sub_ui(bns[0], n, 1);
 	bn_copy(bns[1], bns[0]);
 }
@@ -255,7 +226,7 @@ int			witness(t_bn *a, t_bn *n)
 	init_bns(bns, n);
 	t = 0;
 	ret = 0;
-	while (IS_ODD(bns[1]->num[0]) == 0)
+	while ((bns[1]->num[0] & 1) == 0)
 	{
 		bn_shift_right(bns[1], 1);
 		t++;

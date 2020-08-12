@@ -12,26 +12,26 @@
 
 #include "ft_ssl.h"
 
-static int	genrsa_usage(char *opt)
-{
-	int fd;
-
-	fd = STDERR_FILENO;
-	ft_dprintf(fd, "ft_ssl: genrsa: invalid option %s\n", opt);
-	ft_dprintf(fd, "Options are:\n");
-	ft_dprintf(fd, "-o [file] output the private key to file\n");
-	ft_dprintf(fd, "-des      encrypt the generated key with des-cbc\n");
-	return (1);
-}
-
 static int	set_genrsa_output(char **argv, void *ptr, int *index)
 {
-	t_genrsa *genrsa;
+	t_genrsa	*genrsa;
 
 	genrsa = ptr;
 	(*index)++;
 	if ((genrsa->out = argv[*index]) == NULL)
 		return (1);
+	return (0);
+}
+
+static int	set_genrsa_des(char **argv, void *ptr, int *index)
+{
+	t_genrsa	*genrsa;
+
+	(void)argv;
+	(void)index;
+	genrsa = ptr;
+	genrsa->opts |= GENRSA_DES;
+	genrsa->des = init_des("des-cbc", g_commands[6].des_mode);
 	return (0);
 }
 
@@ -46,8 +46,36 @@ static int	finalize_genrsa_opts(t_genrsa *genrsa)
 	return (0);
 }
 
+static int	set_password_genrsa(char **argv, void *ptr, int *index)
+{
+	t_genrsa	*genrsa;
+	char		**split;
+	int			ret;
+
+	genrsa = ptr;
+	split = NULL;
+	if (argv[(*index) + 1] == NULL)
+		ret = (ft_dprintf(STDERR_FILENO, "ft_ssl: Missing password value\n"));
+	else if (ft_strcmp(argv[++(*index)], "stdin") == 0)
+		ret = pass_stdin(&genrsa->passout);
+	else if ((split = ft_strsplit(argv[*index], ':')) == NULL)
+		ret = 1;
+	else if (ft_strcmp(split[0], "pass") == 0)
+		ret = pass_pass(split[1], &genrsa->passout);
+	else if (ft_strcmp(split[0], "env") == 0)
+		ret = pass_env(split[1], &genrsa->passout);
+	else if (ft_strcmp(split[0], "file") == 0)
+		ret = pass_file(split[1], &genrsa->passout);
+	else
+		ret = 1;
+	ft_free_string_tab(&split);
+	return (ret);
+}
+
 const struct s_opts	g_genrsa_opts[] = {
 	{"-o", set_genrsa_output},
+	{"-des", set_genrsa_des},
+	{"-passout", set_password_genrsa},
 	{NULL, NULL}
 };
 

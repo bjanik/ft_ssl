@@ -12,7 +12,7 @@
 
 #include "ft_ssl.h"
 
-static int	rsa_pass_env(char *var_name, char **passwd)
+int	pass_env(char *var_name, char **passwd)
 {
 	char	*var_value;
 
@@ -28,14 +28,14 @@ static int	rsa_pass_env(char *var_name, char **passwd)
 	return (0);
 }
 
-static int	rsa_pass_pass(char *password, char **passwd)
+int	pass_pass(char *password, char **passwd)
 {
 	if ((*passwd = ft_strdup(password)) == NULL)
 		return (1);
 	return (0);
 }
 
-static int	rsa_pass_file(char *filename, char **passwd)
+int	pass_file(char *filename, char **passwd)
 {
 	int	fd;
 
@@ -50,7 +50,7 @@ static int	rsa_pass_file(char *filename, char **passwd)
 	return (0);
 }
 
-static int	rsa_pass_stdin(char **passwd)
+int	pass_stdin(char **passwd)
 {
 	if ((*passwd = ft_strnew(64)) == NULL)
 		return (1);
@@ -61,7 +61,7 @@ static int	rsa_pass_stdin(char **passwd)
 	return (0);
 }
 
-int			set_password_rsa(char **argv, void *ptr, int *index)
+int	set_password_rsa(char **argv, void *ptr, int *index)
 {
 	t_rsa	*rsa;
 	char	**split;
@@ -75,15 +75,15 @@ int			set_password_rsa(char **argv, void *ptr, int *index)
 	if (argv[(*index) + 1] == NULL)
 		ret = (ft_dprintf(STDERR_FILENO, "ft_ssl: Missing password value\n"));
 	else if (ft_strcmp(argv[++(*index)], "stdin") == 0)
-		ret = rsa_pass_stdin(str);
+		ret = pass_stdin(str);
 	else if ((split = ft_strsplit(argv[*index], ':')) == NULL)
 		ret = 1;
 	else if (ft_strcmp(split[0], "pass") == 0)
-		ret = rsa_pass_pass(split[1], str);
+		ret = pass_pass(split[1], str);
 	else if (ft_strcmp(split[0], "env") == 0)
-		ret = rsa_pass_env(split[1], str);
+		ret = pass_env(split[1], str);
 	else if (ft_strcmp(split[0], "file") == 0)
-		ret = rsa_pass_file(split[1], str);
+		ret = pass_file(split[1], str);
 	else
 		ret = 1;
 	ft_free_string_tab(&split);

@@ -12,23 +12,6 @@
 
 #include "ft_ssl.h"
 
-unsigned char	*gen_hash(t_ctx *ctx, t_msg *msg, int des)
-{
-	unsigned char		*hash;
-
-	if (des == SINGLE_DES)
-	{
-		md5_init(ctx);
-		hash = md5_core(ctx, msg, 0);
-	}
-	else
-	{
-		sha256_init(ctx);
-		hash = sha256_core(ctx, msg, 0);
-	}
-	return (hash);
-}
-
 unsigned char	*pbkdf(char *password, unsigned char *salt, int des)
 {
 	unsigned char		*hash;
@@ -51,7 +34,7 @@ unsigned char	*pbkdf(char *password, unsigned char *salt, int des)
 	return (hash);
 }
 
-uint64_t				get_keys_vector_from_hash(unsigned char *keys)
+uint64_t		get_keys_vector_from_hash(unsigned char *keys)
 {
 	uint64_t	tmp;
 	uint64_t	key;
@@ -68,7 +51,7 @@ uint64_t				get_keys_vector_from_hash(unsigned char *keys)
 	return (key);
 }
 
-int						display_skv(t_des *des)
+int				display_skv(t_des *des)
 {
 	int		i;
 	uint8_t	nb_keys;
@@ -91,10 +74,10 @@ int						display_skv(t_des *des)
 	return (0);
 }
 
-void				set_key(t_des *des,
-								unsigned char *hash,
-								unsigned char keys[][8],
-								int nb)
+void			set_key(t_des *des,
+							unsigned char *hash,
+							unsigned char keys[][8],
+							int nb)
 {
 	uint64_t	key;
 	int			i;
@@ -124,7 +107,7 @@ void				set_key(t_des *des,
 	}
 }
 
-int						generate_keys_vector(t_des *des)
+int				generate_keys_vector(t_des *des)
 {
 	unsigned char	*hash;
 	unsigned char	keys[4][8];

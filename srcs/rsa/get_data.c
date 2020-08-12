@@ -68,8 +68,8 @@ static int	skip_until_header(const int fd, const char *header)
 	char	*str;
 
 	str = (!ft_strcmp(header, PEM_PRIVATE_HEADER)) ? "private" : "public";
-	if ((ret = get_next_line(fd, &line)) < 0)
-		return (-1);
+	if ((ret = get_next_line(fd, &line)) == 0)
+		return (ft_dprintf(2, "ft_ssl: Unable to load %s key\n", str));
 	while (ft_strcmp(line, header))
 	{
 		free(line);

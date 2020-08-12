@@ -87,7 +87,7 @@ int				flag_check(t_rsa_data rsa_data)
 	uint64_t	size;
 
 	ret = 0;
-	size = SIZE(rsa_data.prime1) + SIZE(rsa_data.prime2);
+	size = rsa_data.prime1->size + rsa_data.prime2->size;
 	if (check_primality(rsa_data))
 		ret = 1;
 	if (check_modulus(rsa_data, size * 64))

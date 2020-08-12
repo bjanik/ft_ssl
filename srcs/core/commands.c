@@ -25,7 +25,7 @@ int	genrsa_command(char **argv, t_ssl_command *cmd)
 	else if (genrsa_command_run(&genrsa->rsa_data, genrsa))
 		ret = 1;
 	if (ret == 0)
-		pem(&genrsa->rsa_data, genrsa->fd[OUT]);
+		pem(genrsa);
 	genrsa_clear(genrsa);
 	return (0);
 }
@@ -68,6 +68,7 @@ int	digest_command(char **argv, t_ssl_command *cmd)
 	int opts;
 
 	i = 2;
+	opts = 0;
 	while (argv[i] && ft_strcmp(END_OF_OPT, argv[i]) && argv[i][0] == '-')
 	{
 		if (set_options(cmd, &opts, argv, &i))

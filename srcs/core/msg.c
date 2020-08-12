@@ -14,6 +14,7 @@
 
 int		init_msg(t_msg *msg, unsigned char *message, char *input_file)
 {
+	ft_memset(msg, 0x0, sizeof(t_msg));
 	if (message)
 	{
 		msg->str = message;

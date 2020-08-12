@@ -17,7 +17,7 @@ t_des		*init_des(char *name,
 {
 	t_des	*des;
 
-	if (!(des = (t_des*)malloc(sizeof(t_des))))
+	if (!(des = (t_des*)ft_malloc(sizeof(t_des))))
 		return (NULL);
 	des->input_file = NULL;
 	des->output_file = NULL;

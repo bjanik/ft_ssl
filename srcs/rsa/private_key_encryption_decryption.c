@@ -12,10 +12,19 @@
 
 #include "ft_ssl.h"
 
-unsigned char	*private_key_decryption(t_des *des,
-										unsigned char *data,
-										uint32_t *data_len,
-										char *args[])
+static unsigned char	*free_data(unsigned char *decrypted_data,
+									unsigned char *data)
+{
+	ft_dprintf(STDERR_FILENO, "ft_ssl: Bad decrypt\n");
+	ft_memdel((void**)&decrypted_data);
+	ft_memdel((void**)&data);
+	return (NULL);
+}
+
+unsigned char			*private_key_decryption(t_des *des,
+												unsigned char *data,
+												uint32_t *data_len,
+												char *args[])
 {
 	unsigned char	*decrypted_data;
 	unsigned char	*decrypted_data_no_pad;
@@ -27,10 +36,7 @@ unsigned char	*private_key_decryption(t_des *des,
 	swap_keys(des->keys[2]);
 	decrypted_data = des_decrypt_data(des, data, *data_len);
 	if (decrypted_data[*data_len - 1] > 8)
-	{
-		ft_dprintf(STDERR_FILENO, "ft_ssl: Bad decrypt\n");
-		return (NULL);
-	}
+		return (free_data(decrypted_data, data));
 	if (ft_memcmp(decrypted_data + *data_len - decrypted_data[*data_len - 1],
 					g_padding_patterns[decrypted_data[*data_len - 1] - 1],
 					decrypted_data[*data_len - 1]))
@@ -44,16 +50,16 @@ unsigned char	*private_key_decryption(t_des *des,
 	return (decrypted_data_no_pad);
 }
 
-unsigned char	*private_key_encryption(t_des *des,
-										unsigned char *data,
-										uint32_t *data_len,
-										char *args[])
+unsigned char			*private_key_encryption(t_des *des,
+												unsigned char *data,
+												uint32_t *data_len,
+												char *args[])
 {
 	unsigned char	*des_encrypted_data;
 
-	if (key_from_passphrase(des, 0, args[0], args[1]))
-		return (NULL);
-	des_encrypted_data = des_encrypt_data(des, data, data_len);
+	des_encrypted_data = NULL;
+	if (key_from_passphrase(des, 0, args[0], args[1]) == 0)
+		des_encrypted_data = des_encrypt_data(des, data, data_len);
 	ft_memdel((void**)&data);
 	return (des_encrypted_data);
 }

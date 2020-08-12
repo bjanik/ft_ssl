@@ -37,16 +37,16 @@ void		bn_sub(t_bn *res, t_bn *a, t_bn *b)
 		return ;
 	bn_set_zero(res);
 	i = -1;
-	while (++i < SIZE(a))
+	while (++i < a->size)
 	{
-		if (i > SIZE(b) - 1)
+		if (i > b->size - 1)
 			res->num[i] = a->num[i];
 		else
 			res->num[i] = a->num[i] - b->num[i];
-		if (i < SIZE(b) && b->num[i] && res->num[i] >= a->num[i])
+		if (i < b->size && b->num[i] && res->num[i] >= a->num[i])
 		{
 			j = i + 1;
-			while (a->num[j] == 0 && j < SIZE(a) - 2)
+			while (a->num[j] == 0 && j < a->size - 2)
 				a->num[j++] = ULLONG_MAX;
 			a->num[j] -= 1;
 		}

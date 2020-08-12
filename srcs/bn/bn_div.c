@@ -38,8 +38,8 @@ void		bn_div(t_bn *q, t_bn *r, t_bn *n, t_bn *d)
 	{
 		bn_shift_left(r, 1);
 		r->num[0] ^= bn_get_bit(n, i);
-		if (SIZE(r) == 0 && r->num[0] > 0)
-			INC_SIZE(r);
+		if (r->size == 0 && r->num[0] > 0)
+			r->size++;
 		bn_copy(cr, r);
 		if (bn_cmp(cr, d) >= 0)
 		{

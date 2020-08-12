@@ -12,6 +12,13 @@
 
 #include "ft_ssl.h"
 
+static char	*passwd_too_short(char *passwd)
+{
+	ft_dprintf(STDERR_FILENO, "ft_ssl: password needs at least 4 bytes\n");
+	ft_strdel(&passwd);
+	return (NULL);
+}
+
 char		*get_pem_passphrase(const char *in, int decrypt)
 {
 	char		*pwd[2];
@@ -26,17 +33,15 @@ char		*get_pem_passphrase(const char *in, int decrypt)
 	if (decrypt || pwd[0] == NULL)
 		return (pwd[0]);
 	if (ft_strlen(pwd[0]) < 4)
-	{
-		ft_dprintf(STDERR_FILENO, "ft_ssl: password needs at least 4 bytes\n");
-		ft_strdel(&pwd[0]);
-		ft_strdel(&prompt);
-		return (NULL);
-	}
+		return (passwd_too_short(pwd[0]));
 	pwd[1] = (!decrypt) ? getpass("Verifying - Enter PEM pass phrase:") : 0;
 	if (pwd[0] == NULL || pwd[1] == NULL)
 		ft_dprintf(STDERR_FILENO, "ft_ssl: bad PEM password read\n");
 	else if (ft_strcmp(pwd[0], pwd[1]) != 0)
+	{
 		ft_dprintf(STDERR_FILENO, "ft_ssl: Verify password failure\n");
+		ft_strdel(&pwd[0]);
+	}
 	return (pwd[0]);
 }
 

@@ -20,9 +20,9 @@ static void	display_bn_flag_text(t_bn *n, int fd, const char *id)
 	uint32_t	printed;
 	uint8_t		val;
 
-	if (SIZE(n) == 0)
+	if (n->size == 0)
 		return ;
-	pos = SIZE(n) - 1;
+	pos = n->size - 1;
 	printed = 0;
 	ft_dprintf(fd, "%s\n    ", id);
 	while (pos > -1)
@@ -31,15 +31,15 @@ static void	display_bn_flag_text(t_bn *n, int fd, const char *id)
 		while (limb_len)
 		{
 			val = (n->num[pos] >> (limb_len - 1) * 8) & 0xFF;
-			ft_printf("%02hhx", val);
-			(pos != 0 || limb_len != 1) ? ft_putchar(':') : 0;
+			ft_dprintf(fd, "%02hhx", val);
+			(pos != 0 || limb_len != 1) ? ft_putchar_fd(':', fd) : 0;
 			printed++;
 			(printed % 15 == 0) ? ft_dprintf(fd, "\n    ") : 0;
 			limb_len--;
 		}
 		pos--;
 	}
-	ft_putchar('\n');
+	ft_putchar_fd('\n', fd);
 }
 
 void		flag_text(t_rsa *rsa)

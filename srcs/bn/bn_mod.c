@@ -33,10 +33,39 @@ void	bn_mod(t_bn *r, t_bn *n, t_bn *d)
 		bn_shift_left(r, 1);
 		r->num[0] ^= bn_get_bit(cn, i);
 		if (r->size == 0 && r->num[0] > 0)
-			INC_SIZE(r);
+			r->size++;
 		(r->size > r->alloc) ? bn_realloc(r) : 0;
 		bn_copy(cr, r);
 		(bn_cmp(r, d) >= 0) ? bn_sub(r, cr, d) : 0;
 	}
 	bn_clears(2, &cn, &cr);
+}
+
+void	bn_mod_no_alloc(t_bn *r, t_bn *n, t_bn *d)
+{
+	t_bn	*cr;
+	int64_t	i;
+
+	if (bn_cmp(n, d) < 0)
+	{
+		if (r != n)
+			bn_copy(r, n);
+		return ;
+	}
+	cr = bn_clone(d);
+	bn_set_zero(r);
+	i = n->size * 64;
+	while (--i >= 0)
+	{
+		bn_shift_left(r, 1);
+		r->num[0] ^= bn_get_bit(n, i);
+		if (r->size == 0 && r->num[0] > 0)
+			r->size++;
+		if (r->size > r->alloc)
+			bn_realloc(r);
+		bn_copy(cr, r);
+		if (bn_cmp(r, d) >= 0)
+			bn_sub(r, cr, d);
+	}
+	bn_clear(&cr);
 }

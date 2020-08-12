@@ -101,10 +101,9 @@ static int			rsa_handle_key(t_rsa *rsa, char **data)
 		}
 		if (retrieve_data_from_public_key(&rsa->rsa_data, *data))
 			return (1);
-		if (rsa->opts & RSA_TEXT)
-			flag_text(rsa);
-		if (rsa->opts & RSA_MODULUS)
-			flag_modulus(rsa->rsa_data.modulus, rsa->fd[OUT]);
+		(rsa->opts & RSA_TEXT) ? flag_text(rsa) : 0;
+		(rsa->opts & RSA_MODULUS) ? flag_modulus(rsa->rsa_data.modulus,
+												rsa->fd[OUT]) : 0;
 	}
 	else if (rsa->opts & RSA_PUBOUT)
 	{
@@ -127,6 +126,7 @@ int					rsa_command_run(t_rsa *rsa)
 		if ((data = get_data(rsa->fd[IN], &rsa->des, PEM_PRIVATE_HEADER,
 								PEM_PRIVATE_FOOTER)) == NULL)
 			return (1);
+		rsa_output_file(rsa);
 		if (rsa_private_key_routine(rsa, &data) || data == NULL)
 		{
 			ft_strdel(&data);
@@ -136,9 +136,8 @@ int					rsa_command_run(t_rsa *rsa)
 	if ((ret = rsa_handle_key(rsa, &data)))
 	{
 		ft_strdel(&data);
-		return (1);
+		return (ret);
 	}
-	rsa_output_file(rsa);
 	(!(rsa->opts & RSA_NOOUT)) ? print_rsa_key(rsa, data, rsa->fd[OUT]) : 0;
 	ft_strdel(&data);
 	return (ret);

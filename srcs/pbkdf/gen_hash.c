@@ -1,33 +1,30 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   lst_to_tab.c                                       :+:      :+:    :+:   */
+/*   gen_hash.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: bjanik <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/01/15 14:31:28 by bjanik            #+#    #+#             */
-/*   Updated: 2019/01/15 14:31:29 by bjanik           ###   ########.fr       */
+/*   Created: 2020/08/12 18:10:18 by bjanik            #+#    #+#             */
+/*   Updated: 2020/08/12 18:10:19 by bjanik           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "lexer.h"
+#include "ft_ssl.h"
 
-char	**lst_to_tab(t_list *tokens, int count)
+unsigned char	*gen_hash(t_ctx *ctx, t_msg *msg, int des)
 {
-	t_list	*tk;
-	char	**tab;
-	int		i;
+	unsigned char		*hash;
 
-	i = 0;
-	tk = tokens;
-	if (!(tab = (char**)ft_malloc(sizeof(char*) * (count + 1))))
-		ft_error_msg("Malloc failed\n");
-	while (tk)
+	if (des == SINGLE_DES)
 	{
-		if (!(tab[i++] = ft_strdup(tk->content)))
-			ft_error_msg("Malloc failed\n");
-		tk = tk->next;
+		md5_init(ctx);
+		hash = md5_core(ctx, msg, 0);
 	}
-	tab[i] = NULL;
-	return (tab);
+	else
+	{
+		sha256_init(ctx);
+		hash = sha256_core(ctx, msg, 0);
+	}
+	return (hash);
 }

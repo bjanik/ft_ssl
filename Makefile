@@ -66,6 +66,7 @@ SRC_NAME = base64/base64_core.c \
 		genrsa/genrsa_clear.c\
 		genrsa/genrsa_init.c\
 		genrsa/genrsa_opts.c\
+		genrsa/genrsa_usage.c\
 		lexer/delimitate_token.c \
 		lexer/init_lexer.c \
 		lexer/lexer.c \
@@ -74,6 +75,7 @@ SRC_NAME = base64/base64_core.c \
 		lexer/reset_lexer.c \
 		md5/md5.c \
 		md5/md5_transform.c \
+		pbkdf/gen_hash.c \
 		pbkdf/get_password.c \
 		pbkdf/get_salt.c \
 		pbkdf/pbkdf.c \

@@ -12,18 +12,15 @@
 
 #include "ft_ssl.h"
 
-void	print_encryption_header(t_rsa *rsa, const int fd)
+void	print_encryption_header(t_des *des, const int fd)
 {
 	char	*iv;
 
-	if ((rsa->opts & RSA_DES) && (rsa->opts & RSA_PUBOUT) == 0)
-	{
-		ft_dprintf(fd, "%s\n%s: DES-CBC,", PROC_TYPE, DEK_INFO);
-		iv = ft_itoa_base_llu(convert_input_to_block(rsa->des->salt),
-								"0123456789ABCDEF");
-		ft_dprintf(fd, "%s\n\n", iv);
-		ft_strdel(&iv);
-	}
+	ft_dprintf(fd, "%s\n%s: DES-CBC,", PROC_TYPE, DEK_INFO);
+	iv = ft_itoa_base_llu(convert_input_to_block(des->salt),
+							"0123456789ABCDEF");
+	ft_dprintf(fd, "%s\n\n", iv);
+	ft_strdel(&iv);
 }
 
 void	print_rsa_key(t_rsa *rsa,
@@ -41,7 +38,8 @@ void	print_rsa_key(t_rsa *rsa,
 	if (rsa->opts & RSA_PUBIN || rsa->opts & RSA_PUBOUT)
 		public = 1;
 	ft_dprintf(fd, "%s\n", public ? PEM_PUBLIC_HEADER : PEM_PRIVATE_HEADER);
-	print_encryption_header(rsa, fd);
+	if ((rsa->opts & RSA_DES) && (rsa->opts & RSA_PUBOUT) == 0)
+		print_encryption_header(rsa->des, fd);
 	while (len > 0)
 	{
 		if (len > 64)

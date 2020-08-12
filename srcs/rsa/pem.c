@@ -68,19 +68,50 @@ int				pem_output(char *data_encoded, int fd)
 	return (0);
 }
 
-int				pem(t_rsa_data *rsa, int fd)
+static void		print_private_key(t_genrsa *genrsa, char *data, const int fd)
+{
+	int	i;
+	int	len;
+
+	len = ft_strlen(data);
+	i = 0;
+	ft_dprintf(STDERR_FILENO, "writing RSA key\n");
+	ft_dprintf(fd, "%s\n", PEM_PRIVATE_HEADER);
+	if (genrsa->opts & GENRSA_DES)
+		print_encryption_header(genrsa->des, fd);
+	while (len > 0)
+	{
+		if (len > 64)
+			write(fd, data + i, 64);
+		else
+			write(fd, data + i, len);
+		i += 64;
+		len -= 64;
+		write(fd, "\n", 1);
+	}
+	ft_dprintf(fd, "%s\n", PEM_PRIVATE_FOOTER);
+}
+
+int				pem(t_genrsa *genrsa)
 {
 	uint32_t		data_len;
 	unsigned char	*data;
 	char			*data_encoded;
+	char			*args[2];
 
-	data_len = get_pem_data_len(rsa);
+	args[0] = NULL;
+	args[1] = genrsa->passout;
+	data_len = get_pem_data_len(&genrsa->rsa_data);
 	if ((data = (unsigned char*)ft_malloc(data_len + 3)) == NULL)
 		return (1);
-	fill_pem_private_data(rsa, data, data_len);
+	fill_pem_private_data(&genrsa->rsa_data, data, data_len);
+	if (genrsa->opts & GENRSA_DES)
+		data = private_key_encryption(genrsa->des, data, &data_len, args);
+	if (data == NULL)
+		return (1);
 	if ((data_encoded = base64_encode_data(data, data_len)) == NULL)
 		return (1);
-	pem_output(data_encoded, fd);
+	print_private_key(genrsa, data_encoded, genrsa->fd[OUT]);
 	ft_memdel((void**)&data_encoded);
 	ft_memdel((void**)&data);
 	return (0);

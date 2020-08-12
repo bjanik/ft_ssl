@@ -40,7 +40,7 @@ t_bn		*get_bn(unsigned char **data, uint32_t len)
 		return (NULL);
 	n->size = len / 8;
 	if (len % 8)
-		INC_SIZE(n);
+		n->size++;
 	while (len)
 	{
 		bytes_in_limb = len % 8;

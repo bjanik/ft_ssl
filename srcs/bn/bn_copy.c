@@ -18,7 +18,7 @@ int		bn_copy(t_bn *a, t_bn *b)
 
 	if (a->alloc < b->size)
 	{
-		if (bn_realloc_size_zero(a, SIZE(b)))
+		if (bn_realloc_size_zero(a, b->size))
 			return (1);
 	}
 	i = -1;

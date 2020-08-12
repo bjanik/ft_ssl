@@ -15,13 +15,13 @@
 
 static void	init_bns(t_bn *bns[], t_bn *u, t_bn *v)
 {
-	bns[0] = bn_init_size(SIZE(v) * 64);
+	bns[0] = bn_init_size(v->size * 64);
 	bns[1] = bn_clone(u);
-	bns[2] = bn_init_size(SIZE(v) * 64);
+	bns[2] = bn_init_size(v->size * 64);
 	bns[3] = bn_clone(v);
-	bns[4] = bn_init_size(SIZE(v) * 64);
-	bns[5] = bn_init_size(SIZE(v) * 64);
-	bns[6] = bn_init_size(SIZE(v) * 64);
+	bns[4] = bn_init_size(v->size * 64);
+	bns[5] = bn_init_size(v->size * 64);
+	bns[6] = bn_init_size(v->size * 64);
 	bn_set_ui(bns[0], 1);
 }
 

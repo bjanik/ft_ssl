@@ -24,6 +24,7 @@ static int	get_private_key_from_inkey(t_rsautl *rsautl,
 	raw_data_len = 0;
 	ret = 0;
 	args[0] = rsautl->in;
+	args[1] = NULL;
 	raw_data = base64_decode_data(&raw_data_len, ft_strdup(data),
 									ft_strlen(data));
 	if (raw_data == NULL)

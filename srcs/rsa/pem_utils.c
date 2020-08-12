@@ -87,7 +87,7 @@ void			write_bn_to_data(t_bn *n, unsigned char *data)
 	int			i;
 	int			j;
 
-	bytes = get_byte_number(n->num[SIZE(n) - 1]);
+	bytes = get_byte_number(n->num[n->size - 1]);
 	i = n->size;
 	while (--i >= 0)
 	{

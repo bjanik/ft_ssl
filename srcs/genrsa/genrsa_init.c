@@ -19,10 +19,12 @@ t_genrsa	*genrsa_init(void)
 	if ((genrsa = ft_malloc(sizeof(t_genrsa))) == NULL)
 		return (NULL);
 	genrsa->out = NULL;
+	genrsa->passout = NULL;
 	genrsa->fd[IN] = STDIN_FILENO;
 	genrsa->fd[OUT] = STDOUT_FILENO;
 	genrsa->des = NULL;
 	genrsa->numbits = 64;
+	genrsa->opts = 0;
 	ft_memset((void*)&genrsa->rsa_data, 0x0, sizeof(t_rsa_data));
 	return (genrsa);
 }
