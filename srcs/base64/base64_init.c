@@ -65,7 +65,7 @@ t_base64	*init_base64(void)
 {
 	t_base64	*base;
 
-	if (!(base = (t_base64*)malloc(sizeof(t_base64))))
+	if (!(base = (t_base64*)ft_malloc(sizeof(t_base64))))
 		ft_error_msg("ft_ssl: malloc failed");
 	base->opts = 0;
 	base->fd[IN] = STDIN_FILENO;

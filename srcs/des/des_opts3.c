@@ -75,7 +75,7 @@ int		set_salt(char **argv, void *ptr, int *index)
 	}
 	if (get_hex_from_str(argv[*index], &salt))
 		return (1);
-	des->salt = (unsigned char*)malloc(sizeof(unsigned char) * 8);
+	des->salt = (unsigned char*)ft_malloc(sizeof(unsigned char) * 8);
 	ft_memset(des->salt, 0, 8);
 	cipher_to_string(salt, des->salt);
 	return (0);

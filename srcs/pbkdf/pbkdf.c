@@ -88,8 +88,7 @@ void			set_key(t_des *des,
 	{
 		ft_memcpy(keys[i], hash + i * 8, 8);
 		key = get_keys_vector_from_hash(keys[i]);
-		if (!(s = ft_itoa_base_llu(key, "0123456789ABCDEF")))
-			ft_error_msg("ft_ssl: Malloc failed");
+		s = ft_itoa_base_llu(key, "0123456789ABCDEF");
 		ft_memcpy(des->hex_keys + i * 16, s, 16);
 		ft_strdel(&s);
 		key = get_56bits_key(key);
@@ -100,8 +99,7 @@ void			set_key(t_des *des,
 		ft_memcpy(keys[3], hash + i * 8, 8);
 		if (des->init_vector == 0)
 			des->init_vector = get_keys_vector_from_hash(keys[3]);
-		if (!(s = ft_itoa_base_llu(des->init_vector, "0123456789ABCDEF")))
-			ft_error_msg("ft_ssl: Malloc failed");
+		s = ft_itoa_base_llu(des->init_vector, "0123456789ABCDEF");
 		ft_memcpy(des->hex_keys + i * 16, s, 16);
 		ft_strdel(&s);
 	}

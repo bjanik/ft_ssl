@@ -26,6 +26,7 @@ static void		print_ascii(const int fd,
 			ft_dprintf(fd, "%c", msg[cur + i]);
 		else
 			ft_dprintf(fd, ".");
+		i++;
 	}
 }
 
@@ -43,6 +44,7 @@ static void		print_hex_values(const int fd,
 			ft_dprintf(fd, "%02x-", msg[cur + i]);
 		else
 			ft_dprintf(fd, "%02x ", msg[cur + i]);
+		i++;
 	}
 	ft_dprintf(fd, "%*c", (16 - i) * 3 + 2, ' ');
 }

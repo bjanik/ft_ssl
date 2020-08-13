@@ -58,8 +58,10 @@ int						parse_opt(t_ssl_command *command, int *opts, char **av,
 			*opts |= OPT_S;
 			s = hash_string(av, index, i);
 			command->hash_func(*opts, s, NULL);
+			if (av[(*index) + 1] == NULL)
+				break ;
 		}
-		else if (av[*index][i] != 'r' && av[*index][i] != 'q')
+		else if (av[*index] && av[*index][i] != 'r' && av[*index][i] != 'q')
 			return (illegal_opt(av[*index][i], av[1]));
 		(av[*index][i] == 'r') ? *opts |= OPT_R : 0;
 		(av[*index][i] == 'q') ? *opts |= OPT_Q : 0;

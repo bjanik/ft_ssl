@@ -81,7 +81,7 @@ static int		check_exponents(t_rsa_data rsa_data, const uint64_t size)
 	return (0);
 }
 
-int				flag_check(t_rsa_data rsa_data)
+int				flag_check(t_rsa_data rsa_data, int fd)
 {
 	int			ret;
 	uint64_t	size;
@@ -95,6 +95,6 @@ int				flag_check(t_rsa_data rsa_data)
 	if (check_exponents(rsa_data, size * 64))
 		ret = 1;
 	if (ret == 0)
-		ft_printf("RSA key ok\n");
+		ft_dprintf(fd, "RSA key ok\n");
 	return (ret);
 }

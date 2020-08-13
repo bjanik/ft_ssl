@@ -28,7 +28,6 @@ void			bn_set_zero(t_bn *n);
 t_bn			*bn_init_size(uint64_t size);
 t_bn			*bn_init(void);
 int				bn_set_random(t_bn *n, int64_t size);
-void			display_bn(t_bn *n);
 int				bn_realloc(t_bn *n);
 int				bn_realloc_size(t_bn *n, int64_t new_alloc);
 int				bn_realloc_size_zero(t_bn *n, int64_t new_alloc);
@@ -71,6 +70,4 @@ int				witness(t_bn *a, t_bn *b);
 int				miller_rabin(t_bn *n, int s, int display);
 int				pseudo_prime(t_bn *n);
 int				initial_sieve_test(t_bn *n, int display);
-
-void			display_stats(t_bn *n);
 #endif

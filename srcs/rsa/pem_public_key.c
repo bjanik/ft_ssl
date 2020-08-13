@@ -44,6 +44,13 @@ uint32_t	get_public_data_len(t_bn *modulus, t_bn *public_exp)
 	return (len);
 }
 
+static void	update_public_data(uint32_t *remain_len, uint32_t *len,
+						unsigned char *public_data)
+{
+	if ((*remain_len)-- >= 0x80)
+		public_data[(*len)++] = 0x80 + get_byte_number((*remain_len)--);
+}
+
 void		fill_pem_public_data(unsigned char *public_data,
 										uint32_t public_data_len,
 										t_bn *modulus,
@@ -56,8 +63,7 @@ void		fill_pem_public_data(unsigned char *public_data,
 	remain_len = public_data_len;
 	public_data[len++] = 0x30;
 	remain_len--;
-	if (remain_len-- >= 0x80)
-		public_data[len++] = 0x80 + get_byte_number(remain_len--);
+	update_public_data(&remain_len, &len, public_data);
 	set_len_to_data(remain_len, public_data, &len);
 	public_data[len++] = 0x30;
 	public_data[len++] = 0x0D;
@@ -65,14 +71,12 @@ void		fill_pem_public_data(unsigned char *public_data,
 	len += 13;
 	public_data[len++] = 0x03;
 	remain_len = public_data_len - len;
-	if (remain_len-- >= 0x80)
-		public_data[len++] = 0x80 + get_byte_number(remain_len--);
+	update_public_data(&remain_len, &len, public_data);
 	set_len_to_data(remain_len, public_data, &len);
 	public_data[len++] = 0x0;
 	public_data[len++] = 0x30;
 	remain_len = public_data_len - len;
-	if (remain_len-- >= 0x80)
-		public_data[len++] = 0x80 + get_byte_number(remain_len--);
+	update_public_data(&remain_len, &len, public_data);
 	set_len_to_data(remain_len, public_data, &len);
 	set_bn_to_data(modulus, public_data, &len);
 	set_bn_to_data(public_exp, public_data, &len);

@@ -55,7 +55,7 @@ unsigned char	*md5_core(t_ctx *ctx, t_msg *msg, uint32_t opts)
 	if (update(ctx, msg, opts) == 0)
 	{
 		md5_final(ctx);
-		digest = (unsigned char*)malloc(MD5_DIGEST_LEN *
+		digest = (unsigned char*)ft_malloc(MD5_DIGEST_LEN *
 										sizeof(unsigned char));
 		if (!digest)
 			return (NULL);

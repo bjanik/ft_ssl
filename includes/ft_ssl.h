@@ -437,7 +437,7 @@ int						key_from_passphrase(t_des *des,
 
 void					flag_modulus(t_bn *n, int fd);
 void					flag_text(t_rsa *rsa);
-int						flag_check(t_rsa_data rsa_data);
+int						flag_check(t_rsa_data rsa_data, int fd);
 
 void					fill_pem_public_data(unsigned char *public_data,
 												uint32_t public_data_len,

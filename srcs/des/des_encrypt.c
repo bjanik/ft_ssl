@@ -25,7 +25,7 @@ unsigned char		*des_encrypt_data(t_des *des,
 	offset = 0;
 	padding_len = 8 - *data_len % 8;
 	data_encrypted_len = *data_len + padding_len;
-	if ((data_with_pad = (unsigned char *)malloc(data_encrypted_len)) == NULL)
+	if (!(data_with_pad = (unsigned char *)ft_malloc(data_encrypted_len)))
 		return (NULL);
 	ft_memcpy(data_with_pad, data, *data_len);
 	ft_memset(data_with_pad + *data_len, padding_len, padding_len);

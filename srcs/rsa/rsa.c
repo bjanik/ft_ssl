@@ -53,7 +53,7 @@ static int			private_routine(t_rsa *rsa, char *args[],
 	if (rsa->opts & RSA_MODULUS)
 		flag_modulus(rsa->rsa_data.modulus, rsa->fd[OUT]);
 	if (rsa->opts & RSA_CHECK)
-		ret = flag_check(rsa->rsa_data);
+		ret = flag_check(rsa->rsa_data, rsa->fd[OUT]);
 	if ((rsa->opts & RSA_DES) && (rsa->opts & RSA_PUBOUT) == 0)
 	{
 		reset_des(rsa->des);

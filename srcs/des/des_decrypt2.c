@@ -26,7 +26,7 @@ static int	init_decryption64_with_salt(t_des *des,
 		if (!ft_strncmp((char*)buf, "Salted__", 8))
 		{
 			ft_memdel((void**)&des->salt);
-			if (!(des->salt = (unsigned char*)malloc(sizeof(unsigned char)
+			if (!(des->salt = (unsigned char*)ft_malloc(sizeof(unsigned char)
 								* 8)))
 				ft_error_msg("ft_ssl: Malloc failed");
 			ft_memcpy(des->salt, buf + 8, 8);

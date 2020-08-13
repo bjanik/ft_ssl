@@ -42,7 +42,7 @@ int				init_decryption_with_salt(t_des *des,
 		else if (!ft_strncmp((char*)buf, "Salted__", 8))
 		{
 			ft_memdel((void**)&des->salt);
-			if (!(des->salt = (unsigned char*)malloc(sizeof(unsigned char)
+			if (!(des->salt = (unsigned char*)ft_malloc(sizeof(unsigned char)
 								* 8)))
 				ft_error_msg("ft_ssl: Malloc failed");
 			ft_memcpy(des->salt, buf + 8, 8);
@@ -117,7 +117,8 @@ unsigned char	*des_decrypt_data(t_des *des, unsigned char *data,
 	uint32_t		offset;
 
 	offset = 0;
-	data_decrypted = (unsigned char*)malloc(data_len * sizeof(unsigned char));
+	data_decrypted = (unsigned char*)ft_malloc(data_len *
+												sizeof(unsigned char));
 	if (data_decrypted == NULL)
 		return (NULL);
 	ft_memset(data_decrypted, 0, data_len);

@@ -76,8 +76,8 @@ int	set_password_rsa(char **argv, void *ptr, int *index)
 		ret = (ft_dprintf(STDERR_FILENO, "ft_ssl: Missing password value\n"));
 	else if (ft_strcmp(argv[++(*index)], "stdin") == 0)
 		ret = pass_stdin(str);
-	else if ((split = ft_strsplit(argv[*index], ':')) == NULL)
-		ret = 1;
+	else if ((split = ft_strsplit(argv[*index], ':')) == NULL || !split[1])
+		ret = ft_dprintf(STDERR_FILENO, "ft_ssl: Error getting password\n");
 	else if (ft_strcmp(split[0], "pass") == 0)
 		ret = pass_pass(split[1], str);
 	else if (ft_strcmp(split[0], "env") == 0)

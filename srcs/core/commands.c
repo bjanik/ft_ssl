@@ -73,6 +73,8 @@ int	digest_command(char **argv, t_ssl_command *cmd)
 	{
 		if (set_options(cmd, &opts, argv, &i))
 			return (1);
+		if (!argv[i])
+			break ;
 		i++;
 	}
 	(argv[i] && !ft_strcmp(END_OF_OPT, argv[i])) ? i++ : 0;

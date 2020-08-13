@@ -107,17 +107,15 @@ int						rsa_message_decryption(t_rsa_data *rsa_data,
 	if (init_plain_and_cipher(bn, msg, mod_len))
 		return (1);
 	bn_mod_pow(bn[1], bn[0], rsa_data->private_exp, rsa_data->modulus);
-	decrypted_msg = (unsigned char*)malloc(mod_len + 1);
-	if (decrypted_msg == NULL)
+	if ((decrypted_msg = (unsigned char*)ft_malloc(mod_len + 1)) == NULL)
 		return (1);
 	decrypted_msg[0] = 0;
 	write_bn_to_data(bn[1], decrypted_msg + 1);
 	ret = check_decryption(decrypted_msg);
-	(ret == -1) ? ft_putendl_fd("ft_ssl: decryption error", STDERR_FILENO) :
+	(ret == -1) ? ft_dprintf(STDERR_FILENO, "ft_ssl: decryption error\n") :
 					write(fd[OUT], decrypted_msg + ret, mod_len - ret);
-	ret = 0;
 	free(msg[0]);
 	free(decrypted_msg);
 	bn_clears(2, &bn[0], &bn[1]);
-	return (ret);
+	return (ret != -1);
 }

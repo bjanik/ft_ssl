@@ -97,6 +97,8 @@ static int	store_lines_in_data(char **data,
 	char	*line;
 	int		proc_type;
 
+	proc_type = 0;
+	ret = 0;
 	while ((ret = get_next_line(fd, &line)) > 0)
 	{
 		if (ft_strcmp(line, footer) == 0)

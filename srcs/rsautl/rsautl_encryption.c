@@ -44,18 +44,18 @@ static unsigned char	*get_raw_message(const int fd,
 	int				ret;
 
 	*mlen = 0;
-	if ((raw_message = (unsigned char *)malloc(mod_len)) == NULL)
+	if ((raw_message = (unsigned char *)ft_malloc(mod_len)) == NULL)
 		return (NULL);
 	while ((ret = read(fd, buf, 8)) > 0)
 	{
-		if (*mlen + ret > mod_len - 11)
+		*mlen += ret;
+		if ((int)(*mlen + ret) > (int)mod_len - 11)
 		{
 			ft_dprintf(STDERR_FILENO, "ft_ssl: message to encrypt too long\n");
 			free(raw_message);
 			return (NULL);
 		}
-		ft_memcpy(raw_message + *mlen, buf, ret);
-		*mlen += ret;
+		ft_memcpy(raw_message + *mlen - ret, buf, ret);
 	}
 	if (ret < 0 || *mlen == 0)
 	{
@@ -73,7 +73,7 @@ static unsigned char	*get_encoded_message(const int fd, uint32_t mod_len)
 
 	offset = 0;
 	mlen = 0;
-	if ((message[0] = (unsigned char *)malloc(mod_len)) == NULL)
+	if ((message[0] = (unsigned char *)ft_malloc(mod_len)) == NULL)
 		return (NULL);
 	message[0][offset++] = 0x0;
 	message[0][offset++] = 0x2;

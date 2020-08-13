@@ -13,26 +13,6 @@
 #include "bn.h"
 #include "ft_ssl.h"
 
-void	display_bn(t_bn *n)
-{
-	int64_t i;
-
-	i = n->size;
-	if (n->size == 0)
-		printf("0");
-	else
-	{
-		while (--i > -1)
-		{
-			if (i == n->size - 1)
-				ft_printf("%llX", n->num[i]);
-			else
-				ft_printf("%016llX", n->num[i]);
-		}
-	}
-	printf("\n");
-}
-
 void	power_of_two(t_bn *n, unsigned int pow)
 {
 	int64_t	limb;
