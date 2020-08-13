@@ -16,7 +16,7 @@ t_arg	*create_elem(void)
 {
 	t_arg *arg;
 
-	if ((arg = (t_arg*)malloc(sizeof(t_arg))) == NULL)
+	if ((arg = (t_arg*)ft_malloc(sizeof(t_arg))) == NULL)
 		return (NULL);
 	arg->next = NULL;
 	init_arg(arg);

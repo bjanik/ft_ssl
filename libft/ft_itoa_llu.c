@@ -31,7 +31,7 @@ char		*ft_itoa_llu(unsigned long long n)
 	int		i;
 
 	i = ft_nb_digit(n);
-	if ((s = (char*)malloc((i + 1) * sizeof(char))) == NULL)
+	if ((s = (char*)ft_malloc((i + 1) * sizeof(char))) == NULL)
 		return (NULL);
 	s[i--] = '\0';
 	if (n == 0)

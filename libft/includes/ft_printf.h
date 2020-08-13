@@ -6,7 +6,7 @@
 /*   By: bjanik <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/08 16:12:45 by bjanik            #+#    #+#             */
-/*   Updated: 2017/05/18 17:02:39 by bjanik           ###   ########.fr       */
+/*   Updated: 2020/08/10 17:07:53 by bjanik           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,14 +107,14 @@ int					handle_precision(t_arg *p);
 int					handle_zeros(t_arg *p);
 void				handle_wildcard(t_arg *p, va_list ap);
 const char			*start_arg(t_arg *p, const char *format, va_list ap);
-int					print_output(t_arg *p, const char *format,  const int fd);
+int					print_output(t_arg *p, const char *format, const int fd);
 t_arg				*create_elem(void);
 void				init_arg(t_arg *arg);
 void				init_ret(t_arg *arg);
 void				append_list(t_arg **arg, t_arg **arg2);
 void				free_arg_list(t_arg **p);
 void				init_print(t_arg *arg);
-int					print_wide_s(t_arg *p,  const int fd);
-int					print_ls(t_arg *p,  const int fd);
+int					print_wide_s(t_arg *p, const int fd);
+int					print_ls(t_arg *p, const int fd);
 int					print_wide_c(t_arg *p, const int fd);
 #endif

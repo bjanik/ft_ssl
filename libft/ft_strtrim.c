@@ -17,7 +17,7 @@ static char	*trim_blank_str(void)
 	char	*str;
 
 	str = NULL;
-	if ((str = (char*)malloc(1)) == NULL)
+	if ((str = (char*)ft_malloc(1)) == NULL)
 		return (NULL);
 	str[0] = '\0';
 	return (str);
@@ -42,7 +42,7 @@ char		*ft_strtrim(char const *s)
 	s--;
 	while (*s == ' ' || *s == '\t' || *s == '\n')
 		s--;
-	if ((str = (char*)malloc(s - save + 2)) == NULL)
+	if ((str = (char*)ft_malloc(s - save + 2)) == NULL)
 		return (NULL);
 	while (save != s + 1)
 		str[i++] = *save++;

@@ -6,7 +6,7 @@
 /*   By: bjanik <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/12/04 14:11:15 by bjanik            #+#    #+#             */
-/*   Updated: 2017/12/04 14:11:26 by bjanik           ###   ########.fr       */
+/*   Updated: 2020/08/13 19:51:41 by bjanik           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,5 +14,5 @@
 
 int	ft_putchar_termcaps(int c)
 {
-	return (write(STDIN, &c, 1));
+	return (write(STDIN_FILENO, &c, 1));
 }

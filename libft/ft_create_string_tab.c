@@ -18,7 +18,7 @@ char	**ft_create_string_tab(int size)
 	int		i;
 
 	i = 0;
-	if ((tab = (char**)malloc(size * sizeof(char *))) == NULL)
+	if ((tab = (char**)ft_malloc(size * sizeof(char *))) == NULL)
 		return (NULL);
 	while (i < size)
 		tab[i++] = NULL;

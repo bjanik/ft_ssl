@@ -6,7 +6,7 @@
 /*   By: bjanik <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/18 17:39:45 by bjanik            #+#    #+#             */
-/*   Updated: 2017/02/07 15:57:51 by bjanik           ###   ########.fr       */
+/*   Updated: 2020/08/12 13:33:33 by bjanik           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ static int	print_string(t_arg *p, const int fd)
 	return (len);
 }
 
-static int	handle_special_case(t_arg *p,const int fd)
+static int	handle_special_case(t_arg *p, const int fd)
 {
 	if (p->spec == 'c' && p->arg[0] == '\0')
 		return (ft_putchar_fd('\0', fd));

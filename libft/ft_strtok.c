@@ -52,7 +52,7 @@ char		**ft_strtok(char const *str, const char *s)
 	tab = NULL;
 	if (str == NULL)
 		return (NULL);
-	if ((tab = (char**)malloc((ft_words(str, s) + 1) * sizeof(char*))) == NULL)
+	if (!(tab = (char**)ft_malloc((ft_words(str, s) + 1) * sizeof(char*))))
 		return (NULL);
 	while (*str)
 	{

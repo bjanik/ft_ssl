@@ -6,7 +6,7 @@
 /*   By: bjanik <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/15 11:39:58 by bjanik            #+#    #+#             */
-/*   Updated: 2017/04/03 19:26:10 by bjanik           ###   ########.fr       */
+/*   Updated: 2020/08/10 17:06:51 by bjanik           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,7 +83,7 @@ t_arg		*go_through_format(const char *format, va_list ap)
 	return (p2);
 }
 
-int 		ft_dprintf(const int fd, const char *format, ...)
+int			ft_dprintf(const int fd, const char *format, ...)
 {
 	t_arg	*arg_list;
 	va_list	ap;

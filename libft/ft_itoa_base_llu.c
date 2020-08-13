@@ -35,7 +35,7 @@ char		*ft_itoa_base_llu(unsigned long long value, char *base)
 
 	size_base = ft_strlen(base);
 	i = nb_digit(value, size_base);
-	if ((s = (char*)malloc((i + 1) * sizeof(char))) == NULL)
+	if ((s = (char*)ft_malloc((i + 1) * sizeof(char))) == NULL)
 		return (NULL);
 	s[i--] = '\0';
 	if (value == 0)

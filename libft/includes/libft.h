@@ -37,10 +37,6 @@
 # define BOLD_GRN "\x1B[1m\033[32m"
 # define RESET "\x1B[0m"
 
-# define STDIN 0
-# define STDOUT 1
-# define STDERR 2
-
 typedef struct		s_dlst
 {
 	void			*data;

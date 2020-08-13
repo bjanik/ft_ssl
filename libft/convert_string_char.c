@@ -26,7 +26,7 @@ wchar_t	*convert_wide_char(va_list ap)
 {
 	wchar_t	*ws;
 
-	if ((ws = (wchar_t*)malloc(2 * sizeof(wchar_t))) == NULL)
+	if ((ws = (wchar_t*)ft_malloc(2 * sizeof(wchar_t))) == NULL)
 		return (NULL);
 	*ws = (wchar_t)va_arg(ap, wint_t);
 	*(ws + 1) = 0;
