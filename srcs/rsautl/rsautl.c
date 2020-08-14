@@ -89,7 +89,8 @@ int			rsautl_command_run(t_rsautl *rsautl)
 		rsautl->fd[OUT] = open(rsautl->out,
 								O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	if (rsautl->opts & RSAUTL_DECRYPT)
-		return (rsa_message_decryption(&rsautl->rsa_data, rsautl->fd));
+		return (rsa_message_decryption(&rsautl->rsa_data, rsautl->fd,
+										rsautl->opts));
 	else
 		return (rsa_message_encryption(&rsautl->rsa_data, rsautl->fd,
 										rsautl->opts));

@@ -23,6 +23,7 @@ void	genrsa_clear(t_genrsa *genrsa)
 	bn_clear(&genrsa->rsa_data.exponent2);
 	bn_clear(&genrsa->rsa_data.coef);
 	ft_strdel(&genrsa->passout);
+	ft_strdel(&genrsa->out);
 	reset_des(genrsa->des);
 	ft_memdel((void**)&genrsa);
 }

@@ -16,11 +16,14 @@ void	print_encryption_header(t_des *des, const int fd)
 {
 	char	*iv;
 
-	ft_dprintf(fd, "%s\n%s: DES-CBC,", PROC_TYPE, DEK_INFO);
-	iv = ft_itoa_base_llu(convert_input_to_block(des->salt),
-							"0123456789ABCDEF");
-	ft_dprintf(fd, "%s\n\n", iv);
-	ft_strdel(&iv);
+	if (des)
+	{
+		ft_dprintf(fd, "%s\n%s: DES-CBC,", PROC_TYPE, DEK_INFO);
+		iv = ft_itoa_base_llu(convert_input_to_block(des->salt),
+								"0123456789ABCDEF");
+		ft_dprintf(fd, "%s\n\n", iv);
+		ft_strdel(&iv);
+	}
 }
 
 void	print_rsa_key(t_rsa *rsa,

@@ -62,7 +62,7 @@ static int			private_routine(t_rsa *rsa, char *args[],
 		if (!(*data = private_key_encryption(rsa->des, *data, data_len, args)))
 			return (1);
 	}
-	return (0);
+	return (ret);
 }
 
 int					rsa_private_key_routine(t_rsa *rsa, char **data)

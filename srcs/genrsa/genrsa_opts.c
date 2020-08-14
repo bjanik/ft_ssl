@@ -18,7 +18,12 @@ static int	set_genrsa_output(char **argv, void *ptr, int *index)
 
 	genrsa = ptr;
 	(*index)++;
-	if ((genrsa->out = argv[*index]) == NULL)
+	if (argv[*index] == NULL)
+	{
+		ft_dprintf(STDERR_FILENO, "ft_ssl: Missing output file\n");
+		return (1);
+	}
+	if ((genrsa->out = ft_strdup(argv[*index])) == NULL)
 		return (1);
 	return (0);
 }
@@ -37,6 +42,11 @@ static int	set_genrsa_des(char **argv, void *ptr, int *index)
 
 static int	finalize_genrsa_opts(t_genrsa *genrsa)
 {
+	if (genrsa->numbits < 32)
+	{
+		ft_dprintf(STDERR_FILENO, "ft_ssl: key size too small\n");
+		return (1);
+	}
 	if (genrsa->out)
 	{
 		if ((genrsa->fd[OUT] = open(genrsa->out, O_CREAT | O_WRONLY | O_TRUNC,
@@ -58,8 +68,8 @@ static int	set_password_genrsa(char **argv, void *ptr, int *index)
 		ret = (ft_dprintf(STDERR_FILENO, "ft_ssl: Missing password value\n"));
 	else if (ft_strcmp(argv[++(*index)], "stdin") == 0)
 		ret = pass_stdin(&genrsa->passout);
-	else if ((split = ft_strsplit(argv[*index], ':')) == NULL)
-		ret = 1;
+	else if ((split = ft_strsplit(argv[*index], ':')) == NULL || !split[1])
+		ret = ft_dprintf(STDERR_FILENO, "ft_ssl: Error getting password\n");
 	else if (ft_strcmp(split[0], "pass") == 0)
 		ret = pass_pass(split[1], &genrsa->passout);
 	else if (ft_strcmp(split[0], "env") == 0)

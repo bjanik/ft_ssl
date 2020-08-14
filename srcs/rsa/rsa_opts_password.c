@@ -52,12 +52,19 @@ int	pass_file(char *filename, char **passwd)
 
 int	pass_stdin(char **passwd)
 {
+	int	ret;
+
 	if ((*passwd = ft_strnew(64)) == NULL)
 		return (1);
-	if (read(STDIN_FILENO, *passwd, 64) < 0)
+	if ((ret = read(STDIN_FILENO, *passwd, 64)) < 0)
 		return (1);
+	if (ret < 4)
+	{
+		ft_dprintf(2, "ft_ssl: Password must have at least 4 characters\n");
+		return (1);
+	}
 	if (ft_strlen(*passwd) > 0)
-		(*passwd)[ft_strlen(*passwd) - 1] = '\0';
+		(*passwd)[ft_strlen(*passwd)] = '\0';
 	return (0);
 }
 

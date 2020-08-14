@@ -101,6 +101,7 @@ SRC_NAME = base64/base64_core.c \
 		rsa/rsa_opts2.c \
 		rsa/rsa_opts3.c \
 		rsa/rsa_opts_password.c \
+		rsautl/display_decryption.c \
 		rsautl/rsautl.c \
 		rsautl/rsautl_clear.c \
 		rsautl/rsautl_decryption.c \

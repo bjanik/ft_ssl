@@ -472,7 +472,11 @@ int						rsa_message_encryption(t_rsa_data *rsa_data,
 												const int fd[],
 												const int opts);
 int						rsa_message_decryption(t_rsa_data *rsa_data,
-												const int fd[]);
+												const int fd[],
+												const int opts);
+void					display_decryption(unsigned char *decrypted_msg,
+											const int opts, uint32_t len,
+											const int fd);
 extern t_ssl_command		g_commands[];
 extern const unsigned char	g_padding_patterns[][8];
 #endif

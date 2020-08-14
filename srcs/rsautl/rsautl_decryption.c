@@ -44,7 +44,7 @@ static unsigned char	*get_encrypted_message(const int fd, uint32_t mod_len)
 	{
 		if (mlen + ret > mod_len)
 		{
-			ft_dprintf(STDERR_FILENO, "ft_ssl: message to encrypt too long\n");
+			ft_dprintf(STDERR_FILENO, "ft_ssl: message to decrypt too long\n");
 			free(message);
 			return (NULL);
 		}
@@ -55,21 +55,29 @@ static unsigned char	*get_encrypted_message(const int fd, uint32_t mod_len)
 	return (message);
 }
 
-static int				check_decryption(unsigned char *decrypted_msg)
+static int				check_decryption(unsigned char *decrypted_msg,
+											uint32_t len)
 {
 	unsigned char	*ptr;
 	int				i;
+	int				ret;
 
 	i = 0;
+	ret = 0;
 	ptr = decrypted_msg;
 	if (*ptr++ != 0x0)
-		return (-1);
+		ret = -1;
 	if (*ptr++ != 0x02)
-		return (-1);
-	while (*ptr++ != 0x0)
+		ret = -1;
+	while (ptr <= decrypted_msg + len && *ptr++ != 0x0)
 		i++;
 	if (i < 8)
+		ret = -1;
+	if (ret == -1)
+	{
+		ft_dprintf(STDERR_FILENO, "ft_ssl: decryption error\n");
 		return (-1);
+	}
 	return (ptr - decrypted_msg);
 }
 
@@ -93,7 +101,8 @@ static int				init_plain_and_cipher(t_bn *bn[],
 }
 
 int						rsa_message_decryption(t_rsa_data *rsa_data,
-												const int fd[])
+												const int fd[],
+												const int opts)
 {
 	unsigned char	*msg[2];
 	unsigned char	*decrypted_msg;
@@ -111,11 +120,11 @@ int						rsa_message_decryption(t_rsa_data *rsa_data,
 		return (1);
 	decrypted_msg[0] = 0;
 	write_bn_to_data(bn[1], decrypted_msg + 1);
-	ret = check_decryption(decrypted_msg);
-	(ret == -1) ? ft_dprintf(STDERR_FILENO, "ft_ssl: decryption error\n") :
-					write(fd[OUT], decrypted_msg + ret, mod_len - ret);
+	ret = check_decryption(decrypted_msg, mod_len + 1);
+	if (ret > -1)
+		display_decryption(decrypted_msg + ret, opts, mod_len - ret, fd[OUT]);
 	free(msg[0]);
 	free(decrypted_msg);
 	bn_clears(2, &bn[0], &bn[1]);
-	return (ret != -1);
+	return (ret == -1);
 }

@@ -26,6 +26,11 @@ int		set_inform(char **argv, void *ptr, int *index)
 	rsa->inform = ft_strdup(argv[*index]);
 	if (rsa->inform == NULL)
 		return (1);
+	if (ft_strcmp("PEM", rsa->inform))
+	{
+		ft_dprintf(STDERR_FILENO, "ft_ssl: Incorrect input format\n");
+		return (1);
+	}
 	return (0);
 }
 
@@ -43,6 +48,11 @@ int		set_outform(char **argv, void *ptr, int *index)
 	rsa->outform = ft_strdup(argv[*index]);
 	if (rsa->outform == NULL)
 		return (1);
+	if (ft_strcmp("PEM", rsa->outform))
+	{
+		ft_dprintf(STDERR_FILENO, "ft_ssl: Incorrect output format\n");
+		return (1);
+	}
 	return (0);
 }
 
