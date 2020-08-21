@@ -48,8 +48,9 @@ static int			private_routine(t_rsa *rsa, char *args[],
 			return (1);
 	}
 	ret = parse_decoded_data(&rsa->rsa_data, *data, *data_len, rsa->opts);
-	if (rsa->opts & RSA_TEXT)
-		flag_text(rsa);
+	if (ret)
+		return (1);
+	(rsa->opts & RSA_TEXT) ? flag_text(rsa) : 0;
 	if (rsa->opts & RSA_MODULUS)
 		flag_modulus(rsa->rsa_data.modulus, rsa->fd[OUT]);
 	if (rsa->opts & RSA_CHECK)
@@ -79,7 +80,10 @@ int					rsa_private_key_routine(t_rsa *rsa, char **data)
 	if (raw_data == NULL)
 		return (1);
 	if (private_routine(rsa, args, &raw_data, &raw_data_len))
+	{
+		ft_memdel((void**)&raw_data);
 		return (1);
+	}
 	ft_strdel(data);
 	*data = base64_encode_data(raw_data, raw_data_len);
 	ft_memdel((void**)&raw_data);

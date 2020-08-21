@@ -91,6 +91,7 @@ SRC_NAME = base64/base64_core.c \
 		rsa/pem_decode.c \
 		rsa/pem_public_key.c \
 		rsa/pem_utils.c \
+		rsa/pem_utils2.c \
 		rsa/print_keys.c \
 		rsa/private_key_encryption_decryption.c \
 		rsa/rsa.c \

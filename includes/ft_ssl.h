@@ -402,7 +402,9 @@ int						parse_decoded_data(t_rsa_data *rsa_data,
 											uint32_t decoded_data_len,
 											int opts);
 
-t_bn					*retrieve_number_from_data(unsigned char **data);
+t_bn					*retrieve_nb_from_data(unsigned char **data,
+												unsigned char *start,
+												uint32_t len);
 
 uint32_t				get_number_len(unsigned char **ptr);
 
@@ -413,6 +415,10 @@ void					set_bn_to_data(t_bn *n, unsigned char *data,
 void					write_bn_to_data(t_bn *n, unsigned char *data);
 uint32_t				get_public_data_len(t_bn *modulus, t_bn *public_exp);
 uint32_t				get_pem_data_len(t_rsa_data *rsa_data);
+int						retrieve_modulus_and_public(t_rsa_data *rsa_data,
+													unsigned char **ptr,
+													unsigned char *data,
+													uint32_t length);
 
 t_rsa					*rsa_init(void);
 void					rsa_clear(t_rsa *rsa);

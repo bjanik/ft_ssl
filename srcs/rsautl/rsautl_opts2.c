@@ -47,6 +47,8 @@ int		set_encrypt(char **argv, void *ptr, int *index)
 	(void)index;
 	rsautl = ptr;
 	rsautl->opts |= RSAUTL_ENCRYPT;
+	if (rsautl->opts & RSAUTL_DECRYPT)
+		rsautl->opts &= ~RSAUTL_DECRYPT;
 	return (0);
 }
 
@@ -58,6 +60,8 @@ int		set_decrypt(char **argv, void *ptr, int *index)
 	(void)index;
 	rsautl = ptr;
 	rsautl->opts |= RSAUTL_DECRYPT;
+	if (rsautl->opts & RSAUTL_ENCRYPT)
+		rsautl->opts &= ~RSAUTL_ENCRYPT;
 	return (0);
 }
 

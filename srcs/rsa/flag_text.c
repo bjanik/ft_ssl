@@ -44,6 +44,9 @@ static void	display_bn_flag_text(t_bn *n, int fd, const char *id)
 
 void		flag_text(t_rsa *rsa)
 {
+	ft_dprintf(rsa->fd[OUT], "%s-Key: (%d bit)\n", (rsa->opts & RSA_PUBIN) ?
+								"Public" : "Private",
+								bn_get_bit_number(rsa->rsa_data.modulus));
 	display_bn_flag_text(rsa->rsa_data.modulus, rsa->fd[OUT], "modulus:");
 	ft_dprintf(rsa->fd[OUT], "publicExponent: 65537 (0x10001)\n");
 	if ((rsa->opts & RSA_PUBIN) == 0)

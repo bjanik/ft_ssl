@@ -54,17 +54,18 @@ int	pass_stdin(char **passwd)
 {
 	int	ret;
 
-	if ((*passwd = ft_strnew(64)) == NULL)
+	if ((ret = get_next_line(STDIN_FILENO, passwd)) < 0)
 		return (1);
-	if ((ret = read(STDIN_FILENO, *passwd, 64)) < 0)
+	if (*passwd == NULL)
+	{
+		ft_dprintf(2, "ft_ssl: Failed to get password\n");
 		return (1);
-	if (ret < 4)
+	}
+	if (ft_strlen(*passwd) < 4)
 	{
 		ft_dprintf(2, "ft_ssl: Password must have at least 4 characters\n");
 		return (1);
 	}
-	if (ft_strlen(*passwd) > 0)
-		(*passwd)[ft_strlen(*passwd)] = '\0';
 	return (0);
 }
 

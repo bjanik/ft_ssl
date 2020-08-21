@@ -23,7 +23,7 @@ static int	get_private_key_from_inkey(t_rsautl *rsautl,
 
 	raw_data_len = 0;
 	ret = 0;
-	args[0] = rsautl->in;
+	args[0] = rsautl->inkey;
 	args[1] = NULL;
 	raw_data = base64_decode_data(&raw_data_len, ft_strdup(data),
 									ft_strlen(data));
@@ -78,8 +78,7 @@ int			rsautl_command_run(t_rsautl *rsautl)
 	if ((rsautl->opts & RSAUTL_PUBIN) && (rsautl->opts & RSAUTL_DECRYPT))
 		return (ft_dprintf(2, "ft_ssl: private key is required\n"));
 	inkey_fd = open(rsautl->inkey, O_RDONLY);
-	if (rsautl->in)
-		rsautl->fd[IN] = open(rsautl->in, O_RDONLY);
+	(rsautl->in) ? rsautl->fd[IN] = open(rsautl->in, O_RDONLY) : 0;
 	ret = rsautl_handle_key(rsautl, &data, inkey_fd);
 	ft_strdel(&data);
 	close(inkey_fd);

@@ -85,7 +85,7 @@ int		set_out_file(char **argv, void *ptr, int *index)
 		return (1);
 	}
 	rsa->out = ft_strdup(argv[(*index)]);
-	if (rsa->in == NULL)
+	if (rsa->out == NULL)
 		return (1);
 	return (0);
 }

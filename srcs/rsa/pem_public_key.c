@@ -45,7 +45,7 @@ uint32_t	get_public_data_len(t_bn *modulus, t_bn *public_exp)
 }
 
 static void	update_public_data(uint32_t *remain_len, uint32_t *len,
-						unsigned char *public_data)
+								unsigned char *public_data)
 {
 	if ((*remain_len)-- >= 0x80)
 		public_data[(*len)++] = 0x80 + get_byte_number((*remain_len)--);
@@ -83,7 +83,8 @@ void		fill_pem_public_data(unsigned char *public_data,
 }
 
 static int	parse_decoded_public_data(t_rsa_data *rsa_data,
-										unsigned char *data)
+										unsigned char *data,
+										uint32_t length)
 {
 	uint32_t		len;
 	unsigned char	*ptr;
@@ -94,21 +95,19 @@ static int	parse_decoded_public_data(t_rsa_data *rsa_data,
 		return (1);
 	len = get_number_len(&ptr);
 	if (*ptr++ != 0x30)
-		return (ft_dprintf(STDERR_FILENO, "ft_ssl: asn1 decoding failed"));
+		return (ft_dprintf(STDERR_FILENO, "ft_ssl: asn1 decoding failed\n"));
 	ptr += *ptr;
 	if (*ptr++ != 0x00)
-		return (ft_dprintf(STDERR_FILENO, "ft_ssl: asn1 decoding failed"));
+		return (ft_dprintf(STDERR_FILENO, "ft_ssl: asn1 decoding failed\n"));
 	if (*ptr++ != 0x03)
-		return (ft_dprintf(STDERR_FILENO, "ft_ssl: asn1 decoding failed"));
+		return (ft_dprintf(STDERR_FILENO, "ft_ssl: asn1 decoding failed\n"));
 	len = get_number_len(&ptr);
 	if (*ptr++ != 0x00)
-		return (ft_dprintf(STDERR_FILENO, "ft_ssl: asn1 decoding failed"));
+		return (ft_dprintf(STDERR_FILENO, "ft_ssl: asn1 decoding failed\n"));
 	if (*ptr++ != 0x30)
-		return (ft_dprintf(STDERR_FILENO, "ft_ssl: asn1 decoding failed"));
+		return (ft_dprintf(STDERR_FILENO, "ft_ssl: asn1 decoding failed\n"));
 	len = get_number_len(&ptr);
-	rsa_data->modulus = retrieve_number_from_data(&ptr);
-	rsa_data->public_exp = retrieve_number_from_data(&ptr);
-	return (0);
+	return (retrieve_modulus_and_public(rsa_data, &ptr, data, length));
 }
 
 int			retrieve_data_from_public_key(t_rsa_data *rsa_data,
@@ -129,7 +128,8 @@ int			retrieve_data_from_public_key(t_rsa_data *rsa_data,
 	if (public_data_decoded == NULL)
 		return (1);
 	ret = parse_decoded_public_data(rsa_data,
-									public_data_decoded);
+									public_data_decoded,
+									public_data_decoded_len);
 	ft_memdel((void**)&public_data_decoded);
 	return (ret);
 }

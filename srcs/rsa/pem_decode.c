@@ -56,47 +56,76 @@ t_bn		*get_bn(unsigned char **data, uint32_t len)
 	return (n);
 }
 
-t_bn		*retrieve_number_from_data(unsigned char **data)
+t_bn		*retrieve_nb_from_data(unsigned char **data,
+									unsigned char *start,
+									uint32_t length)
 {
 	t_bn		*n;
 	uint32_t	len;
 
+	n = NULL;
+	if (*data + 1 > start + length)
+		return (NULL);
 	(*data)++;
 	len = get_number_len(data);
 	if (**data == 0)
 	{
+		if (*data + 1 > start + length)
+			return (NULL);
 		(*data)++;
 		len--;
 	}
-	n = get_bn(data, len);
+	if (*data + len <= start + length)
+		n = get_bn(data, len);
 	return (n);
 }
 
+static int	handle_private_data(t_rsa_data *rsa_data,
+								unsigned char *ptr,
+								unsigned char *data,
+								uint32_t len)
+{
+	if (!(rsa_data->private_exp = retrieve_nb_from_data(&ptr, data, len)))
+		return (1);
+	if (!(rsa_data->prime1 = retrieve_nb_from_data(&ptr, data, len)))
+		return (1);
+	if (!(rsa_data->prime2 = retrieve_nb_from_data(&ptr, data, len)))
+		return (1);
+	if (!(rsa_data->exponent1 = retrieve_nb_from_data(&ptr, data, len)))
+		return (1);
+	if (!(rsa_data->exponent2 = retrieve_nb_from_data(&ptr, data, len)))
+		return (1);
+	if (!(rsa_data->coef = retrieve_nb_from_data(&ptr, data, len)))
+		return (1);
+	return (0);
+}
+
 int			parse_decoded_data(t_rsa_data *rsa_data,
-								unsigned char *decoded_data,
-								uint32_t decoded_data_len,
+								unsigned char *data,
+								uint32_t len,
 								int opts)
 {
 	unsigned char	*ptr;
 	uint32_t		cur_len;
 
-	ptr = decoded_data;
+	ptr = data;
 	if (*ptr++ != 0x30)
 		return (1);
 	cur_len = get_number_len(&ptr);
-	if (cur_len + ptr > decoded_data + decoded_data_len)
+	if (cur_len + ptr > data + len)
 		return (1);
 	ptr += 3;
-	rsa_data->modulus = retrieve_number_from_data(&ptr);
-	rsa_data->public_exp = retrieve_number_from_data(&ptr);
+	if (!(rsa_data->modulus = retrieve_nb_from_data(&ptr, data, len)))
+		return (1);
+	if (!(rsa_data->public_exp = retrieve_nb_from_data(&ptr, data, len)))
+		return (1);
 	if ((opts & RSA_PUBIN) == 0)
 	{
-		rsa_data->private_exp = retrieve_number_from_data(&ptr);
-		rsa_data->prime1 = retrieve_number_from_data(&ptr);
-		rsa_data->prime2 = retrieve_number_from_data(&ptr);
-		rsa_data->exponent1 = retrieve_number_from_data(&ptr);
-		rsa_data->exponent2 = retrieve_number_from_data(&ptr);
-		rsa_data->coef = retrieve_number_from_data(&ptr);
+		if (handle_private_data(rsa_data, ptr, data, len) == 1)
+		{
+			ft_dprintf(STDERR_FILENO, "ft_ssl: Unable to load private key\n");
+			return (1);
+		}
 	}
 	return (0);
 }
