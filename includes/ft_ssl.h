@@ -385,6 +385,7 @@ int						pass_env(char *var_name, char **passwd);
 int						pass_pass(char *password, char **passwd);
 int						pass_file(char *filename, char **passwd);
 int						pass_stdin(char **passwd);
+int						check_file_validity(const char *file);
 
 t_genrsa				*genrsa_init(void);
 void					genrsa_clear(t_genrsa *rsa);
@@ -422,8 +423,8 @@ int						retrieve_modulus_and_public(t_rsa_data *rsa_data,
 
 t_rsa					*rsa_init(void);
 void					rsa_clear(t_rsa *rsa);
-int						rsa_output_file(t_rsa *rsa);
-int						rsa_input_file(t_rsa *rsa);
+int						rsa_output_file(char *file, int fd[]);
+int						rsa_input_file(char *file, int fd[]);
 
 int						rsa_opts(char **argv, t_rsa *rsa);
 int						rsa_usage(char *opt);

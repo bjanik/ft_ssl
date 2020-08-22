@@ -23,6 +23,8 @@ int		set_inkey_file(char **argv, void *ptr, int *index)
 		ft_dprintf(STDERR_FILENO, "ft_ssl: Missing inkey file\n");
 		return (1);
 	}
+	if (rsautl->inkey)
+		free(rsautl->inkey);
 	if ((rsautl->inkey = ft_strdup(argv[*index])) == NULL)
 		return (1);
 	return (0);

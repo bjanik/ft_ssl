@@ -27,7 +27,7 @@ int	genrsa_command(char **argv, t_ssl_command *cmd)
 	if (ret == 0)
 		pem(genrsa);
 	genrsa_clear(genrsa);
-	return (0);
+	return (ret);
 }
 
 int	rsa_command(char **argv, t_ssl_command *cmd)
@@ -56,6 +56,11 @@ int	rsautl_command(char **argv, t_ssl_command *cmd)
 	rsautl = rsautl_init();
 	if (rsautl_opts(argv, rsautl))
 		ret = 1;
+	if (rsautl->inkey == NULL && ret == 0)
+	{
+		ft_dprintf(STDERR_FILENO, "ft_ssl: no keyfile specifed\n");
+		ret = 1;
+	}
 	else if (rsautl_command_run(rsautl))
 		ret = 1;
 	rsautl_clear(rsautl);

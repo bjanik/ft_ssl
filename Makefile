@@ -35,6 +35,7 @@ SRC_NAME = base64/base64_core.c \
 		bn/bn_sub.c \
 		bn/bn_utils.c \
 		core/commands.c \
+		core/errors.c \
 		core/ft_ssl.c \
 		core/interactive_mode.c \
 		core/main.c \

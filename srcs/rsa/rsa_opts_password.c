@@ -23,6 +23,8 @@ int	pass_env(char *var_name, char **passwd)
 					var_name);
 		return (1);
 	}
+	if (*passwd)
+		ft_strdel(passwd);
 	if ((*passwd = ft_strdup(var_value)) == NULL)
 		return (1);
 	return (0);
@@ -30,6 +32,8 @@ int	pass_env(char *var_name, char **passwd)
 
 int	pass_pass(char *password, char **passwd)
 {
+	if (*passwd)
+		ft_strdel(passwd);
 	if ((*passwd = ft_strdup(password)) == NULL)
 		return (1);
 	return (0);
@@ -44,6 +48,8 @@ int	pass_file(char *filename, char **passwd)
 		ft_dprintf(STDERR_FILENO, "ft_ssl: Can't open file %s\n", filename);
 		return (1);
 	}
+	if (*passwd)
+		ft_strdel(passwd);
 	if (get_next_line(fd, passwd) < 0)
 		return (1);
 	close(fd);
@@ -54,6 +60,8 @@ int	pass_stdin(char **passwd)
 {
 	int	ret;
 
+	if (*passwd)
+		ft_strdel(passwd);
 	if ((ret = get_next_line(STDIN_FILENO, passwd)) < 0)
 		return (1);
 	if (*passwd == NULL)

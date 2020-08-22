@@ -68,6 +68,16 @@ static int	rsautl_handle_key(t_rsautl *rsautl, char **data, int inkey_fd)
 	return (0);
 }
 
+static int	run_rsautl(t_rsautl *rsautl)
+{
+	if (rsautl->opts & RSAUTL_DECRYPT)
+		return (rsa_message_decryption(&rsautl->rsa_data, rsautl->fd,
+										rsautl->opts));
+	else
+		return (rsa_message_encryption(&rsautl->rsa_data, rsautl->fd,
+										rsautl->opts));
+}
+
 int			rsautl_command_run(t_rsautl *rsautl)
 {
 	char	*data;
@@ -78,19 +88,14 @@ int			rsautl_command_run(t_rsautl *rsautl)
 	if ((rsautl->opts & RSAUTL_PUBIN) && (rsautl->opts & RSAUTL_DECRYPT))
 		return (ft_dprintf(2, "ft_ssl: private key is required\n"));
 	inkey_fd = open(rsautl->inkey, O_RDONLY);
-	(rsautl->in) ? rsautl->fd[IN] = open(rsautl->in, O_RDONLY) : 0;
+	if (rsa_input_file(rsautl->in, rsautl->fd))
+		return (1);
 	ret = rsautl_handle_key(rsautl, &data, inkey_fd);
 	ft_strdel(&data);
 	close(inkey_fd);
 	if (ret)
 		return (1);
-	if (rsautl->out)
-		rsautl->fd[OUT] = open(rsautl->out,
-								O_WRONLY | O_CREAT | O_TRUNC, 0644);
-	if (rsautl->opts & RSAUTL_DECRYPT)
-		return (rsa_message_decryption(&rsautl->rsa_data, rsautl->fd,
-										rsautl->opts));
-	else
-		return (rsa_message_encryption(&rsautl->rsa_data, rsautl->fd,
-										rsautl->opts));
+	if (rsa_output_file(rsautl->out, rsautl->fd))
+		return (1);
+	return (run_rsautl(rsautl));
 }

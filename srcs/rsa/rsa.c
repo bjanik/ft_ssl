@@ -123,15 +123,15 @@ int					rsa_command_run(t_rsa *rsa)
 	char			*data;
 	int				ret;
 
-	if (rsa_input_file(rsa))
+	if (rsa_input_file(rsa->in, rsa->fd))
 		return (1);
 	if ((rsa->opts & RSA_PUBIN) == 0)
 	{
 		if ((data = get_data(rsa->fd[IN], &rsa->des, PEM_PRIVATE_HEADER,
 								PEM_PRIVATE_FOOTER)) == NULL)
 			return (1);
-		rsa_output_file(rsa);
-		if (rsa_private_key_routine(rsa, &data) || data == NULL)
+		if (rsa_output_file(rsa->out, rsa->fd) ||
+				rsa_private_key_routine(rsa, &data) || data == NULL)
 		{
 			ft_strdel(&data);
 			return (1);

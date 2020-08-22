@@ -51,6 +51,8 @@ int			set_rsautl_in(char **argv, void *ptr, int *index)
 		ft_dprintf(STDERR_FILENO, "ft_ssl: Missing input file\n");
 		return (1);
 	}
+	if (rsautl->in)
+		free(rsautl->in);
 	if ((rsautl->in = ft_strdup(argv[*index])) == NULL)
 		return (1);
 	return (0);
@@ -67,6 +69,8 @@ int			set_rsautl_out(char **argv, void *ptr, int *index)
 		ft_dprintf(STDERR_FILENO, "ft_ssl: Missing output file\n");
 		return (1);
 	}
+	if (rsautl->out)
+		free(rsautl->out);
 	if ((rsautl->out = ft_strdup(argv[*index])) == NULL)
 		return (1);
 	return (0);

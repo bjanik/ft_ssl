@@ -23,6 +23,8 @@ static int	set_genrsa_output(char **argv, void *ptr, int *index)
 		ft_dprintf(STDERR_FILENO, "ft_ssl: Missing output file\n");
 		return (1);
 	}
+	if (genrsa->out)
+		free(genrsa->out);
 	if ((genrsa->out = ft_strdup(argv[*index])) == NULL)
 		return (1);
 	return (0);
@@ -36,7 +38,8 @@ static int	set_genrsa_des(char **argv, void *ptr, int *index)
 	(void)index;
 	genrsa = ptr;
 	genrsa->opts |= GENRSA_DES;
-	genrsa->des = init_des("des-cbc", g_commands[6].des_mode);
+	if (genrsa->des == NULL)
+		genrsa->des = init_des("des-cbc", g_commands[6].des_mode);
 	return (0);
 }
 
@@ -51,7 +54,11 @@ static int	finalize_genrsa_opts(t_genrsa *genrsa)
 	{
 		if ((genrsa->fd[OUT] = open(genrsa->out, O_CREAT | O_WRONLY | O_TRUNC,
 									0644)) < 0)
+		{
+			ft_dprintf(STDERR_FILENO, "ft_ssl: ");
+			perror(genrsa->out);
 			return (1);
+		}
 	}
 	return (0);
 }

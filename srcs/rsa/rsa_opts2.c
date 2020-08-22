@@ -23,6 +23,8 @@ int		set_inform(char **argv, void *ptr, int *index)
 		ft_dprintf(STDERR_FILENO, "ft_ssl: Missing inform type\n");
 		return (1);
 	}
+	if (rsa->inform)
+		free(rsa->inform);
 	rsa->inform = ft_strdup(argv[*index]);
 	if (rsa->inform == NULL)
 		return (1);
@@ -45,6 +47,8 @@ int		set_outform(char **argv, void *ptr, int *index)
 		ft_dprintf(STDERR_FILENO, "ft_ssl: Missing outform type\n");
 		return (1);
 	}
+	if (rsa->outform)
+		free(rsa->outform);
 	rsa->outform = ft_strdup(argv[*index]);
 	if (rsa->outform == NULL)
 		return (1);
@@ -67,6 +71,8 @@ int		set_in_file(char **argv, void *ptr, int *index)
 		ft_dprintf(STDERR_FILENO, "ft_ssl: Missing input file\n");
 		return (1);
 	}
+	if (rsa->in)
+		free(rsa->in);
 	rsa->in = ft_strdup(argv[(*index)]);
 	if (rsa->in == NULL)
 		return (1);
@@ -84,6 +90,8 @@ int		set_out_file(char **argv, void *ptr, int *index)
 		ft_dprintf(STDERR_FILENO, "ft_ssl: Missing output file\n");
 		return (1);
 	}
+	if (rsa->out)
+		free(rsa->out);
 	rsa->out = ft_strdup(argv[(*index)]);
 	if (rsa->out == NULL)
 		return (1);
