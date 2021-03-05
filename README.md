@@ -16,7 +16,7 @@ des3\
 des3-bc\
 des3-ecb\
 des3-cbc\
-des3-pcbc\
+des3-pcbc
 
 
 ## Public key commands:
